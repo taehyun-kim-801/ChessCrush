@@ -3,6 +3,7 @@
 USING_NS_CC;
 
 class AnchorPointHelper {
+public:
 	static Point& TopLeft;
 	static Point& TopCenter;
 	static Point& TopRight;
