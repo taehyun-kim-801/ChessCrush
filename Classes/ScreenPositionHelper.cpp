@@ -1,7 +1,7 @@
 #include "ScreenPositionHelper.h"
 
 void ScreenPositionHelper::Initialize() {
-	auto screenSize = Director::getInstance()->getWinSize();
+	const auto screenSize = Director::getInstance()->getWinSize();
 	
 	TopLeft = Point(0, screenSize.height);
 	TopCenter = Point(screenSize.width / 2, screenSize.height);
