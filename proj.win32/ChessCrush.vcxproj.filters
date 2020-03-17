@@ -10,6 +10,12 @@
     <Filter Include="src">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Helper">
+      <UniqueIdentifier>{32d49b79-d641-4d70-9581-8358dbe163bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scenes">
+      <UniqueIdentifier>{437eb6a3-a0f4-463c-8b93-ea58ea41e98a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,8 +27,18 @@
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameScene.cpp" />
-    <ClCompile Include="..\Classes\ScreenPositionHelper.cpp" />
+    <ClCompile Include="..\Classes\ScreenPositionHelper.cpp">
+      <Filter>src\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AnchorPointHelper.cpp">
+      <Filter>src\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\InitializeScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -34,10 +50,18 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameScene.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\Classes\ScreenPositionHelper.h">
+      <Filter>src\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\ScreenPositionHelper.h" />
+    <ClInclude Include="..\Classes\AnchorPointHelper.h">
+      <Filter>src\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\InitializeScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
