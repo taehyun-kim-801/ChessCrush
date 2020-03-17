@@ -1,14 +1,14 @@
 #include "ScreenPositionHelper.h"
 
-Point ScreenPositionHelper::TopLeft = nullptr;
-Point ScreenPositionHelper::TopCenter = nullptr;
-Point ScreenPositionHelper::TopRight = nullptr;
-Point ScreenPositionHelper::MiddleLeft = nullptr;
-Point ScreenPositionHelper::MiddleCenter = nullptr;
-Point ScreenPositionHelper::MiddleRight = nullptr;
-Point ScreenPositionHelper::BottomLeft = nullptr;
-Point ScreenPositionHelper::BottomCenter = nullptr;
-Point ScreenPositionHelper::BottomRight = nullptr;
+Point ScreenPositionHelper::TopLeft = Point::ZERO;
+Point ScreenPositionHelper::TopCenter = Point::ZERO;
+Point ScreenPositionHelper::TopRight = Point::ZERO;
+Point ScreenPositionHelper::MiddleLeft = Point::ZERO;
+Point ScreenPositionHelper::MiddleCenter = Point::ZERO;
+Point ScreenPositionHelper::MiddleRight = Point::ZERO;
+Point ScreenPositionHelper::BottomLeft = Point::ZERO;
+Point ScreenPositionHelper::BottomCenter = Point::ZERO;
+Point ScreenPositionHelper::BottomRight = Point::ZERO;
 
 void ScreenPositionHelper::Initialize() {
 	const auto screenSize = Director::getInstance()->getWinSize();

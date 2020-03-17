@@ -1,14 +1,14 @@
 #include "AnchorPointHelper.h"
 
-Point AnchorPointHelper::TopLeft = nullptr;
-Point AnchorPointHelper::TopCenter = nullptr;
-Point AnchorPointHelper::TopRight = nullptr;
-Point AnchorPointHelper::MiddleLeft = nullptr;
-Point AnchorPointHelper::MiddleCenter = nullptr;
-Point AnchorPointHelper::MiddleRight = nullptr;
-Point AnchorPointHelper::BottomLeft = nullptr;
-Point AnchorPointHelper::BottomCenter = nullptr;
-Point AnchorPointHelper::BottomRight = nullptr;
+Point AnchorPointHelper::TopLeft = Point::ZERO;
+Point AnchorPointHelper::TopCenter = Point::ZERO;
+Point AnchorPointHelper::TopRight = Point::ZERO;
+Point AnchorPointHelper::MiddleLeft = Point::ZERO;
+Point AnchorPointHelper::MiddleCenter = Point::ZERO;
+Point AnchorPointHelper::MiddleRight = Point::ZERO;
+Point AnchorPointHelper::BottomLeft = Point::ZERO;
+Point AnchorPointHelper::BottomCenter = Point::ZERO;
+Point AnchorPointHelper::BottomRight = Point::ZERO;
 
 void AnchorPointHelper::Initialize() {
 	TopLeft = Point(0, 1);
