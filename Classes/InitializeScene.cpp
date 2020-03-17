@@ -10,10 +10,19 @@ Scene* InitializeScene::createScene() {
 bool InitializeScene::init() {
 	if (!Scene::init()) return false;
 
+	auto initCallback = CallFunc::create(CC_CALLBACK_0(InitializeScene::GameInitialize, this));
+	auto nextSceneCallback = CallFunc::create(CC_CALLBACK_0(InitializeScene::LoadNextScene, this));
+	auto seq = Sequence::create(initCallback, nextSceneCallback, nullptr);
+	runAction(seq);
+
+	return true;
+}
+
+void InitializeScene::GameInitialize() {
 	ScreenPositionHelper::Initialize();
 	AnchorPointHelper::Initialize();
+}
 
-	auto gameScene = GameScene::createScene();
-	Director::getInstance()->pushScene(gameScene);
-	return true;
+void InitializeScene::LoadNextScene() {
+	Director::getInstance()->replaceScene(GameScene::createScene());
 }

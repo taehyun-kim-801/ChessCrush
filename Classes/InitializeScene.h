@@ -8,4 +8,8 @@ public:
 	static Scene* createScene();
 	virtual bool init();
 	CREATE_FUNC(InitializeScene);
+
+private:
+	void GameInitialize();
+	void LoadNextScene();
 };
