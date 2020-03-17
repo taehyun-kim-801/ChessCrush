@@ -10,7 +10,7 @@ bool GameScene::init() {
 	if (!Scene::init()) return false;
 	chessBoardSprite = Sprite::create("ChessBoard_1.png");
 	chessBoardSprite->setAnchorPoint(AnchorPointHelper::MiddleCenter);
-	chessBoardSprite->setPosition(ScreenPositionHelper::MiddleCenter);
+	chessBoardSprite->setPosition(ScreenPositionHelper::MiddleCenter+Point(0, 30));
 	chessBoardSprite->setContentSize(ChessBoardContentSize);
 
 	this->addChild(chessBoardSprite);
