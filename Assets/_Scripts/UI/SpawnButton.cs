@@ -20,13 +20,11 @@ namespace ChessCrush.UI
             {
                 if (Game.instance.chessBoard.AnybodyIn(i, 0))
                 {
-                    var square = Game.instance.objectPool.Use("DisableMoveSquare");
-                    square.GetComponent<ChessBoardObject>().Initialize(i, 0);
+                    var square = DisableMoveSquare.UseWithComponent(new ChessBoardVector(i, 0));
                 }
                 else
                 {
-                    var square = Game.instance.objectPool.Use("AbleMoveSquare");
-                    square.GetComponent<AbleMoveSquare>().Initialize(i, 0);
+                    var square = AbleMoveSquare.UseWithComponent(new ChessBoardVector(i, 0), spawnType);
                 }
             }
         }

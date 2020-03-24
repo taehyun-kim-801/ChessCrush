@@ -10,6 +10,9 @@ namespace ChessCrush.UI
         static Vector2 originPosition;
         private static readonly float ChessBoardBlockSize = 0.73f;
 
+        public ChessBoardVector() { }
+        public ChessBoardVector(int x,int y) { this.x = x; this.y = y; }
+
         public Vector3 ToWorldVector()
         {
             if (originPosition == default)

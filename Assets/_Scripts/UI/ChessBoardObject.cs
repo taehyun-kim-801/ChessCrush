@@ -12,7 +12,7 @@ namespace ChessCrush.UI
             rectTransform = GetComponent<RectTransform>();
         }
 
-        public void Initialize(int x, int y)
+        protected virtual void Initialize(int x, int y)
         {
             chessBoardPosition.x = x;
             chessBoardPosition.y = y;
