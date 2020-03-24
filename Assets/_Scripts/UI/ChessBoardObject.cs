@@ -16,7 +16,7 @@ namespace ChessCrush.UI
         {
             chessBoardPosition.x = x;
             chessBoardPosition.y = y;
-            if (rectTransform.TryGetAnchorPreset(out AnchorPreset anchorPreset))
+            if (transform.parent.GetComponent<RectTransform>().TryGetAnchorPreset(out AnchorPreset anchorPreset))
                 rectTransform.anchoredPosition = chessBoardPosition.ToWorldVector().ToAnchoredPosition(anchorPreset);
         }
     }

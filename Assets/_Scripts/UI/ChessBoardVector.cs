@@ -8,7 +8,7 @@ namespace ChessCrush.UI
         public int y;
 
         static Vector2 originPosition;
-        private static readonly float ChessBoardBlockSize = 0.72f;
+        private static readonly float ChessBoardBlockSize = 0.73f;
 
         public Vector3 ToWorldVector()
         {
