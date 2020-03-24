@@ -7,7 +7,7 @@ namespace ChessCrush.UI
     public class SpawnButton: MonoBehaviour
     {
         public Button button;
-        public SpawnType spawnType;
+        public PieceType pieceSpawnType;
 
         private void Awake()
         {
@@ -24,7 +24,7 @@ namespace ChessCrush.UI
                 }
                 else
                 {
-                    var square = AbleMoveSquare.UseWithComponent(new ChessBoardVector(i, 0), spawnType);
+                    var square = AbleMoveSquare.UseWithComponent(new ChessBoardVector(i, 0), pieceSpawnType);
                 }
             }
         }
