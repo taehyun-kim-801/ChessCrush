@@ -4,8 +4,8 @@ namespace ChessCrush.UI
 {
     public class ChessBoardObject: MonoBehaviour
     {
-        RectTransform rectTransform;
-        ChessBoardVector chessBoardPosition = new ChessBoardVector();
+        private RectTransform rectTransform;
+        protected ChessBoardVector chessBoardPosition = new ChessBoardVector();
 
         private void Awake()
         {
