@@ -1,5 +1,6 @@
 ﻿using ChessCrush.Game;
 using System;
+using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +12,15 @@ namespace ChessCrush.UI
         private PieceType spawnType;
         private Button button;
         private ChessBoard chessBoard;
+        public static ReactiveProperty<bool> haveToAppearProperty = new ReactiveProperty<bool>();
+        private IDisposable haveToAppearPropertyCallback;
 
         private void Awake()
         {
             base.Awake();
             button = gameObject.GetComponent<Button>();
             chessBoard = Director.instance.chessBoard;
-            button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare());
+            button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare()).AddTo(gameObject);
         }
 
         private void SubscribeAbleMoveSquare()
@@ -32,12 +35,27 @@ namespace ChessCrush.UI
             {
                 chessBoard.AddChessPiece(piece);
             }
+
+            haveToAppearProperty.Value = false;
         }
 
         private void Initialize(int x, int y, PieceType spawnType)
         {
             base.Initialize(x, y);
             this.spawnType = spawnType;
+            haveToAppearProperty.Value = true;
+            haveToAppearPropertyCallback = haveToAppearProperty.Subscribe(value =>
+            {
+                if(!value)
+                    Destroy();
+            });
+        }
+
+        private void Destroy()
+        {
+            DisableMoveSquare.haveToAppearProperty.Value = false;
+            gameObject.SetActive(false);
+            haveToAppearPropertyCallback.Dispose();
         }
 
         public static AbleMoveSquare UseWithComponent(ChessBoardVector boardVector, PieceType spawnType = default)
