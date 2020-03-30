@@ -14,21 +14,22 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
+            base.Awake();
             button = gameObject.GetComponent<Button>();
-            chessBoard = Game.instance.chessBoard;
+            chessBoard = Director.instance.chessBoard;
             button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare());
         }
 
         private void SubscribeAbleMoveSquare()
         {
+            var piece = ChessPiece.UseWithComponent(chessBoardPosition.x, chessBoardPosition.y, spawnType);
+            
             if(spawnType == default)
             {
-                ChessPiece piece = Game.instance.chessBoard.GetChessPiece(chessBoardPosition.x, chessBoardPosition.y);
                 piece.MoveTo(chessBoardPosition.x, chessBoardPosition.y);
             }
             else
             {
-                ChessPiece piece = new ChessPiece(chessBoardPosition.x, chessBoardPosition.y, spawnType);
                 chessBoard.AddChessPiece(piece);
             }
         }
@@ -41,7 +42,7 @@ namespace ChessCrush.UI
 
         public static AbleMoveSquare UseWithComponent(ChessBoardVector boardVector, PieceType spawnType = default)
         {
-            var result = Game.instance.objectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
+            var result = Director.instance.uiObjectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
             result.Initialize(boardVector.x, boardVector.y, spawnType);
             return result;
         }

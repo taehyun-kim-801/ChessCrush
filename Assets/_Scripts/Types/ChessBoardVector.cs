@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using ChessCrush.Game;
+using UnityEngine;
 
-namespace ChessCrush.UI
+namespace ChessCrush
 {
     public class ChessBoardVector
     {
@@ -16,7 +17,7 @@ namespace ChessCrush.UI
         public Vector3 ToWorldVector()
         {
             if (originPosition == default)
-                originPosition = Game.instance.chessBoardOrigin.position;
+                originPosition = Director.instance.chessBoardOrigin.position;
             return new Vector3(x * ChessBoardBlockSize + originPosition.x, y * ChessBoardBlockSize + originPosition.y);
         }
     }

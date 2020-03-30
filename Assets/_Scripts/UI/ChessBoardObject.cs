@@ -7,7 +7,7 @@ namespace ChessCrush.UI
         private RectTransform rectTransform;
         protected ChessBoardVector chessBoardPosition = new ChessBoardVector();
 
-        private void Awake()
+        protected void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
         }

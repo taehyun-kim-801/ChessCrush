@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using ChessCrush.Game;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ namespace ChessCrush.UI
 
         public static DisableMoveSquare UseWithComponent(ChessBoardVector boardVector)
         {
-            var result = Game.instance.objectPool.Use(nameof(DisableMoveSquare)).GetComponent<DisableMoveSquare>();
+            var result = Director.instance.uiObjectPool.Use(nameof(DisableMoveSquare)).GetComponent<DisableMoveSquare>();
             result.Initialize(boardVector.x, boardVector.y);
             return result;
         }

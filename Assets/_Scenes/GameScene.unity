@@ -1005,6 +1005,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859922949}
   m_CullTransparentMesh: 0
+--- !u!1 &895466666
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 895466668}
+  - component: {fileID: 895466667}
+  m_Layer: 0
+  m_Name: NonUIObjectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &895466667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895466666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 219ce00e4a959644ab230fa444c17e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolSerializeList:
+  - serializeObject: {fileID: 6309920751204199103, guid: 0e6381aea1a970941abbbe47a57f85fe,
+      type: 3}
+    initCount: 64
+    plusCount: 0
+--- !u!4 &895466668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895466666}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &906492755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,6 +1948,7 @@ GameObject:
   - component: {fileID: 1663649391}
   - component: {fileID: 1663649390}
   - component: {fileID: 1663649389}
+  - component: {fileID: 1663649392}
   m_Layer: 5
   m_Name: BishopButton
   m_TagString: Untagged
@@ -2010,6 +2059,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1663649387}
   m_CullTransparentMesh: 0
+--- !u!114 &1663649392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663649387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1663649389}
+  pieceSpawnType: 1
 --- !u!1 &1663818037
 GameObject:
   m_ObjectHideFlags: 0
@@ -2414,7 +2477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1860966425}
-  spawnType: 0
+  pieceSpawnType: 0
 --- !u!1 &1867051342
 GameObject:
   m_ObjectHideFlags: 0
@@ -2783,7 +2846,7 @@ GameObject:
   - component: {fileID: 2022536584}
   - component: {fileID: 2022536583}
   m_Layer: 5
-  m_Name: ObjectPool
+  m_Name: UIObjectPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2998,7 +3061,7 @@ GameObject:
   - component: {fileID: 2100741089}
   - component: {fileID: 2100741090}
   m_Layer: 0
-  m_Name: Game
+  m_Name: Director
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3030,7 +3093,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 022a594126462cd4cb462d8aa5504545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectPool: {fileID: 2022536583}
+  uiObjectPool: {fileID: 2022536583}
+  nonUiObjectPool: {fileID: 895466667}
   chessBoard: {fileID: 359102532}
   chessBoardOrigin: {fileID: 1001583261}
 --- !u!1 &2128572697

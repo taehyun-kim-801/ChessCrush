@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
-namespace ChessCrush.UI
+namespace ChessCrush.Game
 {
-    public class Game: MonoBehaviour
+    public class Director: MonoBehaviour
     {
-        static public Game instance;
-        public ObjectPool objectPool;
+        static public Director instance;
+        public ObjectPool uiObjectPool;
+        public ObjectPool nonUiObjectPool;
         public ChessBoard chessBoard;
         public Transform chessBoardOrigin;
 
