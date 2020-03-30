@@ -45,7 +45,7 @@ namespace ChessCrush.Game
                 case PieceType.Knight:
                     return Resources.Load<Sprite>(string.Format(path, "Black_Knight"));
                 case PieceType.Rook:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_King"));
+                    return Resources.Load<Sprite>(string.Format(path, "Black_Rook"));
                 case PieceType.Queen:
                     return Resources.Load<Sprite>(string.Format(path, "Black_Queen"));
                 case PieceType.King:
