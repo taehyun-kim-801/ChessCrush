@@ -1,4 +1,4 @@
 ﻿namespace ChessCrush
 {
-    public enum PieceType { Pawn, Bishop, Knight, Rook, Queen, King }
+    public enum PieceType { Pawn = 1, Bishop, Knight, Rook, Queen, King }
 }
