@@ -11,8 +11,9 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
+            base.Awake();
             button = gameObject.GetComponent<Button>();
-            button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare());
+            //button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare());
         }
 
         private void SubscribeAbleMoveSquare()
