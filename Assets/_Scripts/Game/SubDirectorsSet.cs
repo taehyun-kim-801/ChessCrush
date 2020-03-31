@@ -16,10 +16,9 @@ namespace ChessCrush.Game
         {
             subDirectors.Add(Resources.Load("Prefabs/ChessGameDirector") as GameObject);
         }
-
         public static T Find<T>() where T: SubDirector
         {
-            var result = subDirectors.Find(go => go.name == nameof(T.GetType()));
+            var result = subDirectors.Find(go => !(go.GetComponent<T>() is null));
             if (result is null)
                 return null;
             return result.GetComponent<T>();

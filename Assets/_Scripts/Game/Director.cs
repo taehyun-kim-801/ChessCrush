@@ -24,5 +24,12 @@ namespace ChessCrush.Game
         {
 
         }
+
+        public T GetSubDirector<T>() where T:SubDirector
+        {
+            var director = SubDirectorsSet.Find<T>();
+            var result = Instantiate(director.gameObject).GetComponent<T>();
+            return result;
+        }
     }
 }
