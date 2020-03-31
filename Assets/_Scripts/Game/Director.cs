@@ -28,8 +28,17 @@ namespace ChessCrush.Game
         public T GetSubDirector<T>() where T:SubDirector
         {
             var director = SubDirectorsSet.Find<T>();
-            var result = Instantiate(director.gameObject).GetComponent<T>();
-            return result;
+
+            var parameterType = typeof(T);
+            var resultObj = SubDirectorsSet.directorDictionary[parameterType];
+
+            if(resultObj is null)
+            {
+                resultObj = Instantiate(director.gameObject) as GameObject;
+                SubDirectorsSet.directorDictionary[parameterType] = resultObj;
+            }
+
+            return resultObj.GetComponent<T>();
         }
     }
 }
