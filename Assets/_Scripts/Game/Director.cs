@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace ChessCrush.Game
 {
@@ -7,8 +8,6 @@ namespace ChessCrush.Game
         static public Director instance;
         public ObjectPool uiObjectPool;
         public ObjectPool nonUiObjectPool;
-        public ChessBoard chessBoard;
-        public Transform chessBoardOrigin;
 
         private void Awake()
         {
@@ -19,6 +18,11 @@ namespace ChessCrush.Game
 
             DontDestroyOnLoad(gameObject);
             instance = this;
+        }
+
+        public void StartChessGame()
+        {
+
         }
     }
 }
