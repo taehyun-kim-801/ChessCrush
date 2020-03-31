@@ -19,7 +19,7 @@ namespace ChessCrush.UI
         {
             base.Awake();
             button = gameObject.GetComponent<Button>();
-            chessBoard = Director.instance.chessBoard;
+            chessBoard = Director.instance.GetSubDirector<ChessGameDirector>().chessGameObjects.chessBoard;
             button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare()).AddTo(gameObject);
         }
 
