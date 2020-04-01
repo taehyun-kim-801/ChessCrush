@@ -7,6 +7,7 @@ namespace ChessCrush.UI
 {
     public class SpawnButton: MonoBehaviour
     {
+        private ChessGameDirector gameDirector;
         private Button button;
         public PieceType pieceSpawnType;
 
@@ -16,11 +17,16 @@ namespace ChessCrush.UI
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton());
         }
 
+        private void Start()
+        {
+            gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+        }
+
         private void SubscribeButton()
         {
             for (int i = 0; i < 8; i++)
             {
-                if (Director.instance.chessBoard.AnybodyIn(i, 0))
+                if (gameDirector.chessGameObjects.chessBoard.AnybodyIn(i, 0))
                 {
                     var square = DisableMoveSquare.UseWithComponent(new ChessBoardVector(i, 0));
                 }

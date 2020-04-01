@@ -17,7 +17,7 @@ namespace ChessCrush
         public Vector3 ToWorldVector()
         {
             if (originPosition == default)
-                originPosition = Director.instance.chessBoardOrigin.position;
+                originPosition = Director.instance.GetSubDirector<ChessGameDirector>().chessGameObjects.chessBoardOrigin.position;
             return new Vector3(x * ChessBoardBlockSize + originPosition.x, y * ChessBoardBlockSize + originPosition.y);
         }
     }
