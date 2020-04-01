@@ -13,9 +13,13 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
-            gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
             button = GetComponent<Button>();
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton());
+        }
+
+        private void Start()
+        {
+            gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
         }
 
         private void SubscribeButton()

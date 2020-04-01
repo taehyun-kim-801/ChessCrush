@@ -19,8 +19,12 @@ namespace ChessCrush.UI
         {
             base.Awake();
             button = gameObject.GetComponent<Button>();
-            chessBoard = Director.instance.GetSubDirector<ChessGameDirector>().chessGameObjects.chessBoard;
             button.OnClickAsObservable().Subscribe(_ => SubscribeAbleMoveSquare()).AddTo(gameObject);
+        }
+
+        private void Start()
+        {
+            chessBoard = Director.instance.GetSubDirector<ChessGameDirector>().chessGameObjects.chessBoard;
         }
 
         private void SubscribeAbleMoveSquare()
@@ -60,7 +64,7 @@ namespace ChessCrush.UI
 
         public static AbleMoveSquare UseWithComponent(ChessBoardVector boardVector, PieceType spawnType = default)
         {
-            var result = Director.instance.uiObjectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
+            var result = Director.instance.GetSubDirector<ChessGameDirector>().chessGameUI.objectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
             result.Initialize(boardVector.x, boardVector.y, spawnType);
             return result;
         }

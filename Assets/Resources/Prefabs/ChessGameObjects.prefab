@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58f8a3707d59ff849a9528bc5d0d9613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessBoard: {fileID: 7230648349994262263}
+  chessBoardOrigin: {fileID: 7230648350376825902}
 --- !u!1 &7230648349994262258
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,15 +17,20 @@ public class ObjectPool : MonoBehaviour
     [SerializeField]
     private List<SerializeInfo> poolSerializeList;
     private Dictionary<string, List<GameObject>> poolDictionary = new Dictionary<string, List<GameObject>>();
+    public bool isCreated { get; private set; }
+
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void Start()
-    {
+        isCreated = false;
         Initialize();
     }
+
+    //private void Start()
+    //{
+    //    Initialize();
+    //}
+
     private void Initialize()
     {
         foreach(var info in poolSerializeList)
@@ -39,6 +44,7 @@ public class ObjectPool : MonoBehaviour
             }
             poolDictionary.Add(info.serializeObject.name, objList);
         }
+        isCreated = true;
     }
 
     public GameObject Use(string objectName)

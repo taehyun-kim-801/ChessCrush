@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ChessCrush.UI;
+using System.Collections;
 using UnityEngine;
 
 namespace ChessCrush.Game
@@ -6,7 +7,6 @@ namespace ChessCrush.Game
     public class Director: MonoBehaviour
     {
         static public Director instance;
-        public ObjectPool uiObjectPool;
         public ObjectPool nonUiObjectPool;
 
         private void Awake()
@@ -20,9 +20,15 @@ namespace ChessCrush.Game
             instance = this;
         }
 
-        public void StartChessGame()
-        {
 
+        private void Start()
+        {
+            StartCoroutine(StartChessGame());
+        }
+        public IEnumerator StartChessGame()
+        {
+            yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated);
+            GetSubDirector<ChessGameDirector>();
         }
 
         public T GetSubDirector<T>() where T:SubDirector

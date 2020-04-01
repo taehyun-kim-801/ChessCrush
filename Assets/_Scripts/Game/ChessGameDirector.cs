@@ -7,11 +7,14 @@ namespace ChessCrush.Game
     {
         //TODO: Player, Enemy Player field
         public ChessGameObjects chessGameObjects;
+        public ChessGameUI chessGameUI;
 
         private void OnEnable()
         {
-            Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
-            Director.instance.uiObjectPool.Use(nameof(ChessGameUI));
+            var cgo = Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
+            chessGameObjects = cgo.GetComponent<ChessGameObjects>();
+            var cgUI = MainCanvas.instance.Use(nameof(ChessGameUI));
+            chessGameUI = cgUI.GetComponent<ChessGameUI>();
         }
     }
 }
