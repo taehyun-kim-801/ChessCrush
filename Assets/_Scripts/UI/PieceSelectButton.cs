@@ -8,18 +8,13 @@ namespace ChessCrush.UI
     {
         private Button button;
         private PieceType pieceType;
-        private ChessBoardVector chessBoardPosition = new ChessBoardVector();
         private static ChessGameDirector chessGameDirector;
 
         private void Awake()
         {
+            base.Awake();
             button = GetComponent<Button>();
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton()).AddTo(gameObject);
-        }
-
-        private void Start()
-        {
-            chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
         }
 
         private void SubscribeButton()
@@ -127,12 +122,16 @@ namespace ChessCrush.UI
 
         private void Initialize(ChessBoardVector position,PieceType pieceType)
         {
+            base.Initialize(position.x, position.y);
             chessBoardPosition = position;
             this.pieceType = pieceType;
         }
 
         public static PieceSelectButton UseWithComponent(ChessBoardVector position,PieceType pieceType)
         {
+            if(chessGameDirector is null)
+                chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
             var result = chessGameDirector.chessGameUI.objectPool.Use("PieceSelectButton").GetComponent<PieceSelectButton>();
             result.Initialize(position, pieceType);
             return result;

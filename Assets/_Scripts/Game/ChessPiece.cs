@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ChessCrush.UI;
+using UnityEngine;
 
 namespace ChessCrush.Game
 {
@@ -24,6 +25,7 @@ namespace ChessCrush.Game
             MoveTo(x, y);
             spriteRenderer.sprite = GetSprite(pieceType);
             transform.position = chessBoardVector.ToWorldVector();
+            PieceSelectButton.UseWithComponent(chessBoardVector, pieceType);
         }
 
         public static ChessPiece UseWithComponent(int x, int y, PieceType pieceType)
