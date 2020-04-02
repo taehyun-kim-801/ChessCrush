@@ -43,4 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7fdfdafba3c9842b22d2bf5a7221bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chessGameObjects: {fileID: 0}
+  InputTime: 30
