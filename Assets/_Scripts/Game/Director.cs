@@ -8,6 +8,7 @@ namespace ChessCrush.Game
     {
         static public Director instance;
         public ObjectPool nonUiObjectPool;
+        public string playerName;
 
         private void Awake()
         {

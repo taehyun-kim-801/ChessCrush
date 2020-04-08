@@ -15,6 +15,8 @@ namespace ChessCrush.UI
         private Button quitButton;
         [SerializeField]
         private GameObject loadingWidget;
+        [SerializeField]
+        private GameObject optionsWidget;
 
         private void Awake()
         {
@@ -31,7 +33,7 @@ namespace ChessCrush.UI
 
         private void SubscribeOptionsButton()
         {
-
+            optionsWidget.SetActive(true);
         }
 
         private void SubscribeQuitButton()
