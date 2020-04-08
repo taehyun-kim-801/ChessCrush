@@ -38,7 +38,11 @@ namespace ChessCrush.UI
 
         private void SubscribeQuitButton()
         {
-
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
         }
     }
 }
