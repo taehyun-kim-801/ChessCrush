@@ -19,6 +19,8 @@ namespace ChessCrush.Game
         {
             subDirectors.Add(Resources.Load("Prefabs/ChessGameDirector") as GameObject);
             directorDictionary.Add(typeof(ChessGameDirector), null);
+            subDirectors.Add(Resources.Load("Prefabs/StartSceneDirector") as GameObject);
+            directorDictionary.Add(typeof(StartSceneDirector), null);
         }
 
         public static T Find<T>() where T: SubDirector

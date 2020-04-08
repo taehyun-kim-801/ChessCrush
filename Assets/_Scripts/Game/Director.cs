@@ -8,6 +8,7 @@ namespace ChessCrush.Game
     {
         static public Director instance;
         public ObjectPool nonUiObjectPool;
+        public string playerName;
 
         private void Awake()
         {
@@ -21,14 +22,10 @@ namespace ChessCrush.Game
         }
 
 
-        private void Start()
-        {
-            StartCoroutine(StartChessGame());
-        }
-        public IEnumerator StartChessGame()
+        private IEnumerator Start()
         {
             yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated);
-            GetSubDirector<ChessGameDirector>();
+            GetSubDirector<StartSceneDirector>();
         }
 
         public T GetSubDirector<T>() where T:SubDirector

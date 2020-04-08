@@ -369,6 +369,10 @@ MonoBehaviour:
       type: 3}
     initCount: 1
     plusCount: 0
+  - serializeObject: {fileID: 1683106980011033762, guid: e5c753ceb41e7a7429b51a4f1249740e,
+      type: 3}
+    initCount: 1
+    plusCount: 0
 --- !u!1 &2098407403
 GameObject:
   m_ObjectHideFlags: 0
