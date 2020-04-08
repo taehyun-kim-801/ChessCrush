@@ -1,5 +1,4 @@
 ﻿using ChessCrush.UI;
-using ChessGame.UI;
 
 namespace ChessCrush.Game
 {
