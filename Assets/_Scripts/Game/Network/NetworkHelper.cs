@@ -24,7 +24,7 @@ namespace ChessCrush.Game
             Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), port));
         }
 
-        public bool ParticipateGame()
+        public int ParticipateGame()
         {
             OutputMemoryStream oms = new OutputMemoryStream();
             oms.Write(true);
@@ -38,12 +38,12 @@ namespace ChessCrush.Game
                 InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
                 ims.Read(out int roomId);
                 ims.Read(out string playerName);
-                return true;
+                return receiveBytes;
             }
             catch(Exception e)
             {
                 Debug.Log(e.Message);
-                return false;
+                return -1;
             }
         }
     }
