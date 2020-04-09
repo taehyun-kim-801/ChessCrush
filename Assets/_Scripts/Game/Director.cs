@@ -9,6 +9,7 @@ namespace ChessCrush.Game
         static public Director instance;
         public ObjectPool nonUiObjectPool;
         public string playerName;
+        public NetworkHelper networkHelper;
 
         private void Awake()
         {
@@ -19,6 +20,8 @@ namespace ChessCrush.Game
 
             DontDestroyOnLoad(gameObject);
             instance = this;
+
+            networkHelper = new NetworkHelper();
         }
 
 
