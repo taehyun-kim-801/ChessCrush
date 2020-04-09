@@ -43,10 +43,13 @@ namespace ChessCrush.UI
 
             loadingWidget.SetActive(true);
             var result = Task.Run(() => networkHelper.ParticipateGame());
-            yield return new WaitUntil(() => !(result is null));
+            yield return new WaitUntil(() => result.IsCompleted);
 
-            if (result.Result)
+            if (result.Result != -1)
+            {
                 Director.instance.GetSubDirector<ChessGameDirector>();
+                gameObject.SetActive(false);
+            }
             else
                 Debug.Log("Failed to participating game");
         }
