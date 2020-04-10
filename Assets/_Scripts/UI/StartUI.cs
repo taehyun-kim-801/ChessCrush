@@ -1,4 +1,6 @@
 ﻿using ChessCrush.Game;
+using System.Collections;
+using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,8 +29,29 @@ namespace ChessCrush.UI
 
         private void SubscribeStartButton()
         {
+            StartCoroutine(CoSubscribeStartButton());
+        }
+
+        private IEnumerator CoSubscribeStartButton()
+        {
+            var networkHelper = Director.instance.networkHelper;
+            if (!networkHelper.socketConnected)
+            {
+                Debug.Log("Socket isn't connected");
+                yield break;
+            }
+
             loadingWidget.SetActive(true);
-            Director.instance.GetSubDirector<ChessGameDirector>();
+            var result = Task.Run(() => networkHelper.ParticipateGame());
+            yield return new WaitUntil(() => result.IsCompleted);
+
+            if (result.Result != -1)
+            {
+                Director.instance.GetSubDirector<ChessGameDirector>();
+                gameObject.SetActive(false);
+            }
+            else
+                Debug.Log("Failed to participating game");
         }
 
         private void SubscribeOptionsButton()
