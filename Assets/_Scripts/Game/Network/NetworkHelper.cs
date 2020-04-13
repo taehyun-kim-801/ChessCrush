@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net;
+using System.Net.Json;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,7 +11,7 @@ namespace ChessCrush.Game
     public class NetworkHelper
     {
         private readonly string serverIPString;
-        private readonly int port;
+        private readonly string portString;
         private readonly int maxBufferSize = 1024;
         
         private Socket socket;
@@ -17,11 +19,17 @@ namespace ChessCrush.Game
 
         public NetworkHelper() 
         {
+            var jsonText = File.ReadAllText("Assets/Data/NetworkSettings.json");
+            JsonTextParser parser = new JsonTextParser();
+            var jsonObjectCollection = parser.Parse(jsonText) as JsonObjectCollection;
+            serverIPString = (string)jsonObjectCollection["ServerIP"].GetValue();
+            portString = (string)jsonObjectCollection["ServerPort"].GetValue();
+
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.SendTimeout = 5000;
             socket.ReceiveTimeout = 5000;
             socket.Bind(new IPEndPoint(IPAddress.Any, 0));
-            Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), port));
+            Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), Convert.ToInt32(portString)));
         }
 
         public int ParticipateGame()
