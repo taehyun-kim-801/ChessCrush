@@ -149,6 +149,9 @@ sysinfo.txt
 *.unitypackage
 *.symbols.zip
 
+# etc
+Assets/Data
+
 # Crashlytics generated file
 
 
