@@ -65,7 +65,7 @@ namespace ChessCrush.UI
             optionsWidget.SetActive(true);
         }
 
-        public void SetAfterSignin()
+        public void SetAfterSignIn()
         {
             signInButton.gameObject.SetActive(false);
             afterSignInButtons.gameObject.SetActive(true);

@@ -67,7 +67,7 @@ namespace ChessCrush.UI
             {
                 Debug.Log("Success to sign in");
                 Director.instance.playerName = signInIDInputField.text;
-                startUI.SetAfterLogin();
+                startUI.SetAfterSignIn();
                 gameObject.SetActive(false);
             }
             else
@@ -88,6 +88,13 @@ namespace ChessCrush.UI
 
         private IEnumerator CoSubscribeSignUpSignUpButton()
         {
+            if (signUpPWInputField.text != signUpConfirmInputField.text)
+            {
+                signUpConfirmInputField.text = "";
+                Debug.Log("Password and confirm are different");
+                yield break;
+            }
+
             var result = Task.Run(() => Director.instance.networkHelper.SignUp(signUpIDInputField.text, signUpPWInputField.text));
             yield return new WaitUntil(() => result.IsCompleted);
 
