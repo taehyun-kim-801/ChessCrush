@@ -60,10 +60,16 @@ namespace ChessCrush.UI
 
         private IEnumerator CoSubscribeSignInButton()
         {
+            if (signInIDInputField.text == "" || signInPWInputField.text == "")
+            {
+                Debug.Log("Please input id and password");
+                yield break;
+            }
+
             var result = Task.Run(() => Director.instance.networkHelper.SignIn(signInIDInputField.text, signInPWInputField.text));
             yield return new WaitUntil(() => result.IsCompleted);
 
-            if (result.Result != -1)
+            if (result.Result == OperationResultCode.SignInCode.Success)
             {
                 Debug.Log("Success to sign in");
                 Director.instance.playerName = signInIDInputField.text;
@@ -75,6 +81,7 @@ namespace ChessCrush.UI
                 Debug.Log("Failed to sign in");
             }
         }
+
         private void SubscribeSignInSignUpButton()
         {
             signInField.SetActive(false);

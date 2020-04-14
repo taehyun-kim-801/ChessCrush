@@ -33,7 +33,7 @@ namespace ChessCrush.Game
             Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), Convert.ToInt32(portString)));
         }
 
-        public int SignIn(string id,string password)
+        public SignInCode SignIn(string id,string password)
         {
             OutputMemoryStream oms = new OutputMemoryStream();
             oms.Write((int)OperationCode.SignIn);
@@ -47,12 +47,12 @@ namespace ChessCrush.Game
                 int receiveBytes = socket.Receive(receiveBuffer);
                 InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
                 ims.Read(out int result);
-                return result;
+                return (SignInCode)result;
             }
             catch(Exception e)
             {
                 Debug.Log(e.Message);
-                return -1;
+                return SignInCode.Etc;
             }
         }
 
