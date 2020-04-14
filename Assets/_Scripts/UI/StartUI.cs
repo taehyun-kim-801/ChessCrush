@@ -10,6 +10,12 @@ namespace ChessCrush.UI
     public class StartUI: MonoBehaviour
     {
         [SerializeField]
+        private Button signInButton;
+        [SerializeField]
+        private SignWidget signWidget;
+        [SerializeField]
+        private GameObject afterSignInButtons;
+        [SerializeField]
         private Button startButton;
         [SerializeField]
         private Button optionsButton;
@@ -57,6 +63,12 @@ namespace ChessCrush.UI
         private void SubscribeOptionsButton()
         {
             optionsWidget.SetActive(true);
+        }
+
+        public void SetAfterSignin()
+        {
+            signInButton.gameObject.SetActive(false);
+            afterSignInButtons.gameObject.SetActive(true);
         }
 
         private void SubscribeQuitButton()
