@@ -450,9 +450,9 @@ RectTransform:
   m_Father: {fileID: 5439072562594439457}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -47.199997}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5567128911677970133
@@ -608,13 +608,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4754326734321708491}
+  - component: {fileID: 2464586552103162478}
   m_Layer: 5
   m_Name: SignWidget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4754326734321708491
 RectTransform:
   m_ObjectHideFlags: 0
@@ -636,6 +637,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2464586552103162478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044840337798722156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca6c01500a94da479dd0dc2d619e832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startUI: {fileID: 5627888710151254614}
+  signInField: {fileID: 1616373341910157400}
+  signInIDInputField: {fileID: 519369836535866745}
+  signInPWInputField: {fileID: 4896670362525999357}
+  signInSignInButton: {fileID: 5360066822306086558}
+  signInSignUpButton: {fileID: 8316342326224714645}
+  signUpField: {fileID: 189551305567798787}
+  signUpIDInputField: {fileID: 5313460653736314214}
+  signUpPWInputField: {fileID: 7247329206372638631}
+  signUpConfirmInputField: {fileID: 7145464792441440424}
+  signUpSignUpButton: {fileID: 7455553507992173103}
+  exitButton: {fileID: 8135565806012498657}
 --- !u!1 &1269360520836400136
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,7 +672,7 @@ GameObject:
   - component: {fileID: 6563427050018315293}
   - component: {fileID: 6740767636838281294}
   m_Layer: 5
-  m_Name: AfterLoginButtons
+  m_Name: AfterSignInButtons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -734,9 +759,9 @@ RectTransform:
   m_Father: {fileID: 1205617494186324824}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 140.03, y: -44.775}
   m_SizeDelta: {x: 99, y: 67.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5363985690149786975
@@ -1174,9 +1199,9 @@ RectTransform:
   m_Father: {fileID: 1205617494186324824}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 254.03, y: -44.775}
   m_SizeDelta: {x: 99, y: 67.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2033510663004498008
@@ -1353,6 +1378,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f741d8122b9a5c41aacd367b9220251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  signInButton: {fileID: 3487601344030640842}
+  signWidget: {fileID: 2464586552103162478}
+  afterSignInButtons: {fileID: 1269360520836400136}
   startButton: {fileID: 8517572720741796826}
   optionsButton: {fileID: 4411796624244636982}
   quitButton: {fileID: 6882400407243650055}
@@ -1610,9 +1638,9 @@ RectTransform:
   m_Father: {fileID: 2032460891770937230}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 81.25, y: -25}
   m_SizeDelta: {x: 95, y: 28.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3253350511184469015
@@ -1692,9 +1720,9 @@ RectTransform:
   m_Father: {fileID: 2032460891770937230}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 312.5, y: -25}
   m_SizeDelta: {x: 307.5, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3878910645345159140
@@ -2332,9 +2360,9 @@ RectTransform:
   m_Father: {fileID: 2785545485364468899}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 81.25, y: -25}
   m_SizeDelta: {x: 95, y: 28.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5245324296396819193
@@ -4829,9 +4857,9 @@ RectTransform:
   m_Father: {fileID: 2785545485364468899}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 312.5, y: -25}
   m_SizeDelta: {x: 307.5, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3441782028913685369
@@ -5685,9 +5713,9 @@ RectTransform:
   m_Father: {fileID: 5439072562594439457}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -97.2}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6184562869529061684
