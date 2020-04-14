@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessCrush.OperationResultCode;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Json;
@@ -55,7 +56,7 @@ namespace ChessCrush.Game
             }
         }
 
-        public int SignUp(string newId,string newPassword)
+        public SignUpCode SignUp(string newId,string newPassword)
         {
             OutputMemoryStream oms = new OutputMemoryStream();
             oms.Write((int)OperationCode.SignUp);
@@ -69,12 +70,12 @@ namespace ChessCrush.Game
                 int receiveBytes = socket.Receive(receiveBuffer);
                 InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
                 ims.Read(out int result);
-                return result;
+                return (SignUpCode)result;
             }
             catch(Exception e)
             {
                 Debug.Log(e.ToString());
-                return -1;
+                return SignUpCode.Etc;
             }
         }
 

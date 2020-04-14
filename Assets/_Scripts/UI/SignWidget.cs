@@ -98,7 +98,7 @@ namespace ChessCrush.UI
             var result = Task.Run(() => Director.instance.networkHelper.SignUp(signUpIDInputField.text, signUpPWInputField.text));
             yield return new WaitUntil(() => result.IsCompleted);
 
-            if (result.Result != -1)
+            if (result.Result == OperationResultCode.SignUpCode.Success)
             {
                 Debug.Log("Success to sign up");
                 gameObject.SetActive(false);
