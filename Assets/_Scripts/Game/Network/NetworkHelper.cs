@@ -32,6 +32,29 @@ namespace ChessCrush.Game
             Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), Convert.ToInt32(portString)));
         }
 
+        public int SignIn(string id,string password)
+        {
+            OutputMemoryStream oms = new OutputMemoryStream();
+            oms.Write((int)OperationCode.SignIn);
+            oms.Write(id);
+            oms.Write(password);
+            socket.Send(oms.buffer);
+
+            byte[] receiveBuffer = new byte[maxBufferSize];
+            try
+            {
+                int receiveBytes = socket.Receive(receiveBuffer);
+                InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
+                ims.Read(out int result);
+                return result;
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+                return -1;
+            }
+        }
+
         public int SignUp(string newId,string newPassword)
         {
             OutputMemoryStream oms = new OutputMemoryStream();
