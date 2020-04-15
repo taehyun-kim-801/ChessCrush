@@ -95,6 +95,12 @@ namespace ChessCrush.UI
 
         private IEnumerator CoSubscribeSignUpSignUpButton()
         {
+            if (signUpIDInputField.text == "" || signUpPWInputField.text == "" || signUpConfirmInputField.text == "")
+            {
+                Debug.Log("Please input all input field");
+                yield break;
+            }
+
             if (signUpPWInputField.text != signUpConfirmInputField.text)
             {
                 signUpConfirmInputField.text = "";
