@@ -373,6 +373,10 @@ MonoBehaviour:
       type: 3}
     initCount: 1
     plusCount: 0
+  - serializeObject: {fileID: 5508913078295864628, guid: d806f0cc8036d1048becfc89a3af388c,
+      type: 3}
+    initCount: 1
+    plusCount: 0
 --- !u!1 &2098407403
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,3 +504,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nonUiObjectPool: {fileID: 895466667}
+  playerName: 
