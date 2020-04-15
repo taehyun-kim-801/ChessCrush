@@ -62,7 +62,7 @@ namespace ChessCrush.UI
         {
             if (signInIDInputField.text == "" || signInPWInputField.text == "")
             {
-                Debug.Log("Please input id and password");
+                MessageBoxUI.UseWithComponent("Please input all input fields");
                 yield break;
             }
 
@@ -71,14 +71,14 @@ namespace ChessCrush.UI
 
             if (result.Result == OperationResultCode.SignInCode.Success)
             {
-                Debug.Log("Success to sign in");
+                MessageBoxUI.UseWithComponent("Success to sign in");
                 Director.instance.playerName = signInIDInputField.text;
                 startUI.SetAfterSignIn();
                 gameObject.SetActive(false);
             }
             else
             {
-                Debug.Log("Failed to sign in");
+                MessageBoxUI.UseWithComponent("Failed to sign in");
             }
         }
 
@@ -97,14 +97,14 @@ namespace ChessCrush.UI
         {
             if (signUpIDInputField.text == "" || signUpPWInputField.text == "" || signUpConfirmInputField.text == "")
             {
-                Debug.Log("Please input all input field");
+                MessageBoxUI.UseWithComponent("Please input all input fields");
                 yield break;
             }
 
             if (signUpPWInputField.text != signUpConfirmInputField.text)
             {
                 signUpConfirmInputField.text = "";
-                Debug.Log("Password and confirm are different");
+                MessageBoxUI.UseWithComponent("Password and confirm are different");
                 yield break;
             }
 
@@ -113,12 +113,12 @@ namespace ChessCrush.UI
 
             if (result.Result == OperationResultCode.SignUpCode.Success)
             {
-                Debug.Log("Success to sign up");
+                MessageBoxUI.UseWithComponent("Success to sign up");
                 gameObject.SetActive(false);
             }
             else
             {
-                Debug.Log("Failed to sign up");
+                MessageBoxUI.UseWithComponent("Failed to sign up");
             }
         }
     }
