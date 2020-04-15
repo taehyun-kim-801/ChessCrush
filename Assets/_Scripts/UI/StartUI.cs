@@ -10,6 +10,12 @@ namespace ChessCrush.UI
     public class StartUI: MonoBehaviour
     {
         [SerializeField]
+        private Button signInButton;
+        [SerializeField]
+        private SignWidget signWidget;
+        [SerializeField]
+        private GameObject afterSignInButtons;
+        [SerializeField]
         private Button startButton;
         [SerializeField]
         private Button optionsButton;
@@ -22,6 +28,7 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
+            signInButton.OnClickAsObservable().Subscribe(_ => signWidget.gameObject.SetActive(true)).AddTo(gameObject);
             startButton.OnClickAsObservable().Subscribe(_ => SubscribeStartButton()).AddTo(gameObject);
             optionsButton.OnClickAsObservable().Subscribe(_ => SubscribeOptionsButton()).AddTo(gameObject);
             quitButton.OnClickAsObservable().Subscribe(_ => SubscribeQuitButton()).AddTo(gameObject);
@@ -57,6 +64,12 @@ namespace ChessCrush.UI
         private void SubscribeOptionsButton()
         {
             optionsWidget.SetActive(true);
+        }
+
+        public void SetAfterSignIn()
+        {
+            signInButton.gameObject.SetActive(false);
+            afterSignInButtons.gameObject.SetActive(true);
         }
 
         private void SubscribeQuitButton()

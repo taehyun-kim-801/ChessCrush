@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessCrush.OperationResultCode;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Json;
@@ -30,6 +31,52 @@ namespace ChessCrush.Game
             socket.ReceiveTimeout = 5000;
             socket.Bind(new IPEndPoint(IPAddress.Any, 0));
             Task.Run(() => socket.Connect(IPAddress.Parse(serverIPString), Convert.ToInt32(portString)));
+        }
+
+        public SignInCode SignIn(string id,string password)
+        {
+            OutputMemoryStream oms = new OutputMemoryStream();
+            oms.Write((int)OperationCode.SignIn);
+            oms.Write(id);
+            oms.Write(password);
+            socket.Send(oms.buffer);
+
+            byte[] receiveBuffer = new byte[maxBufferSize];
+            try
+            {
+                int receiveBytes = socket.Receive(receiveBuffer);
+                InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
+                ims.Read(out int result);
+                return (SignInCode)result;
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+                return SignInCode.Etc;
+            }
+        }
+
+        public SignUpCode SignUp(string newId,string newPassword)
+        {
+            OutputMemoryStream oms = new OutputMemoryStream();
+            oms.Write((int)OperationCode.SignUp);
+            oms.Write(newId);
+            oms.Write(newPassword);
+            socket.Send(oms.buffer);
+
+            byte[] receiveBuffer = new byte[maxBufferSize];
+            try
+            {
+                int receiveBytes = socket.Receive(receiveBuffer);
+                InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
+                ims.Read(out int result);
+                return (SignUpCode)result;
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.ToString());
+                return SignUpCode.Etc;
+            }
         }
 
         public int ParticipateGame()
