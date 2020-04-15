@@ -58,7 +58,7 @@ namespace ChessCrush.UI
                 gameObject.SetActive(false);
             }
             else
-                Debug.Log("Failed to participating game");
+                MessageBoxUI.UseWithComponent("Failed to participating game");
         }
 
         private void SubscribeOptionsButton()
