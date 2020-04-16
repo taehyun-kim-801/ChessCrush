@@ -9,6 +9,7 @@ namespace ChessCrush.UI
 {
     public class AbleMoveSquare: ChessBoardObject
     {
+        private int pieceId;
         private PieceType spawnType;
         private Button button;
         private ChessBoard chessBoard;
@@ -29,7 +30,7 @@ namespace ChessCrush.UI
 
         private void SubscribeAbleMoveSquare()
         {
-            var piece = ChessPiece.UseWithComponent(chessBoardPosition.x, chessBoardPosition.y, spawnType);
+            var piece = ChessPiece.UseWithComponent(pieceId, chessBoardPosition.x, chessBoardPosition.y, spawnType);
             
             if(spawnType == default)
             {
@@ -43,8 +44,9 @@ namespace ChessCrush.UI
             haveToAppearProperty.Value = false;
         }
 
-        private void Initialize(int x, int y, PieceType spawnType)
+        private void Initialize(int pieceId, int x, int y, PieceType spawnType)
         {
+            this.pieceId = pieceId;
             base.Initialize(x, y);
             this.spawnType = spawnType;
             haveToAppearProperty.Value = true;
@@ -62,10 +64,10 @@ namespace ChessCrush.UI
             haveToAppearPropertyCallback.Dispose();
         }
 
-        public static AbleMoveSquare UseWithComponent(ChessBoardVector boardVector, PieceType spawnType = default)
+        public static AbleMoveSquare UseWithComponent(int pieceId, ChessBoardVector boardVector, PieceType spawnType = default)
         {
             var result = Director.instance.GetSubDirector<ChessGameDirector>().chessGameUI.objectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
-            result.Initialize(boardVector.x, boardVector.y, spawnType);
+            result.Initialize(pieceId, boardVector.x, boardVector.y, spawnType);
             return result;
         }
     }
