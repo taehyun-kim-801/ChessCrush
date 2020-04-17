@@ -30,7 +30,7 @@ namespace ChessCrush.UI
 
         private void SubscribeAbleMoveSquare()
         {
-            var piece = ChessPiece.UseWithComponent(pieceId, chessBoardPosition.x, chessBoardPosition.y, spawnType);
+            var piece = ChessPiece.UseWithComponent(pieceId, chessBoardPosition.x, chessBoardPosition.y, spawnType, true);
             
             if(spawnType == default)
             {
