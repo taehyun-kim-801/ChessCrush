@@ -10,6 +10,8 @@ namespace ChessCrush.Game
         public Player player;
         public Player enemyPlayer;
         [NonSerialized]
+        public bool inputCompleted;
+        [NonSerialized]
         public ChessGameObjects chessGameObjects;
         [NonSerialized]
         public ChessGameUI chessGameUI;
@@ -44,7 +46,8 @@ namespace ChessCrush.Game
 
         private IEnumerator CoInput()
         {
-            yield return new WaitForSeconds(InputTime);
+            float temp = Time.time;
+            yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
         }
 
         private IEnumerator CoSimulate()
