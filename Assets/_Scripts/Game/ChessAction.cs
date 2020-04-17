@@ -6,6 +6,13 @@
         public PieceType pieceType;
         public ChessBoardVector chessBoardVector;
 
+        public ChessAction(int pieceId,PieceType pieceType,ChessBoardVector vector)
+        {
+            this.pieceId = pieceId;
+            this.pieceType = pieceType;
+            chessBoardVector = vector;
+        }
+
         public void Read(InputMemoryStream inputMemoryStream)
         {
             inputMemoryStream.Read(out pieceId);

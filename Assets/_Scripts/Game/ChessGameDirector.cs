@@ -7,7 +7,8 @@ namespace ChessCrush.Game
 {
     public class ChessGameDirector : SubDirector
     {
-        //TODO: Player, Enemy Player field
+        public Player player;
+        public Player enemyPlayer;
         [NonSerialized]
         public ChessGameObjects chessGameObjects;
         [NonSerialized]
@@ -17,6 +18,8 @@ namespace ChessCrush.Game
 
         private void OnEnable()
         {
+            player = new Player(Director.instance.playerName, true);
+            enemyPlayer = new Player();
             var cgo = Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
             chessGameObjects = cgo.GetComponent<ChessGameObjects>();
             var cgUI = MainCanvas.instance.Use(nameof(ChessGameUI));

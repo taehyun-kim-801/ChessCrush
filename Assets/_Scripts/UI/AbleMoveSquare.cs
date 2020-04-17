@@ -41,6 +41,7 @@ namespace ChessCrush.UI
                 chessBoard.AddChessPiece(piece);
             }
 
+            Director.instance.GetSubDirector<ChessGameDirector>().player.chessActions.Add(new ChessAction(pieceId, spawnType, chessBoardPosition));
             haveToAppearProperty.Value = false;
         }
 
