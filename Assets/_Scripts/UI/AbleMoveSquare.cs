@@ -42,7 +42,7 @@ namespace ChessCrush.UI
             }
 
             var gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-            gameDirector.player.chessActions.Add(new ChessAction(pieceId, spawnType, chessBoardPosition));
+            gameDirector.player.chessActions.Add(new ChessAction(pieceId, spawnType, new ChessBoardVector(chessBoardPosition.x,chessBoardPosition.y)));
             gameDirector.player.actionsSubject.OnNext(gameDirector.player.chessActions);
 
             haveToAppearProperty.Value = false;
