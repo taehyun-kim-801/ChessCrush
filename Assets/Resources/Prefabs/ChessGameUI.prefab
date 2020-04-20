@@ -556,6 +556,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3631934511930351609}
+  - component: {fileID: 2638169897778837985}
   m_Layer: 5
   m_Name: EnemyPlayerStatus
   m_TagString: Untagged
@@ -585,6 +586,21 @@ RectTransform:
   m_AnchoredPosition: {x: -10, y: -10}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &2638169897778837985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631934511930351608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a31700dfa55c8cd4f969e181a11208ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 3631934512159387207}
+  hpBar: {fileID: 3631934513503229303}
+  energyBar: {fileID: 3631934512304618962}
 --- !u!1 &3631934511960213054
 GameObject:
   m_ObjectHideFlags: 0
@@ -1554,6 +1570,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3631934512419544276}
+  - component: {fileID: 809050528338150735}
   m_Layer: 5
   m_Name: PlayerStatus
   m_TagString: Untagged
@@ -1583,6 +1600,21 @@ RectTransform:
   m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &809050528338150735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631934512419544275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a31700dfa55c8cd4f969e181a11208ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 3631934512793523843}
+  hpBar: {fileID: 3631934512020018887}
+  energyBar: {fileID: 3631934512665934772}
 --- !u!1 &3631934512444507049
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,8 +1702,10 @@ GameObject:
   - component: {fileID: 3631934512622804432}
   - component: {fileID: 3631934512622804463}
   - component: {fileID: 3631934512622804462}
+  - component: {fileID: 7776552152408686680}
+  - component: {fileID: 7700502193132129613}
   m_Layer: 5
-  m_Name: LogScrollView
+  m_Name: ChessActionScroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1767,6 +1801,36 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &7776552152408686680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631934512622804460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5da22b3fe9703334085c1785e3d1d255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  content: {fileID: 3631934512027708766}
+--- !u!114 &7700502193132129613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631934512622804460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 219ce00e4a959644ab230fa444c17e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolSerializeList:
+  - serializeObject: {fileID: 3371869044238726999, guid: 6e4d99d89fb36a447bd50593ce1c0060,
+      type: 3}
+    initCount: 1
+    plusCount: 1
 --- !u!1 &3631934512665934770
 GameObject:
   m_ObjectHideFlags: 0
@@ -2829,6 +2893,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPool: {fileID: 327765565518796434}
+  myStatus: {fileID: 809050528338150735}
+  enemyStatus: {fileID: 2638169897778837985}
+  chessActionScroll: {fileID: 7776552152408686680}
+  inputButton: {fileID: 396711342560146310}
 --- !u!1 &6799399677661499695
 GameObject:
   m_ObjectHideFlags: 0

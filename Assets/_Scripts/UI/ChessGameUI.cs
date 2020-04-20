@@ -10,6 +10,7 @@ namespace ChessCrush.UI
         public ObjectPool objectPool;
         public PlayerStatus myStatus;
         public PlayerStatus enemyStatus;
+        public ChessActionScroll chessActionScroll;
         [SerializeField]
         private Button inputButton;
 
