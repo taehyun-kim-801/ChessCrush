@@ -7,8 +7,6 @@ namespace ChessCrush.Game
 {
     public class ChessGameDirector : SubDirector
     {
-        public Player player;
-        public Player enemyPlayer;
         [NonSerialized]
         public bool inputCompleted;
         [NonSerialized]
@@ -18,10 +16,11 @@ namespace ChessCrush.Game
         [SerializeField]
         private float InputTime;
 
+        public Player player;
+        public Player enemyPlayer;
+
         private void OnEnable()
         {
-            player = new Player(Director.instance.playerName, true, true);
-            enemyPlayer = new Player();
             var cgo = Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
             chessGameObjects = cgo.GetComponent<ChessGameObjects>();
             var cgUI = MainCanvas.instance.Use(nameof(ChessGameUI));
@@ -42,6 +41,8 @@ namespace ChessCrush.Game
         private IEnumerator CoSetAttackPlayer()
         {
             yield return null;
+            player = new Player(Director.instance.playerName, true, true);
+            enemyPlayer = new Player();
         }
 
         private IEnumerator CoInput()

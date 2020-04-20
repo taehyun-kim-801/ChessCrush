@@ -11,7 +11,8 @@ namespace ChessCrush.Game
         private ReactiveProperty<int> hp = new ReactiveProperty<int>();
         private ReactiveProperty<int> energyPoint = new ReactiveProperty<int>();
         private bool isMe;
-        public ReactiveProperty<List<ChessAction>> chessActions = new ReactiveProperty<List<ChessAction>>();
+        public List<ChessAction> chessActions = new List<ChessAction>();
+        public Subject<List<ChessAction>> actionsSubject = new Subject<List<ChessAction>>();
 
         public Player()
         {
@@ -23,6 +24,7 @@ namespace ChessCrush.Game
             this.isWhite.Value = isWhite;
             hp.Value = 20;
             energyPoint.Value = 0;
+            chessActions = new List<ChessAction>();
             this.isMe = isMe;
 
             var gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
@@ -32,6 +34,7 @@ namespace ChessCrush.Game
                 //TODO: isWhite Subscribe
                 hp.Subscribe(_ => gameDirector.chessGameUI.myStatus.hpBar.fillAmount = _ / 20);
                 energyPoint.Subscribe(_ => gameDirector.chessGameUI.myStatus.energyBar.fillAmount = _ / 10);
+                actionsSubject.Subscribe(list => gameDirector.chessGameUI.chessActionScroll.SetView(list));
                 //TODO: chessActions Subscribe
             }
             else
@@ -49,7 +52,7 @@ namespace ChessCrush.Game
             isWhite.Dispose();
             hp.Dispose();
             energyPoint.Dispose();
-            chessActions.Dispose();
+            actionsSubject.Dispose();
         }
     }
 }
