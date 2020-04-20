@@ -8,6 +8,8 @@ namespace ChessCrush.UI
     public class ChessGameUI: MonoBehaviour
     {
         public ObjectPool objectPool;
+        public PlayerStatus myStatus;
+        public PlayerStatus enemyStatus;
         [SerializeField]
         private Button inputButton;
 

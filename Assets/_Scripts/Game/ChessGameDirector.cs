@@ -20,7 +20,7 @@ namespace ChessCrush.Game
 
         private void OnEnable()
         {
-            player = new Player(Director.instance.playerName, true);
+            player = new Player(Director.instance.playerName, true, true);
             enemyPlayer = new Player();
             var cgo = Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
             chessGameObjects = cgo.GetComponent<ChessGameObjects>();
