@@ -6,6 +6,7 @@ namespace ChessCrush.UI
 {
     public class PieceSelectButton: ChessBoardObject
     {
+        private int pieceId;
         private Button button;
         private PieceType pieceType;
         private static ChessGameDirector chessGameDirector;
@@ -116,24 +117,24 @@ namespace ChessCrush.UI
             if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y))
                 DisableMoveSquare.UseWithComponent(position);
             else
-                AbleMoveSquare.UseWithComponent(position);
+                AbleMoveSquare.UseWithComponent(pieceId, position);
         }
         #endregion
 
-        private void Initialize(ChessBoardVector position,PieceType pieceType)
+        private void Initialize(int pieceId, ChessBoardVector position, PieceType pieceType)
         {
             base.Initialize(position.x, position.y);
             chessBoardPosition = position;
             this.pieceType = pieceType;
         }
 
-        public static PieceSelectButton UseWithComponent(ChessBoardVector position,PieceType pieceType)
+        public static PieceSelectButton UseWithComponent(int pieceId, ChessBoardVector position,PieceType pieceType)
         {
             if(chessGameDirector is null)
                 chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
 
             var result = chessGameDirector.chessGameUI.objectPool.Use("PieceSelectButton").GetComponent<PieceSelectButton>();
-            result.Initialize(position, pieceType);
+            result.Initialize(pieceId, position, pieceType);
             return result;
         }
     }

@@ -32,7 +32,7 @@ namespace ChessCrush.UI
                 }
                 else
                 {
-                    var square = AbleMoveSquare.UseWithComponent(new ChessBoardVector(i, 0), pieceSpawnType);
+                    var square = AbleMoveSquare.UseWithComponent(0, new ChessBoardVector(i, 0), pieceSpawnType);
                 }
             }
         }

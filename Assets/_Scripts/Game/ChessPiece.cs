@@ -5,8 +5,10 @@ namespace ChessCrush.Game
 {
     public class ChessPiece: MonoBehaviour
     {
+        private int pieceId;
         public ChessBoardVector chessBoardVector { get; private set; }
         private SpriteRenderer spriteRenderer;
+        private bool isExpected;
 
         private void Awake()
         {
@@ -20,18 +22,22 @@ namespace ChessCrush.Game
             chessBoardVector.y = y;
         }
 
-        private void Initialize(int x, int y, PieceType pieceType)
+        private void Initialize(int pieceId, int x, int y, PieceType pieceType, bool isExpected)
         {
+            this.pieceId = pieceId;
             MoveTo(x, y);
+            this.isExpected = isExpected;
             spriteRenderer.sprite = GetSprite(pieceType);
+            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
             transform.position = chessBoardVector.ToWorldVector();
-            PieceSelectButton.UseWithComponent(chessBoardVector, pieceType);
+            if(!isExpected)
+                PieceSelectButton.UseWithComponent(pieceId, chessBoardVector, pieceType);
         }
 
-        public static ChessPiece UseWithComponent(int x, int y, PieceType pieceType)
+        public static ChessPiece UseWithComponent(int pieceId, int x, int y, PieceType pieceType, bool isExpected)
         {
             var result = Director.instance.nonUiObjectPool.Use(nameof(ChessPiece)).GetComponent<ChessPiece>();
-            result.Initialize(x, y, pieceType);
+            result.Initialize(pieceId, x, y, pieceType, isExpected);
             return result;
         }
 

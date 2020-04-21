@@ -7,13 +7,17 @@ namespace ChessCrush.Game
 {
     public class ChessGameDirector : SubDirector
     {
-        //TODO: Player, Enemy Player field
+        [NonSerialized]
+        public bool inputCompleted;
         [NonSerialized]
         public ChessGameObjects chessGameObjects;
         [NonSerialized]
         public ChessGameUI chessGameUI;
         [SerializeField]
         private float InputTime;
+
+        public Player player;
+        public Player enemyPlayer;
 
         private void OnEnable()
         {
@@ -37,11 +41,14 @@ namespace ChessCrush.Game
         private IEnumerator CoSetAttackPlayer()
         {
             yield return null;
+            player = new Player(Director.instance.playerName, true, true);
+            enemyPlayer = new Player();
         }
 
         private IEnumerator CoInput()
         {
-            yield return new WaitForSeconds(InputTime);
+            float temp = Time.time;
+            yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
         }
 
         private IEnumerator CoSimulate()

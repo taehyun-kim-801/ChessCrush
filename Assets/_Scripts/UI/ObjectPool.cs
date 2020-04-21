@@ -68,4 +68,12 @@ public class ObjectPool : MonoBehaviour
     {
         go.SetActive(false);
     }
+
+    public void DestroyAll()
+    {
+        foreach(var list in poolDictionary)
+        {
+            list.Value.ForEach(go => go.SetActive(false));
+        }
+    }
 }
