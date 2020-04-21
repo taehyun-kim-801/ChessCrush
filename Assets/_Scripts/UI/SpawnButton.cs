@@ -26,7 +26,7 @@ namespace ChessCrush.UI
         {
             for (int i = 0; i < 8; i++)
             {
-                if (gameDirector.chessGameObjects.chessBoard.AnybodyIn(i, 0))
+                if (gameDirector.chessGameObjects.chessBoard.AnybodyIn(i, 0, true))
                 {
                     var square = DisableMoveSquare.UseWithComponent(new ChessBoardVector(i, 0));
                 }
