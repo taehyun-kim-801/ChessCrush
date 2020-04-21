@@ -1,4 +1,5 @@
 ﻿using ChessCrush.Game;
+using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,13 @@ namespace ChessCrush.UI
         private void Awake()
         {
             inputButton.OnClickAsObservable().Subscribe(_ => Director.instance.GetSubDirector<ChessGameDirector>().inputCompleted = true).AddTo(gameObject);
+        }
+
+        public void SetSelectButtons(List<ChessAction> actions)
+        {
+            objectPool.DestroyAll();
+            foreach(var action in actions)
+                PieceSelectButton.UseWithComponent(action.pieceId, action.chessBoardVector, action.pieceType);
         }
     }
 }

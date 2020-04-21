@@ -30,17 +30,6 @@ namespace ChessCrush.UI
 
         private void SubscribeAbleMoveSquare()
         {
-            var piece = ChessPiece.UseWithComponent(pieceId, chessBoardPosition.x, chessBoardPosition.y, spawnType, true);
-            
-            if(spawnType == default)
-            {
-                piece.MoveTo(chessBoardPosition.x, chessBoardPosition.y);
-            }
-            else
-            {
-                chessBoard.AddChessPiece(piece);
-            }
-
             var gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
             gameDirector.player.chessActions.Add(new ChessAction(pieceId, spawnType, new ChessBoardVector(chessBoardPosition.x,chessBoardPosition.y)));
             gameDirector.player.actionsSubject.OnNext(gameDirector.player.chessActions);

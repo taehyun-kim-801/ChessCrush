@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace ChessCrush.Game
 {
@@ -6,5 +7,12 @@ namespace ChessCrush.Game
     {
         public ChessBoard chessBoard;
         public Transform chessBoardOrigin;
+
+        public void SetExpectedAction(List<ChessAction> actions)
+        {
+            chessBoard.ClearExpectedChessPieces();
+            foreach(var action in actions)
+                chessBoard.AddExpectedChessPiece(ChessPiece.UseWithComponent(action.pieceId, action.chessBoardVector.x, action.chessBoardVector.y, action.pieceType, true));
+        }
     }
 }

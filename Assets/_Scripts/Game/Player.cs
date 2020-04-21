@@ -35,7 +35,7 @@ namespace ChessCrush.Game
                 hp.Subscribe(_ => gameDirector.chessGameUI.myStatus.hpBar.fillAmount = _ / 20);
                 energyPoint.Subscribe(_ => gameDirector.chessGameUI.myStatus.energyBar.fillAmount = _ / 10);
                 actionsSubject.Subscribe(list => gameDirector.chessGameUI.chessActionScroll.SetView(list));
-                //TODO: chessActions Subscribe
+                actionsSubject.Subscribe(list => gameDirector.chessGameObjects.SetExpectedAction(list));
             }
             else
             {
