@@ -111,14 +111,18 @@ namespace ChessCrush.UI
             var result = Task.Run(() => Director.instance.networkHelper.SignUp(signUpIDInputField.text, signUpPWInputField.text));
             yield return new WaitUntil(() => result.IsCompleted);
 
-            if (result.Result == OperationResultCode.SignUpCode.Success)
+            switch(result.Result)
             {
-                MessageBoxUI.UseWithComponent("Success to sign up");
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                MessageBoxUI.UseWithComponent("Failed to sign up");
+                case OperationResultCode.SignUpCode.Success:
+                    MessageBoxUI.UseWithComponent("Success to sign up");
+                    startUI.SetAfterSignIn();
+                    gameObject.SetActive(false);
+                    break;
+                case OperationResultCode.SignUpCode.DuplicatedParameterException:
+                    MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
+                    break;
+                case OperationResultCode.SignUpCode.Etc:
+                    break;
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using ChessCrush.UI;
 using System.Collections;
 using UnityEngine;
+using BackEnd;
 
 namespace ChessCrush.Game
 {
@@ -22,6 +23,14 @@ namespace ChessCrush.Game
             instance = this;
 
             networkHelper = new NetworkHelper();
+
+            Backend.Initialize(() =>
+            {
+                if (Backend.IsInitialized)
+                    networkHelper.connected = true;
+                else
+                    networkHelper.connected = false;
+            });
         }
 
 
