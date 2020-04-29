@@ -93,32 +93,27 @@ namespace ChessCrush.UI
 
         private void SubscribeSignUpSignUpButton()
         {
-            StartCoroutine(CoSubscribeSignUpSignUpButton());
-        }
-
-        private IEnumerator CoSubscribeSignUpSignUpButton()
-        {
             if (signUpIDInputField.text == "" || signUpPWInputField.text == "" || signUpConfirmInputField.text == "")
             {
                 MessageBoxUI.UseWithComponent("Please input all input fields");
-                yield break;
+                return;
             }
 
             if (signUpPWInputField.text != signUpConfirmInputField.text)
             {
                 signUpConfirmInputField.text = "";
                 MessageBoxUI.UseWithComponent("Password and confirm are different");
-                yield break;
+                return;
             }
 
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
             Backend.BMember.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, c =>
-              {
-                  bro = c;
-                  success.Value = true;
-              });
+            {
+                bro = c;
+                success.Value = true;
+            });
 
             success.ObserveOnMainThread().Subscribe(value =>
             {
