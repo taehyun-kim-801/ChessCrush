@@ -1,4 +1,7 @@
-﻿using ChessCrush.Game;
+﻿using BackEnd;
+using ChessCrush.Game;
+using ChessCrush.OperationResultCode;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UniRx;
@@ -108,22 +111,45 @@ namespace ChessCrush.UI
                 yield break;
             }
 
-            var result = Task.Run(() => Director.instance.networkHelper.SignUp(signUpIDInputField.text, signUpPWInputField.text));
-            yield return new WaitUntil(() => result.IsCompleted);
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
 
-            switch(result.Result)
+            Backend.BMember.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, c =>
+              {
+                  bro = c;
+                  success.Value = true;
+              });
+
+            success.ObserveOnMainThread().Subscribe(value =>
             {
-                case OperationResultCode.SignUpCode.Success:
-                    MessageBoxUI.UseWithComponent("Success to sign up");
-                    startUI.SetAfterSignIn();
-                    gameObject.SetActive(false);
-                    break;
-                case OperationResultCode.SignUpCode.DuplicatedParameterException:
-                    MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
-                    break;
-                case OperationResultCode.SignUpCode.Etc:
-                    break;
-            }
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to sign up");
+                        startUI.SetAfterSignIn();
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        switch ((SignUpCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SignUpCode.DuplicatedParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
+                                break;
+                            case SignUpCode.Etc:
+                                MessageBoxUI.UseWithComponent("Failed to sign up");
+                                break;
+                            default:
+                                return;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
         }
     }
 }
