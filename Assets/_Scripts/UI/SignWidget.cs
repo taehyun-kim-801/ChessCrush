@@ -58,31 +58,49 @@ namespace ChessCrush.UI
 
         private void SubscribeSignInButton()
         {
-            StartCoroutine(CoSubscribeSignInButton());
-        }
-
-        private IEnumerator CoSubscribeSignInButton()
-        {
             if (signInIDInputField.text == "" || signInPWInputField.text == "")
             {
                 MessageBoxUI.UseWithComponent("Please input all input fields");
-                yield break;
+                return;
             }
 
-            var result = Task.Run(() => Director.instance.networkHelper.SignIn(signInIDInputField.text, signInPWInputField.text));
-            yield return new WaitUntil(() => result.IsCompleted);
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
 
-            if (result.Result == OperationResultCode.SignInCode.Success)
+            Backend.BMember.CustomLogin(signInIDInputField.text, signInPWInputField.text, c =>
+              {
+                  bro = c;
+                  success.Value = true;
+              });
+
+            success.ObserveOnMainThread().Subscribe(value =>
             {
-                MessageBoxUI.UseWithComponent("Success to sign in");
-                Director.instance.playerName = signInIDInputField.text;
-                startUI.SetAfterSignIn();
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                MessageBoxUI.UseWithComponent("Failed to sign in");
-            }
+                if(value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if(bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to sign in");
+                        Director.instance.playerName = signInIDInputField.text;
+                        startUI.SetAfterSignIn();
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        switch((SignInCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SignInCode.BadUnauthorizedException:
+                                MessageBoxUI.UseWithComponent("Failed to sign in: wrong id or password");
+                                break;
+                            case SignInCode.Blocked:
+                                MessageBoxUI.UseWithComponent("Failed to sign in: blocked user");
+                                break;
+                            case SignInCode.Etc:
+                                return;
+                        }
+                    }
+                }
+            });
         }
 
         private void SubscribeSignInSignUpButton()
@@ -123,6 +141,7 @@ namespace ChessCrush.UI
                     if (bro.IsSuccess())
                     {
                         MessageBoxUI.UseWithComponent("Success to sign up");
+                        Director.instance.playerName = signUpIDInputField.text;
                         startUI.SetAfterSignIn();
                         gameObject.SetActive(false);
                     }
