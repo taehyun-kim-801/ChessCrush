@@ -26,12 +26,23 @@ namespace ChessCrush.UI
         [SerializeField]
         private GameObject optionsWidget;
 
+        ReactiveProperty<bool> signedIn = new ReactiveProperty<bool>();
+
         private void Awake()
         {
             signInButton.OnClickAsObservable().Subscribe(_ => signWidget.gameObject.SetActive(true)).AddTo(gameObject);
             startButton.OnClickAsObservable().Subscribe(_ => SubscribeStartButton()).AddTo(gameObject);
             optionsButton.OnClickAsObservable().Subscribe(_ => SubscribeOptionsButton()).AddTo(gameObject);
             quitButton.OnClickAsObservable().Subscribe(_ => SubscribeQuitButton()).AddTo(gameObject);
+
+            signedIn.Subscribe(_ =>
+            {
+                if (_)
+                {
+                    signInButton.gameObject.SetActive(false);
+                    afterSignInButtons.gameObject.SetActive(true);
+                }
+            }).AddTo(gameObject);
         }
 
         private void SubscribeStartButton()
@@ -68,6 +79,7 @@ namespace ChessCrush.UI
 
         public void SetAfterSignIn()
         {
+            signedIn = true;
             signInButton.gameObject.SetActive(false);
             afterSignInButtons.gameObject.SetActive(true);
         }
