@@ -1,4 +1,5 @@
-﻿using ChessCrush.Game;
+﻿using BackEnd;
+using ChessCrush.Game;
 using System.Collections;
 using System.Threading.Tasks;
 using UniRx;
@@ -43,6 +44,16 @@ namespace ChessCrush.UI
                     afterSignInButtons.gameObject.SetActive(true);
                 }
             }).AddTo(gameObject);
+
+            if(PlayerPrefs.HasKey("access_token"))
+            {
+                var value = PlayerPrefs.GetString("access_token");
+                var bro = Backend.BMember.LoginWithTheBackendToken();
+                if (bro.IsSuccess())
+                    signedIn.Value = true;
+                else
+                    MessageBoxUI.UseWithComponent("Failed to login");
+            }
         }
 
         private void SubscribeStartButton()
@@ -79,9 +90,7 @@ namespace ChessCrush.UI
 
         public void SetAfterSignIn()
         {
-            signedIn = true;
-            signInButton.gameObject.SetActive(false);
-            afterSignInButtons.gameObject.SetActive(true);
+            signedIn.Value = true;
         }
 
         private void SubscribeQuitButton()
