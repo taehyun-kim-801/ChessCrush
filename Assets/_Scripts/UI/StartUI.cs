@@ -45,7 +45,7 @@ namespace ChessCrush.UI
                 }
             }).AddTo(gameObject);
 
-            if(PlayerPrefs.HasKey("access_token"))
+            if (PlayerPrefs.HasKey("access_token"))
             {
                 var value = PlayerPrefs.GetString("access_token");
                 var bro = Backend.BMember.LoginWithTheBackendToken();

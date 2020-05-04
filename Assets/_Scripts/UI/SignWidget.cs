@@ -35,6 +35,12 @@ namespace ChessCrush.UI
         [SerializeField]
         private Button signUpSignUpButton;
         [SerializeField]
+        private GameObject setInfoField;
+        [SerializeField]
+        private InputField nicknameInputField;
+        [SerializeField]
+        private Button infoSetButton;
+        [SerializeField]
         private Button exitButton;
 
         private void Awake()
@@ -42,6 +48,7 @@ namespace ChessCrush.UI
             signInSignInButton.OnClickAsObservable().Subscribe(_ => SubscribeSignInButton());
             signInSignUpButton.OnClickAsObservable().Subscribe(_ => SubscribeSignInSignUpButton());
             signUpSignUpButton.OnClickAsObservable().Subscribe(_ => SubscribeSignUpSignUpButton());
+            infoSetButton.OnClickAsObservable().Subscribe(_ => SubscribeInfoSetButton());
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false));
         }
 
@@ -54,6 +61,7 @@ namespace ChessCrush.UI
             signUpIDInputField.text = "";
             signUpPWInputField.text = "";
             signUpConfirmInputField.text = "";
+            setInfoField.SetActive(false);
         }
 
         private void SubscribeSignInButton()
@@ -140,10 +148,9 @@ namespace ChessCrush.UI
                     var saveToken = Backend.BMember.SaveToken(bro);
                     if (bro.IsSuccess())
                     {
-                        MessageBoxUI.UseWithComponent("Success to sign up");
-                        Director.instance.playerName = signUpIDInputField.text;
                         startUI.SetAfterSignIn();
-                        gameObject.SetActive(false);
+                        signUpField.SetActive(false);
+                        setInfoField.SetActive(true);
                     }
                     else
                     {
@@ -157,6 +164,56 @@ namespace ChessCrush.UI
                                 break;
                             default:
                                 return;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        private void SubscribeInfoSetButton() 
+        {
+            if (nicknameInputField.text == "")
+            {
+                MessageBoxUI.UseWithComponent("Please input nickname field");
+                return;
+            }
+
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.CreateNickname(nicknameInputField.text, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if(bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to sign in");
+                        Director.instance.playerName = nicknameInputField.text;
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        switch((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SetNicknameCode.BadParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname: Nickname doesn't fit");
+                                break;
+                            case SetNicknameCode.DuplicatedParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname: Duplicated nickname");
+                                break;
+                            case SetNicknameCode.Etc:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname");
+                                break;
                         }
                     }
 
