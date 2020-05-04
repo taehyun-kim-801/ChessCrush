@@ -1,4 +1,5 @@
-﻿using ChessCrush.OperationResultCode;
+﻿using BackEnd;
+using ChessCrush.OperationResultCode;
 using System;
 using System.IO;
 using System.Net;
@@ -17,6 +18,8 @@ namespace ChessCrush.Game
         
         private Socket socket;
         public bool socketConnected { get { return socket.Connected; } }
+
+        public bool connected;
 
         public NetworkHelper() 
         {
@@ -58,25 +61,11 @@ namespace ChessCrush.Game
 
         public SignUpCode SignUp(string newId,string newPassword)
         {
-            OutputMemoryStream oms = new OutputMemoryStream();
-            oms.Write((int)OperationCode.SignUp);
-            oms.Write(newId);
-            oms.Write(newPassword);
-            socket.Send(oms.buffer);
-
-            byte[] receiveBuffer = new byte[maxBufferSize];
-            try
-            {
-                int receiveBytes = socket.Receive(receiveBuffer);
-                InputMemoryStream ims = new InputMemoryStream(receiveBuffer);
-                ims.Read(out int result);
-                return (SignUpCode)result;
-            }
-            catch(Exception e)
-            {
-                Debug.Log(e.ToString());
-                return SignUpCode.Etc;
-            }
+            var bro = Backend.BMember.CustomSignUp(newId, newPassword);
+            if (bro.IsSuccess())
+                return SignUpCode.Success;
+            else
+                return (SignUpCode)Convert.ToInt32(bro.GetStatusCode());
         }
 
         public int ParticipateGame()

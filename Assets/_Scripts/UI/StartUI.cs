@@ -1,4 +1,5 @@
-﻿using ChessCrush.Game;
+﻿using BackEnd;
+using ChessCrush.Game;
 using System.Collections;
 using System.Threading.Tasks;
 using UniRx;
@@ -26,12 +27,33 @@ namespace ChessCrush.UI
         [SerializeField]
         private GameObject optionsWidget;
 
+        ReactiveProperty<bool> signedIn = new ReactiveProperty<bool>();
+
         private void Awake()
         {
             signInButton.OnClickAsObservable().Subscribe(_ => signWidget.gameObject.SetActive(true)).AddTo(gameObject);
             startButton.OnClickAsObservable().Subscribe(_ => SubscribeStartButton()).AddTo(gameObject);
             optionsButton.OnClickAsObservable().Subscribe(_ => SubscribeOptionsButton()).AddTo(gameObject);
             quitButton.OnClickAsObservable().Subscribe(_ => SubscribeQuitButton()).AddTo(gameObject);
+
+            signedIn.Subscribe(_ =>
+            {
+                if (_)
+                {
+                    signInButton.gameObject.SetActive(false);
+                    afterSignInButtons.gameObject.SetActive(true);
+                }
+            }).AddTo(gameObject);
+
+            if (PlayerPrefs.HasKey("access_token"))
+            {
+                var value = PlayerPrefs.GetString("access_token");
+                var bro = Backend.BMember.LoginWithTheBackendToken();
+                if (bro.IsSuccess())
+                    signedIn.Value = true;
+                else
+                    MessageBoxUI.UseWithComponent("Failed to login");
+            }
         }
 
         private void SubscribeStartButton()
@@ -68,8 +90,7 @@ namespace ChessCrush.UI
 
         public void SetAfterSignIn()
         {
-            signInButton.gameObject.SetActive(false);
-            afterSignInButtons.gameObject.SetActive(true);
+            signedIn.Value = true;
         }
 
         private void SubscribeQuitButton()

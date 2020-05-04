@@ -1,4 +1,7 @@
-﻿using ChessCrush.Game;
+﻿using BackEnd;
+using ChessCrush.Game;
+using ChessCrush.OperationResultCode;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UniRx;
@@ -32,6 +35,12 @@ namespace ChessCrush.UI
         [SerializeField]
         private Button signUpSignUpButton;
         [SerializeField]
+        private GameObject setInfoField;
+        [SerializeField]
+        private InputField nicknameInputField;
+        [SerializeField]
+        private Button infoSetButton;
+        [SerializeField]
         private Button exitButton;
 
         private void Awake()
@@ -39,6 +48,7 @@ namespace ChessCrush.UI
             signInSignInButton.OnClickAsObservable().Subscribe(_ => SubscribeSignInButton());
             signInSignUpButton.OnClickAsObservable().Subscribe(_ => SubscribeSignInSignUpButton());
             signUpSignUpButton.OnClickAsObservable().Subscribe(_ => SubscribeSignUpSignUpButton());
+            infoSetButton.OnClickAsObservable().Subscribe(_ => SubscribeInfoSetButton());
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false));
         }
 
@@ -51,35 +61,54 @@ namespace ChessCrush.UI
             signUpIDInputField.text = "";
             signUpPWInputField.text = "";
             signUpConfirmInputField.text = "";
+            setInfoField.SetActive(false);
         }
 
         private void SubscribeSignInButton()
         {
-            StartCoroutine(CoSubscribeSignInButton());
-        }
-
-        private IEnumerator CoSubscribeSignInButton()
-        {
             if (signInIDInputField.text == "" || signInPWInputField.text == "")
             {
                 MessageBoxUI.UseWithComponent("Please input all input fields");
-                yield break;
+                return;
             }
 
-            var result = Task.Run(() => Director.instance.networkHelper.SignIn(signInIDInputField.text, signInPWInputField.text));
-            yield return new WaitUntil(() => result.IsCompleted);
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
 
-            if (result.Result == OperationResultCode.SignInCode.Success)
+            Backend.BMember.CustomLogin(signInIDInputField.text, signInPWInputField.text, c =>
+              {
+                  bro = c;
+                  success.Value = true;
+              });
+
+            success.ObserveOnMainThread().Subscribe(value =>
             {
-                MessageBoxUI.UseWithComponent("Success to sign in");
-                Director.instance.playerName = signInIDInputField.text;
-                startUI.SetAfterSignIn();
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                MessageBoxUI.UseWithComponent("Failed to sign in");
-            }
+                if(value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if(bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to sign in");
+                        Director.instance.playerName = signInIDInputField.text;
+                        startUI.SetAfterSignIn();
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        switch((SignInCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SignInCode.BadUnauthorizedException:
+                                MessageBoxUI.UseWithComponent("Failed to sign in: wrong id or password");
+                                break;
+                            case SignInCode.Blocked:
+                                MessageBoxUI.UseWithComponent("Failed to sign in: blocked user");
+                                break;
+                            case SignInCode.Etc:
+                                return;
+                        }
+                    }
+                }
+            });
         }
 
         private void SubscribeSignInSignUpButton()
@@ -90,36 +119,108 @@ namespace ChessCrush.UI
 
         private void SubscribeSignUpSignUpButton()
         {
-            StartCoroutine(CoSubscribeSignUpSignUpButton());
-        }
-
-        private IEnumerator CoSubscribeSignUpSignUpButton()
-        {
             if (signUpIDInputField.text == "" || signUpPWInputField.text == "" || signUpConfirmInputField.text == "")
             {
                 MessageBoxUI.UseWithComponent("Please input all input fields");
-                yield break;
+                return;
             }
 
             if (signUpPWInputField.text != signUpConfirmInputField.text)
             {
                 signUpConfirmInputField.text = "";
                 MessageBoxUI.UseWithComponent("Password and confirm are different");
-                yield break;
+                return;
             }
 
-            var result = Task.Run(() => Director.instance.networkHelper.SignUp(signUpIDInputField.text, signUpPWInputField.text));
-            yield return new WaitUntil(() => result.IsCompleted);
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
 
-            if (result.Result == OperationResultCode.SignUpCode.Success)
+            Backend.BMember.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, c =>
             {
-                MessageBoxUI.UseWithComponent("Success to sign up");
-                gameObject.SetActive(false);
-            }
-            else
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
             {
-                MessageBoxUI.UseWithComponent("Failed to sign up");
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (bro.IsSuccess())
+                    {
+                        startUI.SetAfterSignIn();
+                        signUpField.SetActive(false);
+                        setInfoField.SetActive(true);
+                    }
+                    else
+                    {
+                        switch ((SignUpCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SignUpCode.DuplicatedParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
+                                break;
+                            case SignUpCode.Etc:
+                                MessageBoxUI.UseWithComponent("Failed to sign up");
+                                break;
+                            default:
+                                return;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        private void SubscribeInfoSetButton() 
+        {
+            if (nicknameInputField.text == "")
+            {
+                MessageBoxUI.UseWithComponent("Please input nickname field");
+                return;
             }
+
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.CreateNickname(nicknameInputField.text, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if(bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to sign in");
+                        Director.instance.playerName = nicknameInputField.text;
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        switch((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SetNicknameCode.BadParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname: Nickname doesn't fit");
+                                break;
+                            case SetNicknameCode.DuplicatedParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname: Duplicated nickname");
+                                break;
+                            case SetNicknameCode.Etc:
+                                MessageBoxUI.UseWithComponent("Failed to set nickname");
+                                break;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
         }
     }
 }
