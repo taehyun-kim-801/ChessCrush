@@ -27,7 +27,7 @@ namespace ChessCrush.UI
         [SerializeField]
         private GameObject optionsWidget;
 
-        ReactiveProperty<bool> signedIn = new ReactiveProperty<bool>();
+        private StartSceneDirector startSceneDirector;
 
         private void Awake()
         {
@@ -35,22 +35,19 @@ namespace ChessCrush.UI
             startButton.OnClickAsObservable().Subscribe(_ => SubscribeStartButton()).AddTo(gameObject);
             optionsButton.OnClickAsObservable().Subscribe(_ => SubscribeOptionsButton()).AddTo(gameObject);
             quitButton.OnClickAsObservable().Subscribe(_ => SubscribeQuitButton()).AddTo(gameObject);
+        }
 
-            signedIn.Subscribe(_ =>
-            {
-                if (_)
-                {
-                    signInButton.gameObject.SetActive(false);
-                    afterSignInButtons.gameObject.SetActive(true);
-                }
-            }).AddTo(gameObject);
+        private void Start()
+        {
+            startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
+            startSceneDirector.signedIn.Subscribe(_ => SubscribeSignedIn(_));
 
             if (PlayerPrefs.HasKey("access_token"))
             {
                 var value = PlayerPrefs.GetString("access_token");
                 var bro = Backend.BMember.LoginWithTheBackendToken();
                 if (bro.IsSuccess())
-                    signedIn.Value = true;
+                    startSceneDirector.signedIn.Value = true;
                 else
                     MessageBoxUI.UseWithComponent("Failed to login");
             }
@@ -88,9 +85,10 @@ namespace ChessCrush.UI
             optionsWidget.SetActive(true);
         }
 
-        public void SetAfterSignIn()
+        public void SubscribeSignedIn(bool value)
         {
-            signedIn.Value = true;
+            signInButton.gameObject.SetActive(!value);
+            afterSignInButtons.gameObject.SetActive(value);
         }
 
         private void SubscribeQuitButton()

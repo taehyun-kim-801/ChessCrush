@@ -1,10 +1,12 @@
 ﻿using ChessCrush.UI;
+using UniRx;
 
 namespace ChessCrush.Game
 {
     public class StartSceneDirector: SubDirector
     {
         private StartUI startUI;
+        public ReactiveProperty<bool> signedIn = new ReactiveProperty<bool>();
 
         private void OnEnable()
         {
