@@ -16,6 +16,8 @@ namespace ChessCrush.UI
         private Button exitButton;
         [SerializeField]
         private Button signOutButton;
+        [SerializeField]
+        private Button logOutButton;
 
         private StartSceneDirector startSceneDirector;
 
@@ -24,6 +26,7 @@ namespace ChessCrush.UI
             nameChangeButton.OnClickAsObservable().Subscribe(_ => SubscribeNameChangeButton()).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => SubscribeExitButton()).AddTo(gameObject);
             signOutButton.OnClickAsObservable().Subscribe(_ => SubscribeSignOutButton()).AddTo(gameObject);
+            logOutButton.OnClickAsObservable().Subscribe(_ => SubscribeLogOutButton()).AddTo(gameObject);
             if (!(Director.instance.playerName is null))
                 nameInputField.text = Director.instance.playerName;
         }
@@ -69,6 +72,33 @@ namespace ChessCrush.UI
                     }
                     else
                         MessageBoxUI.UseWithComponent("Faield to sign out");
+                }
+            });
+        }
+
+        private void SubscribeLogOutButton()
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.Logout(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    if (bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to log out");
+                        startSceneDirector.signedIn.Value = false;
+                        gameObject.SetActive(false);
+                    }
+                    else
+                        MessageBoxUI.UseWithComponent("Faield to log out");
                 }
             });
         }
