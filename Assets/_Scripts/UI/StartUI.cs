@@ -40,7 +40,7 @@ namespace ChessCrush.UI
         private void Start()
         {
             startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
-            startSceneDirector.signedIn.Subscribe(_ => SubscribeSignedIn(_));
+            startSceneDirector.signedIn.Subscribe(_ => SubscribeSignedIn(_)).AddTo(startSceneDirector);
 
             if (PlayerPrefs.HasKey("access_token"))
             {
