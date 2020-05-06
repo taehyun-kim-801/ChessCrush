@@ -96,7 +96,6 @@ namespace ChessCrush.UI
                     if(bro.IsSuccess())
                     {
                         MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.playerName = signInIDInputField.text;
                         startSceneDirector.signedIn.Value = true;
                         gameObject.SetActive(false);
                     }
@@ -205,7 +204,7 @@ namespace ChessCrush.UI
                     if(bro.IsSuccess())
                     {
                         MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.playerName = nicknameInputField.text;
+                        Director.instance.GetUserInfo();
                         gameObject.SetActive(false);
                     }
                     else

@@ -23,12 +23,12 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
+            Director.instance.userInfo.Subscribe(info => nameInputField.text = info.nickname).AddTo(Director.instance);
+
             nameChangeButton.OnClickAsObservable().Subscribe(_ => SubscribeNameChangeButton()).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => SubscribeExitButton()).AddTo(gameObject);
             signOutButton.OnClickAsObservable().Subscribe(_ => SubscribeSignOutButton()).AddTo(gameObject);
             logOutButton.OnClickAsObservable().Subscribe(_ => SubscribeLogOutButton()).AddTo(gameObject);
-            if (!(Director.instance.playerName is null))
-                nameInputField.text = Director.instance.playerName;
         }
 
         private void Start()
@@ -39,7 +39,6 @@ namespace ChessCrush.UI
         private void SubscribeNameChangeButton()
         {
             var name = nameInputField.text;
-            Director.instance.playerName = name;
         }
 
         private void SubscribeExitButton()

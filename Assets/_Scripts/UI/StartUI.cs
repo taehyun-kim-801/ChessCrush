@@ -89,6 +89,7 @@ namespace ChessCrush.UI
         {
             signInButton.gameObject.SetActive(!value);
             afterSignInButtons.gameObject.SetActive(value);
+            Director.instance.GetUserInfo();
         }
 
         private void SubscribeQuitButton()
