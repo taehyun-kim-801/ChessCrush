@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using BackEnd;
 using System;
+using UniRx;
 
 namespace ChessCrush.Game
 {
@@ -11,6 +12,16 @@ namespace ChessCrush.Game
         static public Director instance;
         [NonSerialized]
         public ObjectPool nonUiObjectPool;
+
+        public struct UserInfo
+        {
+            public string nickname;
+            public string inDate;
+            public string subscriptionType;
+            public string emailForFindPassword; 
+        }
+
+        public ReactiveProperty<UserInfo> userInfo = new ReactiveProperty<UserInfo>();
         public string playerName;
         public NetworkHelper networkHelper;
 
@@ -59,6 +70,41 @@ namespace ChessCrush.Game
             }
 
             return resultObj.GetComponent<T>();
+        }
+
+        public void GetUserInfo()
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.GetUserInfo(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.Subscribe(value =>
+            {
+                if (value)
+                {
+                    if (bro.IsSuccess())
+                    {
+                        var infoJson = bro.GetReturnValuetoJSON()["row"];
+                        SetUserInfoUsingJson(infoJson);
+                    }
+                }
+            });
+        }
+
+        private void SetUserInfoUsingJson(LitJson.JsonData jsonData)
+        {
+            var newUserInfo = new UserInfo();
+            newUserInfo.nickname = ReferenceEquals(jsonData["nickname"], null) ? null : (string)jsonData["nickname"];
+            newUserInfo.inDate = ReferenceEquals(jsonData["inDate"], null) ? null : (string)jsonData["inDate"];
+            newUserInfo.subscriptionType = ReferenceEquals(jsonData["subscriptionType"], null) ? null : (string)jsonData["subscriptionType"];
+            newUserInfo.emailForFindPassword = ReferenceEquals(jsonData["emailForFindPassword"], null) ? null : (string)jsonData["emailForFindPassword"];
+
+            userInfo.Value = newUserInfo;
         }
     }
 }

@@ -43,6 +43,8 @@ namespace ChessCrush.UI
         [SerializeField]
         private Button exitButton;
 
+        private StartSceneDirector startSceneDirector;
+
         private void Awake()
         {
             signInSignInButton.OnClickAsObservable().Subscribe(_ => SubscribeSignInButton());
@@ -50,6 +52,11 @@ namespace ChessCrush.UI
             signUpSignUpButton.OnClickAsObservable().Subscribe(_ => SubscribeSignUpSignUpButton());
             infoSetButton.OnClickAsObservable().Subscribe(_ => SubscribeInfoSetButton());
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false));
+        }
+
+        private void Start()
+        {
+            startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
         }
 
         private void OnEnable()
@@ -89,8 +96,7 @@ namespace ChessCrush.UI
                     if(bro.IsSuccess())
                     {
                         MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.playerName = signInIDInputField.text;
-                        startUI.SetAfterSignIn();
+                        startSceneDirector.signedIn.Value = true;
                         gameObject.SetActive(false);
                     }
                     else
@@ -148,7 +154,7 @@ namespace ChessCrush.UI
                     var saveToken = Backend.BMember.SaveToken(bro);
                     if (bro.IsSuccess())
                     {
-                        startUI.SetAfterSignIn();
+                        startSceneDirector.signedIn.Value = true;
                         signUpField.SetActive(false);
                         setInfoField.SetActive(true);
                     }
@@ -198,7 +204,7 @@ namespace ChessCrush.UI
                     if(bro.IsSuccess())
                     {
                         MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.playerName = nicknameInputField.text;
+                        Director.instance.GetUserInfo();
                         gameObject.SetActive(false);
                     }
                     else
