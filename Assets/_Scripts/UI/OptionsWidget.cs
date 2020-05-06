@@ -1,5 +1,7 @@
 ﻿using BackEnd;
 using ChessCrush.Game;
+using ChessCrush.OperationResultCode;
+using System;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +40,44 @@ namespace ChessCrush.UI
 
         private void SubscribeNameChangeButton()
         {
-            var name = nameInputField.text;
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.UpdateNickname(nameInputField.text, c=>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    if (bro.IsSuccess())
+                    {
+                        MessageBoxUI.UseWithComponent("Success to update nickname");
+                        Director.instance.GetUserInfo();
+                    }
+                    else
+                    {
+                        switch ((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SetNicknameCode.BadParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to update nickname: nickname doesn't fit");
+                                break;
+                            case SetNicknameCode.DuplicatedParameterException:
+                                MessageBoxUI.UseWithComponent("Failed to update nickname: duplicated nickname");
+                                break;
+                            case SetNicknameCode.Etc:
+                                MessageBoxUI.UseWithComponent("Failed to update nickname");
+                                break;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
         }
 
         private void SubscribeExitButton()
@@ -71,6 +110,9 @@ namespace ChessCrush.UI
                     }
                     else
                         MessageBoxUI.UseWithComponent("Faield to sign out");
+
+                    bro.Clear();
+                    success.Dispose();
                 }
             });
         }
@@ -98,6 +140,9 @@ namespace ChessCrush.UI
                     }
                     else
                         MessageBoxUI.UseWithComponent("Faield to log out");
+
+                    bro.Clear();
+                    success.Dispose();
                 }
             });
         }
