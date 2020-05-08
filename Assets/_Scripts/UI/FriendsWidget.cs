@@ -8,8 +8,6 @@ namespace ChessCrush.UI
     public class FriendsWidget: MonoBehaviour
     {
         [SerializeField]
-        private Button background;
-        [SerializeField]
         private GameObject myFriendsScrollContent;
         [SerializeField]
         private Button goToSearchButton;
@@ -20,7 +18,6 @@ namespace ChessCrush.UI
 
         private void Awake()
         {
-            background.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false));
             goToSearchButton.OnClickAsObservable().Subscribe(_ => requestWidget.SetActive(true));
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false));
         }
