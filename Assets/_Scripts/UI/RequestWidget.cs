@@ -1,4 +1,5 @@
 ﻿using BackEnd;
+using ChessCrush.Game;
 using ChessCrush.OperationResultCode;
 using System;
 using UniRx;
@@ -13,14 +14,28 @@ namespace ChessCrush.UI
         private InputField nicknameInputField;
         [SerializeField]
         private Button requestButton;
+        [SerializeField]
+        private Button exitButton;
 
         private void Awake()
         {
-            requestButton.OnClickAsObservable().Subscribe(_ => SubscribeRequestButton());
+            requestButton.OnClickAsObservable().Subscribe(_ => SubscribeRequestButton()).AddTo(gameObject);
+            exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            nicknameInputField.text = "";
         }
 
         private void SubscribeRequestButton()
         {
+            if(nicknameInputField.text==Director.instance.userInfo.Value.nickname)
+            {
+                MessageBoxUI.UseWithComponent("Please input except your nickname");
+                return;
+            }
+
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
@@ -37,7 +52,7 @@ namespace ChessCrush.UI
                     if (bro.IsSuccess())
                     {
                         LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
-                        if (!ReferenceEquals(jsonData["rows"], null))
+                        if (jsonData["rows"].Count != 0)
                             RequestFriend((string)jsonData["rows"][0]["inDate"]["S"]);
                         else
                             MessageBoxUI.UseWithComponent("There's no player");
