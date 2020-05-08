@@ -37,9 +37,8 @@ namespace ChessCrush.UI
                     if (bro.IsSuccess())
                     {
                         LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
-                        var inDate = (string)jsonData["rows"][0]["inDate"]["S"];
-                        if (!ReferenceEquals(inDate, null))
-                            RequestFriend(inDate);
+                        if (!ReferenceEquals(jsonData["rows"], null))
+                            RequestFriend((string)jsonData["rows"][0]["inDate"]["S"]);
                         else
                             MessageBoxUI.UseWithComponent("There's no player");
                     }
