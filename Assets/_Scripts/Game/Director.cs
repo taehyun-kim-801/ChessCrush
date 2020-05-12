@@ -4,6 +4,7 @@ using UnityEngine;
 using BackEnd;
 using System;
 using UniRx;
+using UniRx.Triggers;
 
 namespace ChessCrush.Game
 {
@@ -32,7 +33,14 @@ namespace ChessCrush.Game
             Backend.Initialize(() =>
             {
                 if (Backend.IsInitialized)
+                {
+                    SetBackendSetting();
+                    gameObject.UpdateAsObservable().Subscribe(_ =>
+                    {
+                        Backend.Match.poll();
+                    }).AddTo(gameObject);
                     networkHelper.connected = true;
+                }
                 else
                     networkHelper.connected = false;
             });
@@ -46,6 +54,25 @@ namespace ChessCrush.Game
         {
             yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated && Backend.IsInitialized);
             GetSubDirector<StartSceneDirector>();
+        }
+
+        private void SetBackendSetting()
+        {
+            Backend.Match.OnJoinMatchMakingServer += args => { };
+            Backend.Match.OnLeaveMatchMakingServer += args => { };
+            Backend.Match.OnMatchMakingResponse += args => { };
+            Backend.Match.OnException += args => { };
+
+            Backend.Match.OnSessionJoinInServer += args => { };
+            Backend.Match.OnSessionOnline += args => { };
+            Backend.Match.OnSessionListInServer += args => { };
+            Backend.Match.OnMatchInGameAccess += args => { };
+            Backend.Match.OnMatchInGameStart += () => { };
+            Backend.Match.OnMatchRelay += args => { };
+            Backend.Match.OnMatchChat += args => { };
+            Backend.Match.OnMatchResult += args => { };
+            Backend.Match.OnLeaveInGameServer += args => { };
+            Backend.Match.OnSessionOffline += args => { };
         }
 
         public T GetSubDirector<T>() where T:SubDirector
