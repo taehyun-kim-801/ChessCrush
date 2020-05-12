@@ -58,7 +58,10 @@ namespace ChessCrush.Game
 
         private void SetBackendSetting()
         {
-            Backend.Match.OnJoinMatchMakingServer += args => { };
+            Backend.Match.OnJoinMatchMakingServer += args => 
+            {
+                Backend.Match.RequestMatchMaking(BackEnd.Tcp.MatchType.MMR, BackEnd.Tcp.MatchModeType.OneOnOne);
+            };
             Backend.Match.OnLeaveMatchMakingServer += args => { };
             Backend.Match.OnMatchMakingResponse += args => { };
             Backend.Match.OnException += args => { };
