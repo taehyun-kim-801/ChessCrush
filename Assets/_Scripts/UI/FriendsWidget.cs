@@ -73,8 +73,8 @@ namespace ChessCrush.UI
                             for (int i = 0; i < jsonData["rows"].Count; i++)
                             {
                                 var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"];
+                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
                                 newList.Add(userInfo);
                             }
@@ -99,7 +99,7 @@ namespace ChessCrush.UI
                 success.Value = true;
             });
 
-            success.Subscribe(value =>
+            success.ObserveOnMainThread().Subscribe(value =>
             {
                 if (value)
                 {
@@ -113,8 +113,8 @@ namespace ChessCrush.UI
                             for (int i = 0; i < jsonData["rows"].Count; i++)
                             {
                                 var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"];
+                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
                                 newList.Add(userInfo);
                             }
