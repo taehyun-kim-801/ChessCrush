@@ -21,11 +21,15 @@ namespace ChessCrush.UI
         [SerializeField]
         private Button optionsButton;
         [SerializeField]
+        private Button friendsButton;
+        [SerializeField]
         private Button quitButton;
         [SerializeField]
         private GameObject loadingWidget;
         [SerializeField]
         private GameObject optionsWidget;
+        [SerializeField]
+        private GameObject friendsWidget;
 
         private StartSceneDirector startSceneDirector;
 
@@ -34,6 +38,7 @@ namespace ChessCrush.UI
             signInButton.OnClickAsObservable().Subscribe(_ => signWidget.gameObject.SetActive(true)).AddTo(gameObject);
             startButton.OnClickAsObservable().Subscribe(_ => SubscribeStartButton()).AddTo(gameObject);
             optionsButton.OnClickAsObservable().Subscribe(_ => SubscribeOptionsButton()).AddTo(gameObject);
+            friendsButton.OnClickAsObservable().Subscribe(_ => friendsWidget.SetActive(true)).AddTo(gameObject);
             quitButton.OnClickAsObservable().Subscribe(_ => SubscribeQuitButton()).AddTo(gameObject);
         }
 
