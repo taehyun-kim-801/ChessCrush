@@ -5,6 +5,8 @@ using BackEnd;
 using System;
 using UniRx;
 using UniRx.Triggers;
+using BackEnd.Tcp;
+using System.Text.RegularExpressions;
 
 namespace ChessCrush.Game
 {
@@ -62,8 +64,28 @@ namespace ChessCrush.Game
             {
                 Backend.Match.RequestMatchMaking(BackEnd.Tcp.MatchType.MMR, BackEnd.Tcp.MatchModeType.OneOnOne);
             };
-            Backend.Match.OnLeaveMatchMakingServer += args => { };
-            Backend.Match.OnMatchMakingResponse += args => { };
+            Backend.Match.OnLeaveMatchMakingServer += args => 
+            {
+                
+            };
+            Backend.Match.OnMatchMakingResponse += args => 
+            {
+                switch (args.ErrInfo) 
+                {
+                    case ErrorCode.Success:
+                        GetSubDirector<StartSceneDirector>().gameObject.SetActive(false);
+                        GetSubDirector<ChessGameDirector>();
+                        break;
+                    case ErrorCode.Match_InvalidMatchType:
+                    case ErrorCode.Match_InvalidModeType:
+                    case ErrorCode.InvalidOperation:
+                    case ErrorCode.Match_MatchMakingCanceled:
+                        MessageBoxUI.UseWithComponent("Failed to do match making");
+                        break;
+                    default:
+                        return;
+                }
+            };
             Backend.Match.OnException += args => { };
 
             Backend.Match.OnSessionJoinInServer += args => { };
