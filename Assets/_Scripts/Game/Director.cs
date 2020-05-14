@@ -86,7 +86,11 @@ namespace ChessCrush.Game
                         return;
                 }
             };
-            Backend.Match.OnException += args => { };
+            Backend.Match.OnException += args => 
+            {
+                MessageBoxUI.UseWithComponent("Network error");
+                Debug.Log(args.ToString());
+            };
 
             Backend.Match.OnSessionJoinInServer += args => { };
             Backend.Match.OnSessionOnline += args => { };
