@@ -6,7 +6,6 @@ using System;
 using UniRx;
 using UniRx.Triggers;
 using BackEnd.Tcp;
-using System.Text.RegularExpressions;
 
 namespace ChessCrush.Game
 {
@@ -37,10 +36,12 @@ namespace ChessCrush.Game
                 if (Backend.IsInitialized)
                 {
                     SetBackendSetting();
+
                     gameObject.UpdateAsObservable().Subscribe(_ =>
                     {
                         Backend.Match.poll();
                     }).AddTo(gameObject);
+
                     networkHelper.connected = true;
                 }
                 else
@@ -50,7 +51,6 @@ namespace ChessCrush.Game
             nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
             Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
         }
-
 
         private IEnumerator Start()
         {
@@ -62,7 +62,8 @@ namespace ChessCrush.Game
         {
             Backend.Match.OnJoinMatchMakingServer += args => 
             {
-                Backend.Match.RequestMatchMaking(BackEnd.Tcp.MatchType.MMR, BackEnd.Tcp.MatchModeType.OneOnOne);
+                if (args.ErrInfo != ErrorInfo.Success)
+                    MessageBoxUI.UseWithComponent("Failed to join match making server");
             };
             Backend.Match.OnLeaveMatchMakingServer += args => 
             {
@@ -73,8 +74,7 @@ namespace ChessCrush.Game
                 switch (args.ErrInfo) 
                 {
                     case ErrorCode.Success:
-                        GetSubDirector<StartSceneDirector>().gameObject.SetActive(false);
-                        GetSubDirector<ChessGameDirector>();
+                        Backend.Match.JoinGameServer(args.Address, args.Port, false, out var errorInfo);
                         break;
                     case ErrorCode.Match_InvalidMatchType:
                     case ErrorCode.Match_InvalidModeType:
@@ -92,7 +92,10 @@ namespace ChessCrush.Game
                 Debug.Log(args.ToString());
             };
 
-            Backend.Match.OnSessionJoinInServer += args => { };
+            Backend.Match.OnSessionJoinInServer += args => 
+            {
+
+            };
             Backend.Match.OnSessionOnline += args => { };
             Backend.Match.OnSessionListInServer += args => { };
             Backend.Match.OnMatchInGameAccess += args => { };
@@ -139,7 +142,11 @@ namespace ChessCrush.Game
                     {
                         var infoJson = bro.GetReturnValuetoJSON()["row"];
                         SetUserInfoUsingJson(infoJson);
+                        Backend.Match.JoinMatchMakingServer(out var errorInfo);
                     }
+                   
+                    bro.Clear();
+                    success.Dispose();
                 }
             });
         }
