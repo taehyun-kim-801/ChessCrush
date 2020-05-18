@@ -60,6 +60,8 @@ namespace ChessCrush.Game
 
         private void SetBackendSetting()
         {
+            string gameRoomToken = "";
+
             Backend.Match.OnJoinMatchMakingServer += args => 
             {
                 if (args.ErrInfo != ErrorInfo.Success)
@@ -75,11 +77,11 @@ namespace ChessCrush.Game
                 {
                     case ErrorCode.Success:
                         Backend.Match.JoinGameServer(args.Address, args.Port, false, out var errorInfo);
+                        gameRoomToken = args.Token;
                         break;
                     case ErrorCode.Match_InvalidMatchType:
                     case ErrorCode.Match_InvalidModeType:
                     case ErrorCode.InvalidOperation:
-                    case ErrorCode.Match_MatchMakingCanceled:
                         MessageBoxUI.UseWithComponent("Failed to do match making");
                         break;
                     default:
@@ -94,10 +96,13 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionJoinInServer += args => 
             {
-
+                Backend.Match.JoinGameRoom(gameRoomToken);
             };
             Backend.Match.OnSessionOnline += args => { };
-            Backend.Match.OnSessionListInServer += args => { };
+            Backend.Match.OnSessionListInServer += args => 
+            {
+
+            };
             Backend.Match.OnMatchInGameAccess += args => { };
             Backend.Match.OnMatchInGameStart += () => { };
             Backend.Match.OnMatchRelay += args => { };
