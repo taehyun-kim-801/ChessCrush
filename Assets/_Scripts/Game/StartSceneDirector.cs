@@ -11,7 +11,13 @@ namespace ChessCrush.Game
         private void OnEnable()
         {
             var ui = MainCanvas.instance.objectPool.Use(nameof(StartUI));
-            startUI = ui.GetComponent<StartUI>();
+            if (ReferenceEquals(startUI, null))
+                startUI = ui.GetComponent<StartUI>();
+        }
+
+        private void OnDisable()
+        {
+            startUI.gameObject.SetActive(false);
         }
     }
 }
