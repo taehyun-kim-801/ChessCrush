@@ -38,9 +38,9 @@ namespace ChessCrush.Game
                     networkHelper.connected = false;
             });
 
+            Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
             nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
             directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
-            Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
         }
 
 
