@@ -16,10 +16,10 @@ public class ObjectPool : MonoBehaviour
 
     [SerializeField]
     private List<SerializeInfo> poolSerializeList;
-    private Dictionary<string, List<GameObject>> poolDictionary = new Dictionary<string, List<GameObject>>();
+    protected Dictionary<string, List<GameObject>> poolDictionary = new Dictionary<string, List<GameObject>>();
     public bool isCreated { get; private set; }
 
-    private void Awake()
+    protected void Awake()
     {
         DontDestroyOnLoad(gameObject);
         isCreated = false;
