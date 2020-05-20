@@ -138,45 +138,14 @@ namespace ChessCrush.UI
                 return;
             }
 
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
+            Director.instance.GetSubDirector<BackendDirector>().CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, SetAfterSignUp, str => MessageBoxUI.UseWithComponent(str));
+        }
 
-            Backend.BMember.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (bro.IsSuccess())
-                    {
-                        startSceneDirector.signedIn.Value = true;
-                        signUpField.SetActive(false);
-                        setInfoField.SetActive(true);
-                    }
-                    else
-                    {
-                        switch ((SignUpCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SignUpCode.DuplicatedParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
-                                break;
-                            case SignUpCode.Etc:
-                                MessageBoxUI.UseWithComponent("Failed to sign up");
-                                break;
-                            default:
-                                return;
-                        }
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+        private void SetAfterSignUp()
+        {
+            startSceneDirector.signedIn.Value = true;
+            signUpField.SetActive(false);
+            setInfoField.SetActive(true);
         }
 
         private void SubscribeInfoSetButton() 
