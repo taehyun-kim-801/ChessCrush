@@ -4,6 +4,7 @@ using ChessCrush.UI;
 using System;
 using UniRx;
 using UniRx.Triggers;
+using UnityEngine;
 
 namespace ChessCrush.Game
 {
@@ -99,6 +100,18 @@ namespace ChessCrush.Game
                     success.Dispose();
                 }
             });
+        }
+
+        public void LoginWithBackendToken(Action successCallback, Action<string> failedCallback)
+        {
+            if (PlayerPrefs.HasKey("access_token"))
+            {
+                var bro = Backend.BMember.LoginWithTheBackendToken();
+                if (bro.IsSuccess())
+                    successCallback();
+                else
+                    failedCallback("Failed to log in");
+            }
         }
 
         public void CreateNickname(string nickname, Action successCallback, Action<string> failedCallback)
