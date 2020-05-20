@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ChessCrush.Game
 {
-    public class BackendDirector: SubDirector
+    public class BackendDirector : SubDirector
     {
         private string roomToken;
 
@@ -42,7 +42,7 @@ namespace ChessCrush.Game
                     var saveToken = Backend.BMember.SaveToken(bro);
                     if (saveToken.IsSuccess())
                         successCallback();
-                    else   
+                    else
                     {
                         switch ((SignUpCode)Convert.ToInt32(bro.GetStatusCode()))
                         {
@@ -201,9 +201,9 @@ namespace ChessCrush.Game
                     var saveToken = Backend.BMember.SaveToken(bro);
                     if (saveToken.IsSuccess())
                     {
-                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                        JsonData jsonData = saveToken.GetReturnValuetoJSON();
                         successCallback(jsonData);
-                        
+
                     }
 
                     bro.Clear();
@@ -211,5 +211,60 @@ namespace ChessCrush.Game
                 }
             });
         }
+
+        public void GetSentRequestList(Action<JsonData> successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Social.Friend.GetSentRequestList(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                    {
+                        JsonData jsonData = saveToken.GetReturnValuetoJSON();
+                        successCallback(jsonData);
+                    }
+                }
+
+                bro.Clear();
+                success.Dispose();
+            });
+        }
+
+        public void AcceptFriend(string friendInDate, Action successCallback, Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Social.Friend.AcceptFriend(friendInDate, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                        failedCallback("Failed to accept friend");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            }
+    }
     }
 }

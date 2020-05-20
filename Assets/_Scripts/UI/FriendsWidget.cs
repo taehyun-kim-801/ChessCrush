@@ -39,7 +39,7 @@ namespace ChessCrush.UI
             contentObjectPool = myFriendsScrollContent.GetComponent<ObjectPool>();
             friendList.Value = new List<UserInfo>();
 
-            acceptButton.OnClickAsObservable().Subscribe(_ => SubscribeAcceptButton()).AddTo(gameObject);
+            acceptButton.OnClickAsObservable().Subscribe(_ => backendDirector.AcceptFriend(requestList[0].inDate, SetAfterAcceptFriend, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
             rejectButton.OnClickAsObservable().Subscribe(_ => SubscribeRejectButton()).AddTo(gameObject);
             goToSearchButton.OnClickAsObservable().Subscribe(_ => requestWidget.SetActive(true)).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
@@ -56,8 +56,6 @@ namespace ChessCrush.UI
             backendDirector.GetFriendList(SetAfterGetFriendList);
             backendDirector.GetReceivedRequestList(SetAfterGetReceivedRequestList);
         }
-
-        private void GetFriendList() => backendDirector.GetFriendList(SetAfterGetFriendList);
 
         private void SetAfterGetFriendList(JsonData jsonData)
         {
@@ -118,34 +116,11 @@ namespace ChessCrush.UI
                 requestView.SetActive(false);
         }
 
-        private void SubscribeAcceptButton()
+        private void SetAfterAcceptFriend()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.AcceptFriend(requestList[0].inDate, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        GetFriendList();
-                        requestList.RemoveAt(0);
-                        AppearReceivedRequest();
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Failed to accept friend");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            backendDirector.GetFriendList(SetAfterGetFriendList);
+            requestList.RemoveAt(0);
+            AppearReceivedRequest();
         }
 
         private void SubscribeRejectButton()
