@@ -38,7 +38,7 @@ namespace ChessCrush.Game
                 if (value)
                 {
                     var saveToken = Backend.BMember.SaveToken(bro);
-                    if (bro.IsSuccess())
+                    if (saveToken.IsSuccess())
                         successCallback();
                     else   
                     {
@@ -51,6 +51,46 @@ namespace ChessCrush.Game
                                 failedCallback("Failed to sign up");
                                 break;
                             default:
+                                return;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        public void CustomLogin(string id, string password, Action successCallback, Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.CustomLogin(id, password, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                    {
+                        switch ((SignInCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SignInCode.BadUnauthorizedException:
+                                failedCallback("Failed to sign in: wrong id or password");
+                                break;
+                            case SignInCode.Blocked:
+                                failedCallback("Failed to sign in: blocked user");
+                                break;
+                            case SignInCode.Etc:
+                                failedCallback("Failed to sign in");
                                 return;
                         }
                     }
