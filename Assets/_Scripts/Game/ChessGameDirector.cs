@@ -22,10 +22,21 @@ namespace ChessCrush.Game
         private void OnEnable()
         {
             var cgo = Director.instance.nonUiObjectPool.Use(nameof(ChessGameObjects));
-            chessGameObjects = cgo.GetComponent<ChessGameObjects>();
+            if (ReferenceEquals(chessGameObjects, null))
+                chessGameObjects = cgo.GetComponent<ChessGameObjects>();
+
             var cgUI = MainCanvas.instance.Use(nameof(ChessGameUI));
-            chessGameUI = cgUI.GetComponent<ChessGameUI>();
+            if (ReferenceEquals(chessGameUI, null))
+                chessGameUI = cgUI.GetComponent<ChessGameUI>();
+
             StartCoroutine(CoGamePlay());
+        }
+
+        private void OnDisable()
+        {
+            chessGameObjects.gameObject.SetActive(false);
+            chessGameUI.gameObject.SetActive(false);
+            StopAllCoroutines();
         }
 
         private IEnumerator CoGamePlay()

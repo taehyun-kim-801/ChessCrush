@@ -12,6 +12,7 @@ namespace ChessCrush.Game
         static public Director instance;
         [NonSerialized]
         public ObjectPool nonUiObjectPool;
+        private DirectorsPool directorsPool;
 
         public ReactiveProperty<UserInfo> userInfo = new ReactiveProperty<UserInfo>();
         public string playerName;
@@ -37,8 +38,9 @@ namespace ChessCrush.Game
                     networkHelper.connected = false;
             });
 
-            nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
             Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
+            nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
+            directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
         }
 
 
@@ -48,20 +50,11 @@ namespace ChessCrush.Game
             GetSubDirector<StartSceneDirector>();
         }
 
-        public T GetSubDirector<T>() where T:SubDirector
+        public T GetSubDirector<T>() where T : SubDirector => directorsPool.UseDirector<T>();
+
+        public void DestroySubDirector<T>(T subDirector) where T: SubDirector
         {
-            var director = SubDirectorsSet.Find<T>();
-
-            var parameterType = typeof(T);
-            var resultObj = SubDirectorsSet.directorDictionary[parameterType];
-
-            if(resultObj is null)
-            {
-                resultObj = Instantiate(director.gameObject) as GameObject;
-                SubDirectorsSet.directorDictionary[parameterType] = resultObj;
-            }
-
-            return resultObj.GetComponent<T>();
+            directorsPool.Destroy(subDirector.gameObject);
         }
 
         public void GetUserInfo()
