@@ -60,7 +60,14 @@ namespace ChessCrush.UI
 
         private void SubscribeStartButton()
         {
-            StartCoroutine(CoSubscribeStartButton());
+            if(ReferenceEquals(Director.instance.userInfo.Value.nickname, null))
+            {
+                MessageBoxUI.UseWithComponent("Please write your nickname first");
+                return;
+            }
+
+            loadingWidget.SetActive(true);
+            Backend.Match.RequestMatchMaking(BackEnd.Tcp.MatchType.MMR, BackEnd.Tcp.MatchModeType.OneOnOne);
         }
 
         private IEnumerator CoSubscribeStartButton()
