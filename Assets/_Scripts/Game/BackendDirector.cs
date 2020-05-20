@@ -170,10 +170,40 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    if (bro.IsSuccess())
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
                     {
                         LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
                         successCallback(jsonData);
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        public void GetReceivedRequestList(Action<JsonData> successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Social.Friend.GetReceivedRequestList(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                    {
+                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                        successCallback(jsonData);
+                        
                     }
 
                     bro.Clear();

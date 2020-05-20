@@ -53,8 +53,8 @@ namespace ChessCrush.UI
 
         private void OnEnable()
         {
-            GetFriendList();
-            GetRequestList();
+            backendDirector.GetFriendList(SetAfterGetFriendList);
+            backendDirector.GetReceivedRequestList(SetAfterGetReceivedRequestList);
         }
 
         private void GetFriendList() => backendDirector.GetFriendList(SetAfterGetFriendList);
@@ -77,47 +77,23 @@ namespace ChessCrush.UI
             friendList.Value = newList;
         }
 
-        private void GetRequestList()
+        private void SetAfterGetReceivedRequestList(JsonData jsonData)
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.GetReceivedRequestList(c =>
+            var newList = new List<UserInfo>();
+            if (jsonData["rows"].Count != 0)
             {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
+                for (int i = 0; i < jsonData["rows"].Count; i++)
                 {
-                    if (bro.IsSuccess())
-                    {
-                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                    var userInfo = new UserInfo();
+                    userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                    userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
-                        var newList = new List<UserInfo>();
-                        if (jsonData["rows"].Count != 0)
-                        {
-                            for (int i = 0; i < jsonData["rows"].Count; i++)
-                            {
-                                var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
-
-                                newList.Add(userInfo);
-                            }
-                        }
-
-                        requestList = newList;
-                    }
-
-                    AppearRequest();
-
-                    bro.Clear();
-                    success.Dispose();
+                    newList.Add(userInfo);
                 }
-            });
+            }
+
+            requestList = newList;
+            AppearReceivedRequest();
         }
 
         private void SubscribeFriendList()
@@ -131,7 +107,7 @@ namespace ChessCrush.UI
             }
         }
 
-        private void AppearRequest()
+        private void AppearReceivedRequest()
         {
             if (requestList.Count > 0)
             {
@@ -161,7 +137,7 @@ namespace ChessCrush.UI
                     {
                         GetFriendList();
                         requestList.RemoveAt(0);
-                        AppearRequest();
+                        AppearReceivedRequest();
                     }
                     else
                         MessageBoxUI.UseWithComponent("Failed to accept friend");
@@ -190,7 +166,7 @@ namespace ChessCrush.UI
                     if (bro.IsSuccess())
                     {
                         requestList.RemoveAt(0);
-                        AppearRequest();
+                        AppearReceivedRequest();
                     }
                     else
                         MessageBoxUI.UseWithComponent("Failed to reject friend");
