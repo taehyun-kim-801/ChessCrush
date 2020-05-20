@@ -100,5 +100,45 @@ namespace ChessCrush.Game
                 }
             });
         }
+
+        public void CreateNickname(string nickname, Action successCallback, Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.CreateNickname(nickname, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                    {
+                        switch ((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SetNicknameCode.BadParameterException:
+                                failedCallback("Failed to set nickname: Nickname doesn't fit");
+                                break;
+                            case SetNicknameCode.DuplicatedParameterException:
+                                failedCallback("Failed to set nickname: Duplicated nickname");
+                                break;
+                            case SetNicknameCode.Etc:
+                                failedCallback("Failed to set nickname");
+                                break;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
     }
 }

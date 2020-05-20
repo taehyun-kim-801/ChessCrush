@@ -128,46 +128,14 @@ namespace ChessCrush.UI
                 return;
             }
 
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
+            backendDirector.CreateNickname(nicknameInputField.text, SetAfterInfoSet, str => MessageBoxUI.UseWithComponent(str));
+        }
 
-            Backend.BMember.CreateNickname(nicknameInputField.text, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if(bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.GetUserInfo();
-                        gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        switch((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SetNicknameCode.BadParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname: Nickname doesn't fit");
-                                break;
-                            case SetNicknameCode.DuplicatedParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname: Duplicated nickname");
-                                break;
-                            case SetNicknameCode.Etc:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname");
-                                break;
-                        }
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+        private void SetAfterInfoSet()
+        {
+            MessageBoxUI.UseWithComponent("Success to sign in");
+            Director.instance.GetUserInfo();
+            gameObject.SetActive(false);
         }
     }
 }
