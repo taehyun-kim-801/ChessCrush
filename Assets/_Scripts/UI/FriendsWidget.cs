@@ -1,4 +1,6 @@
 ﻿using BackEnd;
+using ChessCrush.Game;
+using LitJson;
 using System.Collections.Generic;
 using UniRx;
 using UnityEditor.PackageManager.Requests;
@@ -30,6 +32,8 @@ namespace ChessCrush.UI
         private ReactiveProperty<List<UserInfo>> friendList = new ReactiveProperty<List<UserInfo>>();
         private List<UserInfo> requestList = new List<UserInfo>();
 
+        private BackendDirector backendDirector;
+
         private void Awake()
         {
             contentObjectPool = myFriendsScrollContent.GetComponent<ObjectPool>();
@@ -42,52 +46,37 @@ namespace ChessCrush.UI
             friendList.Subscribe(_ => SubscribeFriendList()).AddTo(gameObject);
         }
 
+        private void Start()
+        {
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
+        }
+
         private void OnEnable()
         {
             GetFriendList();
             GetRequestList();
         }
 
-        private void GetFriendList()
+        private void GetFriendList() => backendDirector.GetFriendList(SetAfterGetFriendList);
+
+        private void SetAfterGetFriendList(JsonData jsonData)
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.GetFriendList(c =>
+            var newList = new List<UserInfo>();
+            if (jsonData["rows"].Count != 0)
             {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
+                for (int i = 0; i < jsonData["rows"].Count; i++)
                 {
-                    if (bro.IsSuccess())
-                    {
-                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                    var userInfo = new UserInfo();
+                    userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                    userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
-                        var newList = new List<UserInfo>();
-                        if (jsonData["rows"].Count != 0)
-                        {
-                            for (int i = 0; i < jsonData["rows"].Count; i++)
-                            {
-                                var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
-
-                                newList.Add(userInfo);
-                            }
-                        }
-
-                        friendList.Value = newList;
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
+                    newList.Add(userInfo);
                 }
-            });
+            }
+
+            friendList.Value = newList;
         }
+
         private void GetRequestList()
         {
             var success = new ReactiveProperty<bool>();

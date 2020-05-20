@@ -1,6 +1,7 @@
 ﻿using BackEnd;
 using ChessCrush.OperationResultCode;
 using ChessCrush.UI;
+using LitJson;
 using System;
 using UniRx;
 using UniRx.Triggers;
@@ -146,6 +147,33 @@ namespace ChessCrush.Game
                                 failedCallback("Failed to set nickname");
                                 break;
                         }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        public void GetFriendList(Action<JsonData> successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Social.Friend.GetFriendList(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    if (bro.IsSuccess())
+                    {
+                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                        successCallback(jsonData);
                     }
 
                     bro.Clear();
