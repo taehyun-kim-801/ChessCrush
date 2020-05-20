@@ -266,5 +266,32 @@ namespace ChessCrush.Game
                 }
             }
     }
+
+        public void RejectFriend(string friendInDate,Action successCallback,Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Social.Friend.RejectFriend(friendInDate, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                        failedCallback("Failed to reject friend");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
     }
 }

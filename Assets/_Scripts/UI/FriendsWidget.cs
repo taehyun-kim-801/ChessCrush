@@ -40,7 +40,7 @@ namespace ChessCrush.UI
             friendList.Value = new List<UserInfo>();
 
             acceptButton.OnClickAsObservable().Subscribe(_ => backendDirector.AcceptFriend(requestList[0].inDate, SetAfterAcceptFriend, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
-            rejectButton.OnClickAsObservable().Subscribe(_ => SubscribeRejectButton()).AddTo(gameObject);
+            rejectButton.OnClickAsObservable().Subscribe(_ => backendDirector.RejectFriend(requestList[0].inDate, SetAfterRejectFriend, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
             goToSearchButton.OnClickAsObservable().Subscribe(_ => requestWidget.SetActive(true)).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
             friendList.Subscribe(_ => SubscribeFriendList()).AddTo(gameObject);
@@ -123,33 +123,10 @@ namespace ChessCrush.UI
             AppearReceivedRequest();
         }
 
-        private void SubscribeRejectButton()
+        private void SetAfterRejectFriend()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.RejectFriend(requestList[0].inDate, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        requestList.RemoveAt(0);
-                        AppearReceivedRequest();
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Failed to reject friend");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            requestList.RemoveAt(0);
+            AppearReceivedRequest();
         }
     }
 }
