@@ -155,6 +155,45 @@ namespace ChessCrush.Game
             });
         }
 
+        public void UpdateNickname(string nickname, Action successCallback,Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.UpdateNickname(nickname, c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    if (bro.IsSuccess())
+                        successCallback();
+                    else
+                    {
+                        switch ((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
+                        {
+                            case SetNicknameCode.BadParameterException:
+                                failedCallback("Failed to update nickname: nickname doesn't fit");
+                                break;
+                            case SetNicknameCode.DuplicatedParameterException:
+                                failedCallback("Failed to update nickname: duplicated nickname");
+                                break;
+                            case SetNicknameCode.Etc:
+                                failedCallback("Failed to update nickname");
+                                break;
+                        }
+                    }
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
         public void GetFriendList(Action<JsonData> successCallback)
         {
             var success = new ReactiveProperty<bool>();
