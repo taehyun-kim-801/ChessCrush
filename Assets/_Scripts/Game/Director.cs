@@ -55,10 +55,10 @@ namespace ChessCrush.Game
         private void SetAfterGetUserInfo(JsonData jsonData)
         {
             SetUserInfoUsingJson(jsonData);
-            Backend.Match.JoinMatchMakingServer(out var errorInfo);
+            GetSubDirector<BackendDirector>().JoinMatchMakingServer(str => MessageBoxUI.UseWithComponent(str));
         }
 
-        private void SetUserInfoUsingJson(LitJson.JsonData jsonData)
+        private void SetUserInfoUsingJson(JsonData jsonData)
         {
             var newUserInfo = new UserInfo();
             newUserInfo.nickname = ReferenceEquals(jsonData["nickname"], null) ? null : (string)jsonData["nickname"];
