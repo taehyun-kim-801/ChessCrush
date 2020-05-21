@@ -1,4 +1,5 @@
 ﻿using BackEnd;
+using BackEnd.Tcp;
 using ChessCrush.OperationResultCode;
 using ChessCrush.UI;
 using LitJson;
@@ -18,10 +19,67 @@ namespace ChessCrush.Game
             Backend.Initialize(() =>
             {
                 if (Backend.IsInitialized)
+                {
+                    SetBackendSetting();
                     gameObject.UpdateAsObservable().Subscribe(_ => Backend.Match.poll()).AddTo(gameObject);
+                }
                 else
                     MessageBoxUI.UseWithComponent("Failed to connect to server");
             });
+        }
+
+        private void SetBackendSetting()
+        {
+            string gameRoomToken = "";
+
+            Backend.Match.OnJoinMatchMakingServer += args =>
+            {
+                if (args.ErrInfo != ErrorInfo.Success)
+                    MessageBoxUI.UseWithComponent("Failed to join match making server");
+            };
+            Backend.Match.OnLeaveMatchMakingServer += args =>
+            {
+
+            };
+            Backend.Match.OnMatchMakingResponse += args =>
+            {
+                switch (args.ErrInfo)
+                {
+                    case ErrorCode.Success:
+                        JoinGameServer(args.Address, args.Port, false);
+                        gameRoomToken = args.Token;
+                        break;
+                    case ErrorCode.Match_InvalidMatchType:
+                    case ErrorCode.Match_InvalidModeType:
+                    case ErrorCode.InvalidOperation:
+                        MessageBoxUI.UseWithComponent("Failed to do match making");
+                        break;
+                    default:
+                        return;
+                }
+            };
+            Backend.Match.OnException += args =>
+            {
+                MessageBoxUI.UseWithComponent("Network error");
+                Debug.Log(args.ToString());
+            };
+
+            Backend.Match.OnSessionJoinInServer += args =>
+            {
+                Backend.Match.JoinGameRoom(gameRoomToken);
+            };
+            Backend.Match.OnSessionOnline += args => { };
+            Backend.Match.OnSessionListInServer += args =>
+            {
+
+            };
+            Backend.Match.OnMatchInGameAccess += args => { };
+            Backend.Match.OnMatchInGameStart += () => { };
+            Backend.Match.OnMatchRelay += args => { };
+            Backend.Match.OnMatchChat += args => { };
+            Backend.Match.OnMatchResult += args => { };
+            Backend.Match.OnLeaveInGameServer += args => { };
+            Backend.Match.OnSessionOffline += args => { };
         }
 
         public void CustomSignUp(string id, string password, Action successCallback, Action<string> failedCallback)
@@ -161,7 +219,35 @@ namespace ChessCrush.Game
                     if (saveToken.IsSuccess())
                         successCallback();
                     else
-                        MessageBoxUI.UseWithComponent("Failed to log out");
+                        failedCallback("Failed to log out");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        public void GetUserInfo(Action<JsonData> successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.GetUserInfo(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.Subscribe(value =>
+            {
+                if (value)
+                {
+                    //var saveToken = Backend.BMember.SaveToken(bro);
+                    if (bro.IsSuccess())
+                    {
+                        var infoJson = bro.GetReturnValuetoJSON()["row"];
+                        successCallback(infoJson);
+                    }
 
                     bro.Clear();
                     success.Dispose();
@@ -264,8 +350,7 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (saveToken.IsSuccess())
+                    if (bro.IsSuccess())
                     {
                         LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
                         successCallback(jsonData);
@@ -292,10 +377,9 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (saveToken.IsSuccess())
+                    if (bro.IsSuccess())
                     {
-                        JsonData jsonData = saveToken.GetReturnValuetoJSON();
+                        JsonData jsonData = bro.GetReturnValuetoJSON();
                         successCallback(jsonData);
 
                     }
@@ -387,5 +471,31 @@ namespace ChessCrush.Game
                 }
             });
         }
+
+        public void JoinMatchMakingServer(Action<string> failedCallback)
+        {
+            if (!Backend.Match.JoinMatchMakingServer(out var errorInfo))
+                failedCallback("Failed to join match making server");
+        }
+
+        public void LeaveMatchMakingServer() => Backend.Match.LeaveMatchMakingServer();
+
+        public void RequestMatchMaking(Action successCallback)
+        {
+            Backend.Match.RequestMatchMaking(MatchType.MMR, MatchModeType.OneOnOne);
+            Backend.Match.OnMatchInGameStart += () => successCallback();
+        }
+
+        public void CancelMatchMaking() => Backend.Match.CancelMatchMaking();
+
+        public void JoinGameServer(string serverAddr, ushort serverPort, bool isReconnect)
+        {
+            if (!Backend.Match.JoinGameServer(serverAddr, serverPort, isReconnect, out var errorInfo))
+                MessageBoxUI.UseWithComponent("Failed to join game server");
+        }
+
+        public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
+
+        public void SendDataToInGameRoom(byte[] data) => Backend.Match.SendDataToInGameRoom(data);
     }
 }

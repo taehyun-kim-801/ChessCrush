@@ -1,5 +1,6 @@
 ﻿using ChessCrush.Game;
 using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -51,10 +52,15 @@ namespace ChessCrush.UI
 
         private void OnEnable()
         {
+            StartCoroutine(CoEnable());
+        }
+
+        private IEnumerator CoEnable()
+        {
+            yield return new WaitUntil(() => !ReferenceEquals(backendDirector, null));
             backendDirector.GetFriendList(SetAfterGetFriendList);
             backendDirector.GetReceivedRequestList(SetAfterGetReceivedRequestList);
         }
-
         private void SetAfterGetFriendList(JsonData jsonData)
         {
             var newList = new List<UserInfo>();
