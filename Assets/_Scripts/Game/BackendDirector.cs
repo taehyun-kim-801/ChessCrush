@@ -264,7 +264,7 @@ namespace ChessCrush.Game
                     bro.Clear();
                     success.Dispose();
                 }
-            }
+            });
     }
 
         public void RejectFriend(string friendInDate,Action successCallback,Action<string> failedCallback)

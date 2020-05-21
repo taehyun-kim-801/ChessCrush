@@ -1,7 +1,4 @@
-﻿using BackEnd;
-using ChessCrush.Game;
-using ChessCrush.OperationResultCode;
-using System;
+﻿using ChessCrush.Game;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;

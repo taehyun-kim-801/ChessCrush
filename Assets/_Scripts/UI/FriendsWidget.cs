@@ -1,9 +1,7 @@
-﻿using BackEnd;
-using ChessCrush.Game;
+﻿using ChessCrush.Game;
 using LitJson;
 using System.Collections.Generic;
 using UniRx;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 
