@@ -30,7 +30,7 @@ namespace ChessCrush.UI
 
             nameChangeButton.OnClickAsObservable().Subscribe(_ => backendDirector.UpdateNickname(nameInputField.text, SetAfterUpdateNickname, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
-            signOutButton.OnClickAsObservable().Subscribe(_ => SubscribeSignOutButton()).AddTo(gameObject);
+            signOutButton.OnClickAsObservable().Subscribe(_ => backendDirector.SignOut(SetAfterSignOut,str=>MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
             logOutButton.OnClickAsObservable().Subscribe(_ => SubscribeLogOutButton()).AddTo(gameObject);
         }
 
@@ -46,36 +46,13 @@ namespace ChessCrush.UI
             Director.instance.GetUserInfo();
         }
 
-        private void SubscribeSignOutButton()
+        private void SetAfterSignOut()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.BMember.SignOut(c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to sign out");
-                        PlayerPrefs.DeleteKey("access_token");
-                        PlayerPrefs.DeleteKey("refresh_token");
-                        startSceneDirector.signedIn.Value = false;
-                        gameObject.SetActive(false);
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Faield to sign out");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            MessageBoxUI.UseWithComponent("Success to sign out");
+            PlayerPrefs.DeleteKey("access_token");
+            PlayerPrefs.DeleteKey("refresh_token");
+            startSceneDirector.signedIn.Value = false;
+            gameObject.SetActive(false);
         }
 
         private void SubscribeLogOutButton()

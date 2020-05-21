@@ -115,6 +115,33 @@ namespace ChessCrush.Game
             }
         }
 
+        public void SignOut(Action successCallback, Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.SignOut(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                        failedCallback("Failed to sign out");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
         public void CreateNickname(string nickname, Action successCallback, Action<string> failedCallback)
         {
             var success = new ReactiveProperty<bool>();
@@ -170,7 +197,8 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    if (bro.IsSuccess())
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
                         successCallback();
                     else
                     {
