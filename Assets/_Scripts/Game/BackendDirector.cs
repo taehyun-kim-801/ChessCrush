@@ -479,5 +479,11 @@ namespace ChessCrush.Game
             if (!Backend.Match.JoinMatchMakingServer(out var errorInfo))
                 failedCallback("Failed to join match making server");
         }
+
+        public void LeaveMatchMakingServer() => Backend.Match.LeaveMatchMakingServer();
+
+        public void RequestMatchMaking() => Backend.Match.RequestMatchMaking(MatchType.MMR, MatchModeType.OneOnOne);
+
+        public void CancelMatchMaking() => Backend.Match.CancelMatchMaking();
     }
 }
