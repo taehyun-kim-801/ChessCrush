@@ -219,7 +219,35 @@ namespace ChessCrush.Game
                     if (saveToken.IsSuccess())
                         successCallback();
                     else
-                        MessageBoxUI.UseWithComponent("Failed to log out");
+                        failedCallback("Failed to log out");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
+        public void GetUserInfo(Action<JsonData> successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.GetUserInfo(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                    {
+                        var infoJson = bro.GetReturnValuetoJSON()["row"];
+                        successCallback(infoJson);
+                    }
 
                     bro.Clear();
                     success.Dispose();

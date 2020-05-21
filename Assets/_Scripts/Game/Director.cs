@@ -4,6 +4,7 @@ using UnityEngine;
 using BackEnd;
 using System;
 using UniRx;
+using LitJson;
 
 namespace ChessCrush.Game
 {
@@ -49,32 +50,12 @@ namespace ChessCrush.Game
             directorsPool.Destroy(subDirector.gameObject);
         }
 
-        public void GetUserInfo()
+        public void GetUserInfo() => GetSubDirector<BackendDirector>().GetUserInfo(SetAfterGetUserInfo);
+
+        private void SetAfterGetUserInfo(JsonData jsonData)
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.BMember.GetUserInfo(c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        var infoJson = bro.GetReturnValuetoJSON()["row"];
-                        SetUserInfoUsingJson(infoJson);
-                        Backend.Match.JoinMatchMakingServer(out var errorInfo);
-                    }
-                   
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            SetUserInfoUsingJson(jsonData);
+            Backend.Match.JoinMatchMakingServer(out var errorInfo);
         }
 
         private void SetUserInfoUsingJson(LitJson.JsonData jsonData)
