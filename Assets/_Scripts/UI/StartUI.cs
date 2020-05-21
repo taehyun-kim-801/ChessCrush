@@ -1,7 +1,4 @@
-﻿using BackEnd;
-using ChessCrush.Game;
-using System.Collections;
-using System.Threading.Tasks;
+﻿using ChessCrush.Game;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,29 +59,14 @@ namespace ChessCrush.UI
             }
 
             loadingWidget.SetActive(true);
-            Backend.Match.RequestMatchMaking(BackEnd.Tcp.MatchType.MMR, BackEnd.Tcp.MatchModeType.OneOnOne);
+            backendDirector.RequestMatchMaking(SetAfterRequestMatchMaking);
         }
 
-        private IEnumerator CoSubscribeStartButton()
+        private void SetAfterRequestMatchMaking()
         {
-            var networkHelper = Director.instance.networkHelper;
-            if (!networkHelper.socketConnected)
-            {
-                Debug.Log("Socket isn't connected");
-                yield break;
-            }
-
-            loadingWidget.SetActive(true);
-            var result = Task.Run(() => networkHelper.ParticipateGame());
-            yield return new WaitUntil(() => result.IsCompleted);
-
-            if (result.Result != -1)
-            {
-                Director.instance.GetSubDirector<ChessGameDirector>();
-                gameObject.SetActive(false);
-            }
-            else
-                MessageBoxUI.UseWithComponent("Failed to participating game");
+            loadingWidget.SetActive(false);
+            Director.instance.GetSubDirector<ChessGameDirector>();
+            Director.instance.DestroySubDirector(startSceneDirector);
         }
 
         private void SubscribeOptionsButton()

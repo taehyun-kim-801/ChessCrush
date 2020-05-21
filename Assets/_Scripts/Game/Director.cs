@@ -19,6 +19,8 @@ namespace ChessCrush.Game
         public string playerName;
         public NetworkHelper networkHelper;
 
+        private BackendDirector backendDirector;
+
         private void Awake()
         {
             if(instance)
@@ -39,7 +41,7 @@ namespace ChessCrush.Game
         private IEnumerator Start()
         {
             yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated && Backend.IsInitialized);
-            GetSubDirector<BackendDirector>();
+            backendDirector = GetSubDirector<BackendDirector>();
             GetSubDirector<StartSceneDirector>();
         }
         
@@ -50,12 +52,12 @@ namespace ChessCrush.Game
             directorsPool.Destroy(subDirector.gameObject);
         }
 
-        public void GetUserInfo() => GetSubDirector<BackendDirector>().GetUserInfo(SetAfterGetUserInfo);
+        public void GetUserInfo() => backendDirector.GetUserInfo(SetAfterGetUserInfo);
 
         private void SetAfterGetUserInfo(JsonData jsonData)
         {
             SetUserInfoUsingJson(jsonData);
-            GetSubDirector<BackendDirector>().JoinMatchMakingServer(str => MessageBoxUI.UseWithComponent(str));
+            backendDirector.JoinMatchMakingServer(str => MessageBoxUI.UseWithComponent(str));
         }
 
         private void SetUserInfoUsingJson(JsonData jsonData)

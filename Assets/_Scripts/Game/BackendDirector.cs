@@ -46,7 +46,7 @@ namespace ChessCrush.Game
                 switch (args.ErrInfo)
                 {
                     case ErrorCode.Success:
-                        Backend.Match.JoinGameServer(args.Address, args.Port, false, out var errorInfo);
+                        JoinGameServer(args.Address, args.Port, false);
                         gameRoomToken = args.Token;
                         break;
                     case ErrorCode.Match_InvalidMatchType:
@@ -242,8 +242,8 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (saveToken.IsSuccess())
+                    //var saveToken = Backend.BMember.SaveToken(bro);
+                    if (bro.IsSuccess())
                     {
                         var infoJson = bro.GetReturnValuetoJSON()["row"];
                         successCallback(infoJson);
@@ -350,8 +350,7 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (saveToken.IsSuccess())
+                    if (bro.IsSuccess())
                     {
                         LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
                         successCallback(jsonData);
@@ -378,10 +377,9 @@ namespace ChessCrush.Game
             {
                 if (value)
                 {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (saveToken.IsSuccess())
+                    if (bro.IsSuccess())
                     {
-                        JsonData jsonData = saveToken.GetReturnValuetoJSON();
+                        JsonData jsonData = bro.GetReturnValuetoJSON();
                         successCallback(jsonData);
 
                     }
@@ -482,8 +480,22 @@ namespace ChessCrush.Game
 
         public void LeaveMatchMakingServer() => Backend.Match.LeaveMatchMakingServer();
 
-        public void RequestMatchMaking() => Backend.Match.RequestMatchMaking(MatchType.MMR, MatchModeType.OneOnOne);
+        public void RequestMatchMaking(Action successCallback)
+        {
+            Backend.Match.RequestMatchMaking(MatchType.MMR, MatchModeType.OneOnOne);
+            Backend.Match.OnMatchInGameStart += () => successCallback();
+        }
 
         public void CancelMatchMaking() => Backend.Match.CancelMatchMaking();
+
+        public void JoinGameServer(string serverAddr, ushort serverPort, bool isReconnect)
+        {
+            if (!Backend.Match.JoinGameServer(serverAddr, serverPort, isReconnect, out var errorInfo))
+                MessageBoxUI.UseWithComponent("Failed to join game server");
+        }
+
+        public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
+
+        public void SendDataToInGameRoom(byte[] data) => Backend.Match.SendDataToInGameRoom(data);
     }
 }
