@@ -1,7 +1,4 @@
-﻿using BackEnd;
-using ChessCrush.Game;
-using ChessCrush.OperationResultCode;
-using System;
+﻿using ChessCrush.Game;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,129 +19,44 @@ namespace ChessCrush.UI
         private Button logOutButton;
 
         private StartSceneDirector startSceneDirector;
+        private BackendDirector backendDirector;
 
         private void Awake()
         {
             Director.instance.userInfo.Subscribe(info => nameInputField.text = info.nickname).AddTo(Director.instance);
 
-            nameChangeButton.OnClickAsObservable().Subscribe(_ => SubscribeNameChangeButton()).AddTo(gameObject);
-            exitButton.OnClickAsObservable().Subscribe(_ => SubscribeExitButton()).AddTo(gameObject);
-            signOutButton.OnClickAsObservable().Subscribe(_ => SubscribeSignOutButton()).AddTo(gameObject);
-            logOutButton.OnClickAsObservable().Subscribe(_ => SubscribeLogOutButton()).AddTo(gameObject);
+            nameChangeButton.OnClickAsObservable().Subscribe(_ => backendDirector.UpdateNickname(nameInputField.text, SetAfterUpdateNickname, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
+            exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
+            signOutButton.OnClickAsObservable().Subscribe(_ => backendDirector.SignOut(SetAfterSignOut,str=>MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
+            logOutButton.OnClickAsObservable().Subscribe(_ => backendDirector.LogOut(SetAfterLogOut, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
         }
 
         private void Start()
         {
             startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
         }
 
-        private void SubscribeNameChangeButton()
+        private void SetAfterUpdateNickname()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.BMember.UpdateNickname(nameInputField.text, c=>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to update nickname");
-                        Director.instance.GetUserInfo();
-                    }
-                    else
-                    {
-                        switch ((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SetNicknameCode.BadParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to update nickname: nickname doesn't fit");
-                                break;
-                            case SetNicknameCode.DuplicatedParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to update nickname: duplicated nickname");
-                                break;
-                            case SetNicknameCode.Etc:
-                                MessageBoxUI.UseWithComponent("Failed to update nickname");
-                                break;
-                        }
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            MessageBoxUI.UseWithComponent("Success to update nickname");
+            Director.instance.GetUserInfo();
         }
 
-        private void SubscribeExitButton()
+        private void SetAfterSignOut()
         {
+            MessageBoxUI.UseWithComponent("Success to sign out");
+            PlayerPrefs.DeleteKey("access_token");
+            PlayerPrefs.DeleteKey("refresh_token");
+            startSceneDirector.signedIn.Value = false;
             gameObject.SetActive(false);
         }
 
-        private void SubscribeSignOutButton()
+        private void SetAfterLogOut()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.BMember.SignOut(c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to sign out");
-                        PlayerPrefs.DeleteKey("access_token");
-                        PlayerPrefs.DeleteKey("refresh_token");
-                        startSceneDirector.signedIn.Value = false;
-                        gameObject.SetActive(false);
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Faield to sign out");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
-        }
-
-        private void SubscribeLogOutButton()
-        {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.BMember.Logout(c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to log out");
-                        startSceneDirector.signedIn.Value = false;
-                        gameObject.SetActive(false);
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Faield to log out");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            MessageBoxUI.UseWithComponent("Success to log out");
+            startSceneDirector.signedIn.Value = false;
+            gameObject.SetActive(false);
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using BackEnd;
-using ChessCrush.Game;
-using ChessCrush.OperationResultCode;
-using System;
-using System.Collections;
-using System.Threading.Tasks;
+﻿using ChessCrush.Game;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +39,7 @@ namespace ChessCrush.UI
         private Button exitButton;
 
         private StartSceneDirector startSceneDirector;
+        private BackendDirector backendDirector;
 
         private void Awake()
         {
@@ -57,6 +53,7 @@ namespace ChessCrush.UI
         private void Start()
         {
             startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
         }
 
         private void OnEnable()
@@ -79,42 +76,14 @@ namespace ChessCrush.UI
                 return;
             }
 
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
+            backendDirector.CustomLogin(signInIDInputField.text, signInPWInputField.text, SetAfterSignIn, str => MessageBoxUI.UseWithComponent(str));
+        }
 
-            Backend.BMember.CustomLogin(signInIDInputField.text, signInPWInputField.text, c =>
-              {
-                  bro = c;
-                  success.Value = true;
-              });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if(value)
-                {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if(bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to sign in");
-                        startSceneDirector.signedIn.Value = true;
-                        gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        switch((SignInCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SignInCode.BadUnauthorizedException:
-                                MessageBoxUI.UseWithComponent("Failed to sign in: wrong id or password");
-                                break;
-                            case SignInCode.Blocked:
-                                MessageBoxUI.UseWithComponent("Failed to sign in: blocked user");
-                                break;
-                            case SignInCode.Etc:
-                                return;
-                        }
-                    }
-                }
-            });
+        private void SetAfterSignIn()
+        {
+            MessageBoxUI.UseWithComponent("Success to sign in");
+            startSceneDirector.signedIn.Value = true;
+            gameObject.SetActive(false);
         }
 
         private void SubscribeSignInSignUpButton()
@@ -138,45 +107,14 @@ namespace ChessCrush.UI
                 return;
             }
 
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
+            backendDirector.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, SetAfterSignUp, str => MessageBoxUI.UseWithComponent(str));
+        }
 
-            Backend.BMember.CustomSignUp(signUpIDInputField.text, signUpPWInputField.text, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if (bro.IsSuccess())
-                    {
-                        startSceneDirector.signedIn.Value = true;
-                        signUpField.SetActive(false);
-                        setInfoField.SetActive(true);
-                    }
-                    else
-                    {
-                        switch ((SignUpCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SignUpCode.DuplicatedParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to sign up: Duplicated id");
-                                break;
-                            case SignUpCode.Etc:
-                                MessageBoxUI.UseWithComponent("Failed to sign up");
-                                break;
-                            default:
-                                return;
-                        }
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+        private void SetAfterSignUp()
+        {
+            startSceneDirector.signedIn.Value = true;
+            signUpField.SetActive(false);
+            setInfoField.SetActive(true);
         }
 
         private void SubscribeInfoSetButton() 
@@ -187,46 +125,14 @@ namespace ChessCrush.UI
                 return;
             }
 
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
+            backendDirector.CreateNickname(nicknameInputField.text, SetAfterInfoSet, str => MessageBoxUI.UseWithComponent(str));
+        }
 
-            Backend.BMember.CreateNickname(nicknameInputField.text, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    var saveToken = Backend.BMember.SaveToken(bro);
-                    if(bro.IsSuccess())
-                    {
-                        MessageBoxUI.UseWithComponent("Success to sign in");
-                        Director.instance.GetUserInfo();
-                        gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        switch((SetNicknameCode)Convert.ToInt32(bro.GetStatusCode()))
-                        {
-                            case SetNicknameCode.BadParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname: Nickname doesn't fit");
-                                break;
-                            case SetNicknameCode.DuplicatedParameterException:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname: Duplicated nickname");
-                                break;
-                            case SetNicknameCode.Etc:
-                                MessageBoxUI.UseWithComponent("Failed to set nickname");
-                                break;
-                        }
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+        private void SetAfterInfoSet()
+        {
+            MessageBoxUI.UseWithComponent("Success to sign in");
+            Director.instance.GetUserInfo();
+            gameObject.SetActive(false);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace ChessCrush.UI
         private GameObject friendsWidget;
 
         private StartSceneDirector startSceneDirector;
+        private BackendDirector backendDirector;
 
         private void Awake()
         {
@@ -45,17 +46,11 @@ namespace ChessCrush.UI
         private void Start()
         {
             startSceneDirector = Director.instance.GetSubDirector<StartSceneDirector>();
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
+
             startSceneDirector.signedIn.Subscribe(_ => SubscribeSignedIn(_)).AddTo(startSceneDirector);
 
-            if (PlayerPrefs.HasKey("access_token"))
-            {
-                var value = PlayerPrefs.GetString("access_token");
-                var bro = Backend.BMember.LoginWithTheBackendToken();
-                if (bro.IsSuccess())
-                    startSceneDirector.signedIn.Value = true;
-                else
-                    MessageBoxUI.UseWithComponent("Failed to login");
-            }
+            backendDirector.LoginWithBackendToken(() => startSceneDirector.signedIn.Value = true, str => MessageBoxUI.UseWithComponent(str));
         }
 
         private void SubscribeStartButton()

@@ -1,7 +1,7 @@
-﻿using BackEnd;
+﻿using ChessCrush.Game;
+using LitJson;
 using System.Collections.Generic;
 using UniRx;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,105 +30,66 @@ namespace ChessCrush.UI
         private ReactiveProperty<List<UserInfo>> friendList = new ReactiveProperty<List<UserInfo>>();
         private List<UserInfo> requestList = new List<UserInfo>();
 
+        private BackendDirector backendDirector;
+
         private void Awake()
         {
             contentObjectPool = myFriendsScrollContent.GetComponent<ObjectPool>();
             friendList.Value = new List<UserInfo>();
 
-            acceptButton.OnClickAsObservable().Subscribe(_ => SubscribeAcceptButton()).AddTo(gameObject);
-            rejectButton.OnClickAsObservable().Subscribe(_ => SubscribeRejectButton()).AddTo(gameObject);
+            acceptButton.OnClickAsObservable().Subscribe(_ => backendDirector.AcceptFriend(requestList[0].inDate, SetAfterAcceptFriend, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
+            rejectButton.OnClickAsObservable().Subscribe(_ => backendDirector.RejectFriend(requestList[0].inDate, SetAfterRejectFriend, str => MessageBoxUI.UseWithComponent(str))).AddTo(gameObject);
             goToSearchButton.OnClickAsObservable().Subscribe(_ => requestWidget.SetActive(true)).AddTo(gameObject);
             exitButton.OnClickAsObservable().Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
             friendList.Subscribe(_ => SubscribeFriendList()).AddTo(gameObject);
         }
 
+        private void Start()
+        {
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
+        }
+
         private void OnEnable()
         {
-            GetFriendList();
-            GetRequestList();
+            backendDirector.GetFriendList(SetAfterGetFriendList);
+            backendDirector.GetReceivedRequestList(SetAfterGetReceivedRequestList);
         }
 
-        private void GetFriendList()
+        private void SetAfterGetFriendList(JsonData jsonData)
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.GetFriendList(c =>
+            var newList = new List<UserInfo>();
+            if (jsonData["rows"].Count != 0)
             {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
+                for (int i = 0; i < jsonData["rows"].Count; i++)
                 {
-                    if (bro.IsSuccess())
-                    {
-                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                    var userInfo = new UserInfo();
+                    userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                    userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
-                        var newList = new List<UserInfo>();
-                        if (jsonData["rows"].Count != 0)
-                        {
-                            for (int i = 0; i < jsonData["rows"].Count; i++)
-                            {
-                                var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
-
-                                newList.Add(userInfo);
-                            }
-                        }
-
-                        friendList.Value = newList;
-                    }
-
-                    bro.Clear();
-                    success.Dispose();
+                    newList.Add(userInfo);
                 }
-            });
+            }
+
+            friendList.Value = newList;
         }
-        private void GetRequestList()
+
+        private void SetAfterGetReceivedRequestList(JsonData jsonData)
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.GetReceivedRequestList(c =>
+            var newList = new List<UserInfo>();
+            if (jsonData["rows"].Count != 0)
             {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
+                for (int i = 0; i < jsonData["rows"].Count; i++)
                 {
-                    if (bro.IsSuccess())
-                    {
-                        LitJson.JsonData jsonData = bro.GetReturnValuetoJSON();
+                    var userInfo = new UserInfo();
+                    userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
+                    userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
 
-                        var newList = new List<UserInfo>();
-                        if (jsonData["rows"].Count != 0)
-                        {
-                            for (int i = 0; i < jsonData["rows"].Count; i++)
-                            {
-                                var userInfo = new UserInfo();
-                                userInfo.nickname = (string)jsonData["rows"][i]["nickname"]["S"];
-                                userInfo.inDate = (string)jsonData["rows"][i]["inDate"]["S"];
-
-                                newList.Add(userInfo);
-                            }
-                        }
-
-                        requestList = newList;
-                    }
-
-                    AppearRequest();
-
-                    bro.Clear();
-                    success.Dispose();
+                    newList.Add(userInfo);
                 }
-            });
+            }
+
+            requestList = newList;
+            AppearReceivedRequest();
         }
 
         private void SubscribeFriendList()
@@ -142,7 +103,7 @@ namespace ChessCrush.UI
             }
         }
 
-        private void AppearRequest()
+        private void AppearReceivedRequest()
         {
             if (requestList.Count > 0)
             {
@@ -153,63 +114,17 @@ namespace ChessCrush.UI
                 requestView.SetActive(false);
         }
 
-        private void SubscribeAcceptButton()
+        private void SetAfterAcceptFriend()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.AcceptFriend(requestList[0].inDate, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        GetFriendList();
-                        requestList.RemoveAt(0);
-                        AppearRequest();
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Failed to accept friend");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            backendDirector.GetFriendList(SetAfterGetFriendList);
+            requestList.RemoveAt(0);
+            AppearReceivedRequest();
         }
 
-        private void SubscribeRejectButton()
+        private void SetAfterRejectFriend()
         {
-            var success = new ReactiveProperty<bool>();
-            var bro = new BackendReturnObject();
-
-            Backend.Social.Friend.RejectFriend(requestList[0].inDate, c =>
-            {
-                bro = c;
-                success.Value = true;
-            });
-
-            success.ObserveOnMainThread().Subscribe(value =>
-            {
-                if (value)
-                {
-                    if (bro.IsSuccess())
-                    {
-                        requestList.RemoveAt(0);
-                        AppearRequest();
-                    }
-                    else
-                        MessageBoxUI.UseWithComponent("Failed to reject friend");
-
-                    bro.Clear();
-                    success.Dispose();
-                }
-            });
+            requestList.RemoveAt(0);
+            AppearReceivedRequest();
         }
     }
 }

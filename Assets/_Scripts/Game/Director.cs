@@ -4,7 +4,6 @@ using UnityEngine;
 using BackEnd;
 using System;
 using UniRx;
-using UniRx.Triggers;
 using BackEnd.Tcp;
 
 namespace ChessCrush.Game
@@ -32,23 +31,6 @@ namespace ChessCrush.Game
 
             networkHelper = new NetworkHelper();
 
-            Backend.Initialize(() =>
-            {
-                if (Backend.IsInitialized)
-                {
-                    SetBackendSetting();
-
-                    gameObject.UpdateAsObservable().Subscribe(_ =>
-                    {
-                        Backend.Match.poll();
-                    }).AddTo(gameObject);
-
-                    networkHelper.connected = true;
-                }
-                else
-                    networkHelper.connected = false;
-            });
-
             Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
             nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
             directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
@@ -57,6 +39,7 @@ namespace ChessCrush.Game
         private IEnumerator Start()
         {
             yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated && Backend.IsInitialized);
+            GetSubDirector<BackendDirector>();
             GetSubDirector<StartSceneDirector>();
         }
 
