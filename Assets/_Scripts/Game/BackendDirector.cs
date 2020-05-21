@@ -142,6 +142,33 @@ namespace ChessCrush.Game
             });
         }
 
+        public void LogOut(Action successCallback, Action<string> failedCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.BMember.Logout(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Subscribe(value =>
+            {
+                if (value)
+                {
+                    var saveToken = Backend.BMember.SaveToken(bro);
+                    if (saveToken.IsSuccess())
+                        successCallback();
+                    else
+                        MessageBoxUI.UseWithComponent("Failed to log out");
+
+                    bro.Clear();
+                    success.Dispose();
+                }
+            });
+        }
+
         public void CreateNickname(string nickname, Action successCallback, Action<string> failedCallback)
         {
             var success = new ReactiveProperty<bool>();
