@@ -17,7 +17,6 @@ namespace ChessCrush.Game
 
         public ReactiveProperty<UserInfo> userInfo = new ReactiveProperty<UserInfo>();
         public string playerName;
-        public NetworkHelper networkHelper;
 
         private BackendDirector backendDirector;
 
@@ -30,8 +29,6 @@ namespace ChessCrush.Game
 
             DontDestroyOnLoad(gameObject);
             instance = this;
-
-            networkHelper = new NetworkHelper();
 
             Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
             nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();

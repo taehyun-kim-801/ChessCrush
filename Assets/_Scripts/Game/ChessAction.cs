@@ -1,6 +1,6 @@
 ﻿namespace ChessCrush.Game
 {
-    public class ChessAction: ITransmittable
+    public class ChessAction
     {
         public int pieceId;
         public PieceType pieceType;
