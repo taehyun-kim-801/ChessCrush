@@ -14,9 +14,8 @@ namespace ChessCrush.Game
     public class BackendDirector : SubDirector
     {
         private string roomToken;
-        public List<SessionId> sessionIdList { get; private set; }
+        public List<SessionId> SessionIdList { get; private set; }
         public bool IsHost { get; private set; }
-        private SessionId hostSession;
 
         private void Awake()
         {
@@ -24,7 +23,7 @@ namespace ChessCrush.Game
             {
                 if (Backend.IsInitialized)
                 {
-                    SetBackendSetting();
+                    SetHandler();
                     gameObject.UpdateAsObservable().Subscribe(_ => Backend.Match.poll()).AddTo(gameObject);
                 }
                 else
@@ -32,7 +31,7 @@ namespace ChessCrush.Game
             });
         }
 
-        private void SetBackendSetting()
+        private void SetHandler()
         {
             string gameRoomToken = "";
 
@@ -41,10 +40,7 @@ namespace ChessCrush.Game
                 if (args.ErrInfo != ErrorInfo.Success)
                     MessageBoxUI.UseWithComponent("Failed to join match making server");
             };
-            Backend.Match.OnLeaveMatchMakingServer += args =>
-            {
 
-            };
             Backend.Match.OnMatchMakingResponse += args =>
             {
                 switch (args.ErrInfo)
@@ -62,6 +58,7 @@ namespace ChessCrush.Game
                         return;
                 }
             };
+
             Backend.Match.OnException += args =>
             {
                 MessageBoxUI.UseWithComponent("Network error");
@@ -72,12 +69,25 @@ namespace ChessCrush.Game
             {
                 Backend.Match.JoinGameRoom(gameRoomToken);
             };
-            Backend.Match.OnSessionOnline += args => { };
+
             Backend.Match.OnSessionListInServer += args =>
             {
-
+                SessionIdList = new List<SessionId>();
+                foreach (var session in args.SessionList)
+                    SessionIdList.Add(session.SessionId);
+                SessionIdList.Sort();
             };
-            Backend.Match.OnMatchInGameAccess += args => { };
+
+            Backend.Match.OnMatchInGameAccess += args => 
+            {
+                foreach(var record in args.GameRecords)
+                {
+                    if (SessionIdList.Contains(record.m_sessionId))
+                        continue;
+
+                    SessionIdList.Add(record.m_sessionId);
+                }
+            };
             Backend.Match.OnMatchInGameStart += () => { };
             Backend.Match.OnMatchRelay += args => { };
             Backend.Match.OnMatchChat += args => { };
@@ -502,13 +512,12 @@ namespace ChessCrush.Game
 
         public bool TrySetHostSession()
         {
-            if (sessionIdList.Count != 2)
+            if (SessionIdList.Count != 2)
                 return false;
 
-            sessionIdList.Sort();
+            SessionIdList.Sort();
 
-            IsHost = IsMySessionId(sessionIdList[0]);
-            hostSession = sessionIdList[0];
+            IsHost = IsMySessionId(SessionIdList[0]);
 
             Backend.Match.LeaveMatchMakingServer();
             return true;
