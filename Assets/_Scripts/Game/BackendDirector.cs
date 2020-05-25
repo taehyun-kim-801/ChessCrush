@@ -4,6 +4,7 @@ using ChessCrush.OperationResultCode;
 using ChessCrush.UI;
 using LitJson;
 using System;
+using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace ChessCrush.Game
     public class BackendDirector : SubDirector
     {
         private string roomToken;
+        public List<SessionId> sessionIdList { get; private set; }
+        public bool IsHost { get; private set; }
+        private SessionId hostSession;
 
         private void Awake()
         {
@@ -492,6 +496,22 @@ namespace ChessCrush.Game
         {
             if (!Backend.Match.JoinGameServer(serverAddr, serverPort, isReconnect, out var errorInfo))
                 MessageBoxUI.UseWithComponent("Failed to join game server");
+        }
+
+        public bool IsMySessionId(SessionId session) => Backend.Match.GetMySessionId() == session;
+
+        public bool TrySetHostSession()
+        {
+            if (sessionIdList.Count != 2)
+                return false;
+
+            sessionIdList.Sort();
+
+            IsHost = IsMySessionId(sessionIdList[0]);
+            hostSession = sessionIdList[0];
+
+            Backend.Match.LeaveMatchMakingServer();
+            return true;
         }
 
         public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
