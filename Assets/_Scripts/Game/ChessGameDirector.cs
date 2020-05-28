@@ -41,19 +41,12 @@ namespace ChessCrush.Game
 
         private IEnumerator CoGamePlay()
         {
-            yield return StartCoroutine(CoSetAttackPlayer());
+            yield return new WaitWhile(() => player is null || enemyPlayer is null);
             while (true)
             {
                 yield return StartCoroutine(CoInput());
                 yield return StartCoroutine(CoSimulate());
             }
-        }
-
-        private IEnumerator CoSetAttackPlayer()
-        {
-            yield return null;
-            player = new Player(Director.instance.playerName, true, true);
-            enemyPlayer = new Player();
         }
 
         private IEnumerator CoInput()
@@ -65,6 +58,12 @@ namespace ChessCrush.Game
         private IEnumerator CoSimulate()
         {
             yield return null;
+        }
+
+        public void SetPlayer(bool isWhite, string enemyName)
+        {
+            player = new Player(Director.instance.playerName, isWhite, true);
+            enemyPlayer = new Player(enemyName, !isWhite, false);
         }
     }
 }

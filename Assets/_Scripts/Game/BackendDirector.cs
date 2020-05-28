@@ -16,6 +16,10 @@ namespace ChessCrush.Game
         private string roomToken;
         public List<SessionId> SessionIdList { get; private set; }
         public bool IsHost { get; private set; }
+        private bool roomJoined;
+        private bool inGameReady;
+
+        private ChessGameDirector chessGameDirector;
 
         private void Awake()
         {
@@ -62,12 +66,16 @@ namespace ChessCrush.Game
             Backend.Match.OnException += args =>
             {
                 MessageBoxUI.UseWithComponent("Network error");
-                Debug.Log(args.ToString());
+                Debug.Log(args.Message);
             };
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
-                Backend.Match.JoinGameRoom(gameRoomToken);
+                if (!roomJoined)
+                {
+                    Backend.Match.JoinGameRoom(gameRoomToken);
+                    roomJoined = true;
+                }
             };
 
             Backend.Match.OnSessionListInServer += args =>
@@ -88,8 +96,49 @@ namespace ChessCrush.Game
                     SessionIdList.Add(record.m_sessionId);
                 }
             };
-            Backend.Match.OnMatchInGameStart += () => { };
-            Backend.Match.OnMatchRelay += args => { };
+            Backend.Match.OnMatchInGameStart += () => 
+            {
+                if (chessGameDirector is null)
+                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
+                TrySetHostSession();
+
+                if(IsHost)
+                {
+                    //호스트: 0이 나오면 선공, 1이 나오면 후공
+                    int rand = UnityEngine.Random.Range(0, 1);
+                    OutputMemoryStream oms = new OutputMemoryStream();
+                    oms.Write(rand);
+                    SendDataToInGameRoom(oms.buffer);
+                }
+            };
+            Backend.Match.OnMatchRelay += args => 
+            {
+                if(!inGameReady)
+                {
+                    var ims = new InputMemoryStream(args.BinaryUserData);
+                    ims.Read(out int rand);
+
+                    if (!IsHost)
+                    {
+                        //1을 받았을 경우 선공, 0을 받았을 경우 후공
+                        if (rand == 1)
+                            chessGameDirector.SetPlayer(true, GetNickNameBySessionId(SessionIdList[0]));
+                        else
+                            chessGameDirector.SetPlayer(false, GetNickNameBySessionId(SessionIdList[0]));
+                    }
+                    else
+                    {
+                        //1을 받았을 경우 후공, 0을 받았을 경우 선공
+                        if (rand == 0)
+                            chessGameDirector.SetPlayer(true, GetNickNameBySessionId(SessionIdList[1]));
+                        else
+                            chessGameDirector.SetPlayer(false, GetNickNameBySessionId(SessionIdList[1]));
+                    }
+
+                    inGameReady = true;
+                }
+            };
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => { };
             Backend.Match.OnLeaveInGameServer += args => { };
@@ -522,6 +571,8 @@ namespace ChessCrush.Game
             Backend.Match.LeaveMatchMakingServer();
             return true;
         }
+
+        public string GetNickNameBySessionId(SessionId sessionId) => Backend.Match.GetNickNameBySessionId(sessionId);
 
         public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
 
