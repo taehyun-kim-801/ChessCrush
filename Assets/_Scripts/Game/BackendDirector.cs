@@ -4,6 +4,7 @@ using ChessCrush.OperationResultCode;
 using ChessCrush.UI;
 using LitJson;
 using System;
+using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -13,6 +14,15 @@ namespace ChessCrush.Game
     public class BackendDirector : SubDirector
     {
         private string roomToken;
+        public List<SessionId> SessionIdList { get; private set; }
+        public bool IsHost { get; private set; }
+        private bool gameServerJoined;
+        private bool roomJoined;
+        private bool inGameReady;
+
+        public Action matchMakingSuccessCallback;
+
+        private ChessGameDirector chessGameDirector;
 
         private void Awake()
         {
@@ -20,7 +30,7 @@ namespace ChessCrush.Game
             {
                 if (Backend.IsInitialized)
                 {
-                    SetBackendSetting();
+                    SetHandler();
                     gameObject.UpdateAsObservable().Subscribe(_ => Backend.Match.poll()).AddTo(gameObject);
                 }
                 else
@@ -28,7 +38,7 @@ namespace ChessCrush.Game
             });
         }
 
-        private void SetBackendSetting()
+        private void SetHandler()
         {
             string gameRoomToken = "";
 
@@ -37,17 +47,19 @@ namespace ChessCrush.Game
                 if (args.ErrInfo != ErrorInfo.Success)
                     MessageBoxUI.UseWithComponent("Failed to join match making server");
             };
-            Backend.Match.OnLeaveMatchMakingServer += args =>
-            {
 
-            };
             Backend.Match.OnMatchMakingResponse += args =>
             {
                 switch (args.ErrInfo)
                 {
                     case ErrorCode.Success:
-                        JoinGameServer(args.Address, args.Port, false);
-                        gameRoomToken = args.Token;
+                        if (!gameServerJoined)
+                        {
+                            matchMakingSuccessCallback();
+                            JoinGameServer(args.Address, args.Port, false);
+                            gameServerJoined = true;
+                            gameRoomToken = args.Token;
+                        }
                         break;
                     case ErrorCode.Match_InvalidMatchType:
                     case ErrorCode.Match_InvalidModeType:
@@ -58,24 +70,89 @@ namespace ChessCrush.Game
                         return;
                 }
             };
+
             Backend.Match.OnException += args =>
             {
                 MessageBoxUI.UseWithComponent("Network error");
-                Debug.Log(args.ToString());
+                if (gameServerJoined)
+                {
+                    Backend.Match.LeaveGameServer();
+                    gameServerJoined = false;
+                }
+                Debug.Log(args.Message);
             };
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
-                Backend.Match.JoinGameRoom(gameRoomToken);
+                if (!roomJoined)
+                {
+                    Backend.Match.JoinGameRoom(gameRoomToken);
+                    roomJoined = true;
+                }
             };
-            Backend.Match.OnSessionOnline += args => { };
+                
             Backend.Match.OnSessionListInServer += args =>
             {
-
+                SessionIdList = new List<SessionId>();
+                foreach (var session in args.SessionList)
+                    SessionIdList.Add(session.SessionId);
+                SessionIdList.Sort();
             };
-            Backend.Match.OnMatchInGameAccess += args => { };
-            Backend.Match.OnMatchInGameStart += () => { };
-            Backend.Match.OnMatchRelay += args => { };
+
+            Backend.Match.OnMatchInGameAccess += args => 
+            {
+                foreach(var record in args.GameRecords)
+                {
+                    if (SessionIdList.Contains(record.m_sessionId))
+                        continue;
+
+                    SessionIdList.Add(record.m_sessionId);
+                }
+            };
+            Backend.Match.OnMatchInGameStart += () => 
+            {
+                if (chessGameDirector is null)
+                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
+                TrySetHostSession();
+
+                if(IsHost)
+                {
+                    //호스트: 0이 나오면 선공, 1이 나오면 후공
+                    int rand = UnityEngine.Random.Range(0, 1);
+                    OutputMemoryStream oms = new OutputMemoryStream();
+                    oms.Write(rand);
+                    byte[] data = oms.buffer.Clone() as byte[];
+                    SendDataToInGameRoom(data);
+                }
+            };
+            Backend.Match.OnMatchRelay += args => 
+            {
+                if(!inGameReady)
+                {
+                    var ims = new InputMemoryStream(args.BinaryUserData);
+                    ims.Read(out int rand);
+
+                    if (!IsHost)
+                    {
+                        //1을 받았을 경우 선공, 0을 받았을 경우 후공
+                        if (rand == 1)
+                            chessGameDirector.SetPlayer(true, GetNickNameBySessionId(SessionIdList[0]));
+                        else
+                            chessGameDirector.SetPlayer(false, GetNickNameBySessionId(SessionIdList[0]));
+                    }
+                    else
+                    {
+                        //1을 받았을 경우 후공, 0을 받았을 경우 선공
+                        if (rand == 0)
+                            chessGameDirector.SetPlayer(true, GetNickNameBySessionId(SessionIdList[1]));
+                        else
+                            chessGameDirector.SetPlayer(false, GetNickNameBySessionId(SessionIdList[1]));
+                    }
+
+                    inGameReady = true;
+                }
+            };
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => { };
             Backend.Match.OnLeaveInGameServer += args => { };
@@ -493,6 +570,21 @@ namespace ChessCrush.Game
             if (!Backend.Match.JoinGameServer(serverAddr, serverPort, isReconnect, out var errorInfo))
                 MessageBoxUI.UseWithComponent("Failed to join game server");
         }
+
+        public bool IsMySessionId(SessionId session) => Backend.Match.GetMySessionId() == session;
+
+        public bool TrySetHostSession()
+        {
+            if (SessionIdList.Count != 2)
+                return false;
+
+            SessionIdList.Sort();
+
+            IsHost = IsMySessionId(SessionIdList[0]);
+            return true;
+        }
+
+        public string GetNickNameBySessionId(SessionId sessionId) => Backend.Match.GetNickNameBySessionId(sessionId);
 
         public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
 
