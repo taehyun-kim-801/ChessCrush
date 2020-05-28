@@ -600,7 +600,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 3631934512159387207}
   hpBar: {fileID: 3631934513503229303}
+  hpText: {fileID: 3631934511865910174}
   energyBar: {fileID: 3631934512304618962}
+  energyText: {fileID: 3631934512093624791}
 --- !u!1 &3631934511960213054
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,7 +1134,7 @@ MonoBehaviour:
     m_Alignment: 2
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Player
@@ -1629,7 +1631,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 3631934512793523843}
   hpBar: {fileID: 3631934512020018887}
+  hpText: {fileID: 3631934512346526050}
   energyBar: {fileID: 3631934512665934772}
+  energyText: {fileID: 3631934513280439873}
 --- !u!1 &3631934512444507049
 GameObject:
   m_ObjectHideFlags: 0
@@ -2033,7 +2037,7 @@ MonoBehaviour:
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Player

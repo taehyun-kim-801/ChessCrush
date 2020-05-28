@@ -62,7 +62,7 @@ namespace ChessCrush.Game
 
         public void SetPlayer(bool isWhite, string enemyName)
         {
-            player = new Player(Director.instance.playerName, isWhite, true);
+            player = new Player(Director.instance.userInfo.Value.nickname, isWhite, true);
             enemyPlayer = new Player(enemyName, !isWhite, false);
         }
     }
