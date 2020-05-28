@@ -16,8 +16,11 @@ namespace ChessCrush.Game
         private string roomToken;
         public List<SessionId> SessionIdList { get; private set; }
         public bool IsHost { get; private set; }
+        private bool gameServerJoined;
         private bool roomJoined;
         private bool inGameReady;
+
+        public Action matchMakingSuccessCallback;
 
         private ChessGameDirector chessGameDirector;
 
@@ -50,8 +53,13 @@ namespace ChessCrush.Game
                 switch (args.ErrInfo)
                 {
                     case ErrorCode.Success:
-                        JoinGameServer(args.Address, args.Port, false);
-                        gameRoomToken = args.Token;
+                        if (!gameServerJoined)
+                        {
+                            matchMakingSuccessCallback();
+                            JoinGameServer(args.Address, args.Port, false);
+                            gameServerJoined = true;
+                            gameRoomToken = args.Token;
+                        }
                         break;
                     case ErrorCode.Match_InvalidMatchType:
                     case ErrorCode.Match_InvalidModeType:
@@ -66,6 +74,11 @@ namespace ChessCrush.Game
             Backend.Match.OnException += args =>
             {
                 MessageBoxUI.UseWithComponent("Network error");
+                if (gameServerJoined)
+                {
+                    Backend.Match.LeaveGameServer();
+                    gameServerJoined = false;
+                }
                 Debug.Log(args.Message);
             };
 
@@ -77,7 +90,7 @@ namespace ChessCrush.Game
                     roomJoined = true;
                 }
             };
-
+                
             Backend.Match.OnSessionListInServer += args =>
             {
                 SessionIdList = new List<SessionId>();
@@ -109,7 +122,8 @@ namespace ChessCrush.Game
                     int rand = UnityEngine.Random.Range(0, 1);
                     OutputMemoryStream oms = new OutputMemoryStream();
                     oms.Write(rand);
-                    SendDataToInGameRoom(oms.buffer);
+                    byte[] data = oms.buffer.Clone() as byte[];
+                    SendDataToInGameRoom(data);
                 }
             };
             Backend.Match.OnMatchRelay += args => 
