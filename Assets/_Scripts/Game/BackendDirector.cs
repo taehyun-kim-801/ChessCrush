@@ -581,8 +581,6 @@ namespace ChessCrush.Game
             SessionIdList.Sort();
 
             IsHost = IsMySessionId(SessionIdList[0]);
-
-            Backend.Match.LeaveMatchMakingServer();
             return true;
         }
 
