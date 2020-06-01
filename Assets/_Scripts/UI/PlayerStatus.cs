@@ -7,6 +7,8 @@ namespace ChessCrush.UI
     {
         public Text nameText;
         public Image hpBar;
+        public Text hpText;
         public Image energyBar;
+        public Text energyText;
     }
 }

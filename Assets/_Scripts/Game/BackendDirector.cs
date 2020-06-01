@@ -122,8 +122,7 @@ namespace ChessCrush.Game
                     int rand = UnityEngine.Random.Range(0, 1);
                     OutputMemoryStream oms = new OutputMemoryStream();
                     oms.Write(rand);
-                    byte[] data = oms.buffer.Clone() as byte[];
-                    SendDataToInGameRoom(data);
+                    SendDataToInGameRoom(oms.buffer);
                 }
             };
             Backend.Match.OnMatchRelay += args => 

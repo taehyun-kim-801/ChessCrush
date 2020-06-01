@@ -1,6 +1,7 @@
 ﻿using ChessCrush.UI;
 using System;
 using System.Collections;
+using UniRx;
 using UnityEngine;
 
 namespace ChessCrush.Game
@@ -18,6 +19,8 @@ namespace ChessCrush.Game
 
         public Player player;
         public Player enemyPlayer;
+
+        public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
 
         private void OnEnable()
         {
@@ -44,6 +47,7 @@ namespace ChessCrush.Game
             yield return new WaitWhile(() => player is null || enemyPlayer is null);
             while (true)
             {
+                turnCount.Value++;
                 yield return StartCoroutine(CoInput());
                 yield return StartCoroutine(CoSimulate());
             }
@@ -62,7 +66,7 @@ namespace ChessCrush.Game
 
         public void SetPlayer(bool isWhite, string enemyName)
         {
-            player = new Player(Director.instance.playerName, isWhite, true);
+            player = new Player(Director.instance.userInfo.Value.nickname, isWhite, true);
             enemyPlayer = new Player(enemyName, !isWhite, false);
         }
     }

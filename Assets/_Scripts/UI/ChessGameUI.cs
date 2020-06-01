@@ -11,13 +11,24 @@ namespace ChessCrush.UI
         public ObjectPool objectPool;
         public PlayerStatus myStatus;
         public PlayerStatus enemyStatus;
+        public Text turnText;
         public ChessActionScroll chessActionScroll;
         [SerializeField]
         private Button inputButton;
+        [SerializeField]
+        private InputTimeCircle inputTimeCircle;
 
-        private void Awake()
+        private ChessGameDirector chessGameDirector;
+
+        private void Start()
         {
-            inputButton.OnClickAsObservable().Subscribe(_ => Director.instance.GetSubDirector<ChessGameDirector>().inputCompleted = true).AddTo(gameObject);
+            chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+            chessGameDirector.turnCount.Subscribe(value =>
+            {
+                turnText.text = $"Turn {value.ToString()}";
+                inputTimeCircle.gameObject.SetActive(true);
+            });
+            inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
         }
 
         public void SetSelectButtons(List<ChessAction> actions)

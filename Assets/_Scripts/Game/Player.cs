@@ -8,11 +8,14 @@ namespace ChessCrush.Game
     {
         private ReactiveProperty<string> name = new ReactiveProperty<string>();
         private ReactiveProperty<bool> isWhite = new ReactiveProperty<bool>();
+        public bool IsWhite { get { return isWhite.Value; } }
         private ReactiveProperty<int> hp = new ReactiveProperty<int>();
         private ReactiveProperty<int> energyPoint = new ReactiveProperty<int>();
-        private bool isMe;
+        public bool IsMe { get; private set; }
         public List<ChessAction> chessActions = new List<ChessAction>();
         public Subject<List<ChessAction>> actionsSubject = new Subject<List<ChessAction>>();
+
+        private ChessGameDirector chessGameDirector;
 
         public Player()
         {
@@ -25,24 +28,40 @@ namespace ChessCrush.Game
             hp.Value = 20;
             energyPoint.Value = 0;
             chessActions = new List<ChessAction>();
-            this.isMe = isMe;
+            this.IsMe = isMe;
 
-            var gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+            chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
             if (isMe)
             {
-                this.name.Subscribe(str => gameDirector.chessGameUI.myStatus.nameText.text = $"Player: {str}");
+                this.name.Subscribe(str => chessGameDirector.chessGameUI.myStatus.nameText.text = $"Player: {str}");
                 //TODO: isWhite Subscribe
-                hp.Subscribe(_ => gameDirector.chessGameUI.myStatus.hpBar.fillAmount = _ / 20);
-                energyPoint.Subscribe(_ => gameDirector.chessGameUI.myStatus.energyBar.fillAmount = _ / 10);
-                actionsSubject.Subscribe(list => gameDirector.chessGameUI.chessActionScroll.SetView(list));
-                actionsSubject.Subscribe(list => gameDirector.chessGameObjects.SetExpectedAction(list));
+                hp.Subscribe(_ =>
+                {
+                    chessGameDirector.chessGameUI.myStatus.hpText.text = $"{_} / 20";
+                    chessGameDirector.chessGameUI.myStatus.hpBar.fillAmount = _ / 20;
+                });
+                energyPoint.Subscribe(_ =>
+                {
+                    chessGameDirector.chessGameUI.myStatus.energyText.text = $"{_} / 10";
+                    chessGameDirector.chessGameUI.myStatus.energyBar.fillAmount = _ / 10;
+                });
+                actionsSubject.Subscribe(list => chessGameDirector.chessGameUI.chessActionScroll.SetView(list));
+                actionsSubject.Subscribe(list => chessGameDirector.chessGameObjects.SetExpectedAction(list));
             }
             else
             {
-                this.name.Subscribe(str => gameDirector.chessGameUI.enemyStatus.nameText.text = $"Player:{str}");
+                this.name.Subscribe(str => chessGameDirector.chessGameUI.enemyStatus.nameText.text = $"Player: {str}");
                 //TODO: isWhite Subscribe
-                hp.Subscribe(_ => gameDirector.chessGameUI.enemyStatus.hpBar.fillAmount = _ / 20);
-                energyPoint.Subscribe(_ => gameDirector.chessGameUI.enemyStatus.energyBar.fillAmount = _ / 10);
+                hp.Subscribe(_ =>
+                {
+                    chessGameDirector.chessGameUI.enemyStatus.hpText.text = $"{_} / 20";
+                    chessGameDirector.chessGameUI.enemyStatus.hpBar.fillAmount = _ / 20;
+                });
+                energyPoint.Subscribe(_ =>
+                {
+                    chessGameDirector.chessGameUI.enemyStatus.energyText.text = $"{_} / 10";
+                    chessGameDirector.chessGameUI.enemyStatus.energyBar.fillAmount = _ / 10;
+                });
             }
         }
 
