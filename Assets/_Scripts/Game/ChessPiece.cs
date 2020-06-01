@@ -5,7 +5,9 @@ namespace ChessCrush.Game
 {
     public class ChessPiece: MonoBehaviour
     {
-        private int pieceId;
+        private static int pieceIdCount = 0;
+
+        public int PieceId { get; private set; }
         public ChessBoardVector chessBoardVector { get; private set; }
         private SpriteRenderer spriteRenderer;
         private bool isExpected;
@@ -24,11 +26,19 @@ namespace ChessCrush.Game
 
         private void Initialize(int pieceId, int x, int y, PieceType pieceType, bool isExpected)
         {
-            this.pieceId = pieceId;
+            if (pieceId == 0)
+                PieceId = pieceIdCount++;
+            else
+                PieceId = pieceId;
             MoveTo(x, y);
             this.isExpected = isExpected;
             spriteRenderer.sprite = GetSprite(pieceType);
-            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+            
+            if (isExpected)
+                spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+            else
+                spriteRenderer.color = new Color(1, 1, 1, 1);
+
             transform.position = chessBoardVector.ToWorldVector();
             if(!isExpected)
                 PieceSelectButton.UseWithComponent(pieceId, chessBoardVector, pieceType);

@@ -55,5 +55,62 @@ namespace ChessCrush.Game
                     attackIconPosition.DOMoveY(myTurnAttackIconPositionY, 1.0f).SetEase(Ease.OutCirc);
             }
         }
+
+        public void DestroyExpectedAction() => chessBoard.ClearExpectedChessPieces();
+
+        public Sequence MakeActionAnimation(Player attackPlayer, Player defensePlayer)
+        {
+            var result = DOTween.Sequence();
+
+            foreach(var action in attackPlayer.chessActions)
+            {
+                ChessBoardVector myBoardVector;
+
+                if (attackPlayer.IsMe)
+                    myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
+                else
+                    myBoardVector = action.chessBoardVector.ToMyBoardVector();
+
+                if(action.pieceId==0)
+                {
+                    ChessPiece chessPiece = new ChessPiece();
+                    result.AppendCallback(() => chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false));
+                    result.Append(chessPiece.transform.DOScale(0,0.5f).From());
+                }
+                else
+                {
+                    var piece = chessBoard.GetChessPieceById(action.pieceId);
+
+                    piece.MoveTo(myBoardVector.x, myBoardVector.y);
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                }
+            }
+
+            foreach (var action in defensePlayer.chessActions)
+            {
+                ChessBoardVector myBoardVector;
+
+                if (defensePlayer.IsMe)
+                    myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
+                else
+                    myBoardVector = action.chessBoardVector.ToMyBoardVector();
+
+                if (action.pieceId == 0)
+                {
+                    ChessPiece chessPiece = new ChessPiece();
+                    result.AppendCallback(() => chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false));
+                    result.Append(chessPiece.transform.DOScale(0, 0.5f).From());
+                }
+                else
+                {
+                    var piece = chessBoard.GetChessPieceById(action.pieceId);
+
+                    piece.MoveTo(myBoardVector.x, myBoardVector.y);
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                }
+            }
+
+            return result;
+        }
     }
 }

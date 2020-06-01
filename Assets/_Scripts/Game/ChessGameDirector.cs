@@ -1,4 +1,5 @@
 ﻿using ChessCrush.UI;
+using DG.Tweening;
 using System;
 using System.Collections;
 using UniRx;
@@ -11,6 +12,8 @@ namespace ChessCrush.Game
         [NonSerialized]
         public bool inputCompleted;
         [NonSerialized]
+        public bool receivedData;
+        [NonSerialized]
         public ChessGameObjects chessGameObjects;
         [NonSerialized]
         public ChessGameUI chessGameUI;
@@ -21,6 +24,13 @@ namespace ChessCrush.Game
         public Player enemyPlayer;
 
         public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
+
+        private BackendDirector backendDirector;
+
+        private void Start()
+        {
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
+        }
 
         private void OnEnable()
         {
@@ -57,11 +67,29 @@ namespace ChessCrush.Game
         {
             float temp = Time.time;
             yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
+            var oms = new OutputMemoryStream();
+            oms.Write(player.chessActions);
+            backendDirector.SendDataToInGameRoom(oms.buffer);
         }
 
         private IEnumerator CoSimulate()
         {
-            yield return null;
+            yield return new WaitUntil(() => receivedData);
+            chessGameObjects.DestroyExpectedAction();
+
+            Sequence seq = DOTween.Sequence();
+            if ((player.IsWhite && turnCount.Value % 2 != 0) || (!player.IsWhite && turnCount.Value % 2 == 0))
+                seq = chessGameObjects.MakeActionAnimation(player, enemyPlayer);
+            else
+                seq = chessGameObjects.MakeActionAnimation(enemyPlayer, player);
+
+            seq.Play();
+            yield return new WaitUntil(() => seq.IsPlaying());
+
+            inputCompleted = false;
+            receivedData = false;
+
+            seq.Kill(true);
         }
 
         public void SetPlayer(bool isWhite, string enemyName)

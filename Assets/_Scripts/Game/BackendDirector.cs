@@ -151,7 +151,17 @@ namespace ChessCrush.Game
 
                     inGameReady = true;
                 }
+                else
+                {
+                    if (!IsMySessionId(args.From.SessionId))
+                    {
+                        var ims = new InputMemoryStream(args.BinaryUserData);
+                        ims.Read(out chessGameDirector.enemyPlayer.chessActions);
+                        chessGameDirector.receivedData = true;
+                    }
+                }
             };
+
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => { };
             Backend.Match.OnLeaveInGameServer += args => { };

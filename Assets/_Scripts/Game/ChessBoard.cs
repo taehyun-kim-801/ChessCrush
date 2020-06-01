@@ -32,6 +32,8 @@ namespace ChessCrush.Game
             return res;
         }
 
+        public ChessPiece GetChessPieceById(int id) => pieces.Find(piece => piece.PieceId == id);
+
         public void AddChessPiece(ChessPiece piece)
         {
             pieces.Add(piece);
