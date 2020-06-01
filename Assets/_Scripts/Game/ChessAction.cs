@@ -6,6 +6,8 @@
         public PieceType pieceType;
         public ChessBoardVector chessBoardVector;
 
+        public ChessAction() { }
+
         public ChessAction(int pieceId,PieceType pieceType,ChessBoardVector vector)
         {
             this.pieceId = pieceId;
