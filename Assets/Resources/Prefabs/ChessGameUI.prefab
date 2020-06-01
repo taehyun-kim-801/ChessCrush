@@ -2994,7 +2994,7 @@ MonoBehaviour:
   turnText: {fileID: 5322541122335139196}
   chessActionScroll: {fileID: 7776552152408686680}
   inputButton: {fileID: 396711342560146310}
-  inputTimeCircle: {fileID: 0}
+  inputTimeCircle: {fileID: 1533924537773967248}
 --- !u!1 &6799399677661499695
 GameObject:
   m_ObjectHideFlags: 0
