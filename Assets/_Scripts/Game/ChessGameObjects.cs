@@ -73,16 +73,15 @@ namespace ChessCrush.Game
 
                 if(action.pieceId==0)
                 {
-                    ChessPiece chessPiece = new ChessPiece();
-                    result.AppendCallback(() => chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false));
-                    result.Append(chessPiece.transform.DOScale(0,0.5f).From());
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From());
                 }
                 else
                 {
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
-                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
                 }
             }
 
@@ -97,16 +96,15 @@ namespace ChessCrush.Game
 
                 if (action.pieceId == 0)
                 {
-                    ChessPiece chessPiece = new ChessPiece();
-                    result.AppendCallback(() => chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false));
-                    result.Append(chessPiece.transform.DOScale(0, 0.5f).From());
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From());
                 }
                 else
                 {
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
-                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
                 }
             }
 
