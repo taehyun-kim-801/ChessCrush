@@ -66,7 +66,12 @@ namespace ChessCrush.Game
         private IEnumerator CoInput()
         {
             float temp = Time.time;
+
+            chessGameUI.SetInpuptAreaActive(true);
             yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
+
+            chessGameUI.SetInpuptAreaActive(false);
+
             var oms = new OutputMemoryStream();
             oms.Write(player.chessActions);
             backendDirector.SendDataToInGameRoom(oms.buffer);
@@ -84,10 +89,16 @@ namespace ChessCrush.Game
                 seq = chessGameObjects.MakeActionAnimation(enemyPlayer, player);
 
             seq.Play();
-            yield return new WaitUntil(() => seq.IsPlaying());
+            yield return new WaitUntil(() => !seq.IsPlaying());
 
             inputCompleted = false;
             receivedData = false;
+
+            player.chessActions.Clear();
+            player.actionsSubject.OnNext(player.chessActions);
+
+            enemyPlayer.chessActions.Clear();
+            enemyPlayer.actionsSubject.OnNext(enemyPlayer.chessActions);
 
             seq.Kill(true);
         }
