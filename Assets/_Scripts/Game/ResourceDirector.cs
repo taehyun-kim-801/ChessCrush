@@ -30,11 +30,13 @@ namespace ChessCrush.Game
             blackPawnSprite = Resources.Load<Sprite>(string.Format(path, "Black_Pawn"));
             blackBishopSprite = Resources.Load<Sprite>(string.Format(path, "Black_Bishop"));
             blackKnightSprite = Resources.Load<Sprite>(string.Format(path, "Black_Knight"));
+            blackRookSprite = Resources.Load<Sprite>(string.Format(path, "Black_Rook"));
             blackQueenSprite = Resources.Load<Sprite>(string.Format(path, "Black_Queen"));
             blackKingSprite = Resources.Load<Sprite>(string.Format(path, "Black_King"));
             whitePawnSprite = Resources.Load<Sprite>(string.Format(path, "White_Pawn"));
             whiteBishopSprite = Resources.Load<Sprite>(string.Format(path, "White_Bishop"));
             whiteKnightSprite = Resources.Load<Sprite>(string.Format(path, "White_Knight"));
+            whiteRookSprite = Resources.Load<Sprite>(string.Format(path, "White_Rook"));
             whiteQueenSprite = Resources.Load<Sprite>(string.Format(path, "White_Queen"));
             whiteKingSprite = Resources.Load<Sprite>(string.Format(path, "White_King"));
         }
