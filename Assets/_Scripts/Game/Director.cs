@@ -39,6 +39,7 @@ namespace ChessCrush.Game
         {
             yield return new WaitUntil(() => nonUiObjectPool.isCreated && MainCanvas.instance.objectPool.isCreated && Backend.IsInitialized);
             backendDirector = GetSubDirector<BackendDirector>();
+            GetSubDirector<ResourceDirector>();
             GetSubDirector<StartSceneDirector>();
         }
         
