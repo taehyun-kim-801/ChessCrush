@@ -39,39 +39,30 @@ namespace ChessCrush.Game
             whiteKingSprite = Resources.Load<Sprite>(string.Format(path, "White_King"));
         }
 
-        public Sprite GetChessSprite(PieceType pieceType, bool isWhite) => pieceType switch
+        public Sprite GetChessSprite(PieceType pieceType, bool isWhite)
         {
-            PieceType.Pawn => isWhite switch
+            switch(pieceType)
             {
-                true => whitePawnSprite,
-                false => blackPawnSprite
-            },
-            PieceType.Bishop => isWhite switch
-            {
-                true => whiteBishopSprite,
-                false => blackBishopSprite
-            },
-            PieceType.Knight => isWhite switch
-            {
-                true => whiteKnightSprite,
-                false => blackKnightSprite
-            },
-            PieceType.Rook => isWhite switch
-            {
-                true => whiteRookSprite,
-                false => blackRookSprite
-            },
-            PieceType.Queen => isWhite switch
-            {
-                true => whiteQueenSprite,
-                false => blackQueenSprite
-            },
-            PieceType.King => isWhite switch
-            {
-                true => whiteKingSprite,
-                false => blackKingSprite
-            },
-            _ => default
-        };
+                case PieceType.Pawn:
+                    if (isWhite) return whitePawnSprite;
+                    else return blackPawnSprite;
+                case PieceType.Bishop:
+                    if (isWhite) return whiteBishopSprite;
+                    else return blackBishopSprite;
+                case PieceType.Knight:
+                    if (isWhite) return whiteKnightSprite;
+                    else return blackKnightSprite;
+                case PieceType.Rook:
+                    if (isWhite) return whiteRookSprite;
+                    else return blackRookSprite;
+                case PieceType.Queen:
+                    if (isWhite) return whiteQueenSprite;
+                    else return blackQueenSprite;
+                case PieceType.King:
+                    if (isWhite) return whiteKingSprite;
+                    else return blackKingSprite;
+                default: return null;
+            }
+        }
     }
 }
