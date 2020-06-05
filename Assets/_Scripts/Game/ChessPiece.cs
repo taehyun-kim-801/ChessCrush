@@ -26,7 +26,7 @@ namespace ChessCrush.Game
 
         private void Initialize(int pieceId, int x, int y, PieceType pieceType, bool isExpected)
         {
-            if (pieceId == 0)
+            if (pieceId == 0 && !isExpected)
                 PieceId = ++pieceIdCount;
             else
                 PieceId = pieceId;

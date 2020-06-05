@@ -23,6 +23,10 @@ namespace ChessCrush.Game
         public Player player;
         public Player enemyPlayer;
 
+        public event Action gameReadyEvents;
+
+        public int myLocalEnergy;
+
         public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
 
         private BackendDirector backendDirector;
@@ -55,6 +59,7 @@ namespace ChessCrush.Game
         private IEnumerator CoGamePlay()
         {
             yield return new WaitWhile(() => player is null || enemyPlayer is null);
+            gameReadyEvents();
             while (true)
             {
                 turnCount.Value++;

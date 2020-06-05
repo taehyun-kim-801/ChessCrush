@@ -1,4 +1,5 @@
 ﻿using ChessCrush.Game;
+using System;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,17 +10,18 @@ namespace ChessCrush.UI
     {
         private Button button;
         private Image buttonImage;
+        [SerializeField]
         private Image chessImage;
         public PieceType pieceSpawnType;
         private int needEnergy;
 
         private ChessGameDirector chessGameDirector;
+        private ResourceDirector resourceDirector;
 
         private void Awake()
         {
             button = GetComponent<Button>();
             buttonImage = gameObject.GetComponent<Image>();
-            chessImage = gameObject.GetComponentInChildren<Image>();
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton());
             needEnergy = SetNeedEnergy();
         }
@@ -27,14 +29,21 @@ namespace ChessCrush.UI
         private void Start()
         {
             chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-            if(chessGameDirector.player.IsWhite)
-            {
-                buttonImage.color = Color.black;
-            }
-            else
-            {
-                buttonImage.color = Color.white;
-            }
+            resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
+
+            chessGameDirector.gameReadyEvents += () =>
+              {
+                  if (chessGameDirector.player.IsWhite)
+                  {
+                      buttonImage.color = Color.black;
+                      chessImage.sprite = resourceDirector.GetChessSprite(pieceSpawnType, true);
+                  }
+                  else
+                  {
+                      buttonImage.color = Color.white;
+                      chessImage.sprite = resourceDirector.GetChessSprite(pieceSpawnType, false);
+                  }
+              };
         }
 
         private void SubscribeButton()
