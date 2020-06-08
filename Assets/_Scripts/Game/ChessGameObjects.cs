@@ -69,7 +69,7 @@ namespace ChessCrush.Game
             {
                 ChessBoardVector myBoardVector;
 
-                if (attackPlayer.IsMe)
+                if (defensePlayer.IsMe)
                     myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
                 else
                     myBoardVector = action.chessBoardVector.ToMyBoardVector();
@@ -92,7 +92,7 @@ namespace ChessCrush.Game
             {
                 ChessBoardVector myBoardVector;
 
-                if (defensePlayer.IsMe)
+                if (attackPlayer.IsMe)
                     myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
                 else
                     myBoardVector = action.chessBoardVector.ToMyBoardVector();
