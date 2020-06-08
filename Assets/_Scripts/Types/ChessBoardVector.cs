@@ -28,5 +28,12 @@ namespace ChessCrush
             result.y = 7 - result.y;
             return result;
         }
+
+        public Vector3 ToWorldVectorOfCenter()
+        {
+            if (originPosition == default)
+                originPosition = Director.instance.GetSubDirector<ChessGameDirector>().chessGameObjects.chessBoardOrigin.position;
+            return new Vector3((x + 0.5f) * ChessBoardBlockSize + originPosition.x, (y + 0.5f) * ChessBoardBlockSize + originPosition.y);
+        }
     }
 }

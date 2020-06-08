@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using ChessCrush.VFX;
+using DG.Tweening;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -15,10 +16,12 @@ namespace ChessCrush.Game
         private readonly float enemyTurnAttackIconPositionY = 2.7f;
 
         private ChessGameDirector chessGameDirector;
+        private ParticleDirector particleDirector;
 
         private void Start()
         {
             chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+            particleDirector = Director.instance.GetSubDirector<ParticleDirector>();
             chessGameDirector.turnCount.Subscribe(value => MoveAttackIcon(value)).AddTo(chessGameDirector);
         }
 
@@ -103,6 +106,15 @@ namespace ChessCrush.Game
                 {
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
+                    if(chessBoard.AnybodyIn(myBoardVector.x,myBoardVector.y))
+                    {
+                        var chessPiece = chessBoard.GetChessPiece(myBoardVector.x, myBoardVector.y);
+                        result.AppendCallback(() => 
+                        {
+                            particleDirector.PlaySkullGhostVFX(myBoardVector.ToWorldVectorOfCenter());
+                            chessPiece.gameObject.SetActive(false);
+                        });
+                    }
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
                 }
