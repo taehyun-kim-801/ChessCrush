@@ -48,6 +48,12 @@ namespace ChessCrush.UI
 
         private void SubscribeButton()
         {
+            //기존에 있던 버튼들 제거
+            AbleMoveSquare.haveToAppearProperty.Value = false;
+            DisableMoveSquare.haveToAppearProperty.Value = false;
+            AbleMoveSquare.haveToAppearProperty.Value = true;
+            DisableMoveSquare.haveToAppearProperty.Value = true;
+
             for (int i = 0; i < 8; i++)
             {
                 if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(i, 0, true))
