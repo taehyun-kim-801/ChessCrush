@@ -74,14 +74,14 @@ namespace ChessCrush.Game
                 if(action.pieceId==0)
                 {
                     var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
-                    result.Append(chessPiece.transform.DOScale(0, 0.5f).From().SetEase(Ease.OutBack));
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
                 }
                 else
                 {
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
-                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
                 }
             }
 
@@ -97,14 +97,14 @@ namespace ChessCrush.Game
                 if (action.pieceId == 0)
                 {
                     var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
-                    result.Append(chessPiece.transform.DOScale(0, 0.5f).From().SetEase(Ease.OutBack));
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
                 }
                 else
                 {
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
-                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 0.5f));
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
                 }
             }
 
