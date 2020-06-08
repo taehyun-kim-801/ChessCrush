@@ -62,7 +62,7 @@ namespace ChessCrush.Game
         {
             var result = DOTween.Sequence();
 
-            foreach(var action in attackPlayer.chessActions)
+            foreach(var action in defensePlayer.chessActions)
             {
                 ChessBoardVector myBoardVector;
 
@@ -85,7 +85,7 @@ namespace ChessCrush.Game
                 }
             }
 
-            foreach (var action in defensePlayer.chessActions)
+            foreach (var action in attackPlayer.chessActions)
             {
                 ChessBoardVector myBoardVector;
 
