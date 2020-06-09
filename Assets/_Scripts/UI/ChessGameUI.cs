@@ -35,7 +35,8 @@ namespace ChessCrush.UI
         {
             objectPool.DestroyAll();
             foreach(var piece in pieces)
-                PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType);
+                if(piece.IsMine)
+                    PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType);
         }
 
         public void SetInpuptAreaActive(bool active)

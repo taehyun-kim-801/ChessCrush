@@ -20,6 +20,11 @@ namespace ChessCrush.UI
 
         private void SubscribeButton()
         {
+            AbleMoveSquare.haveToAppearProperty.Value = false;
+            DisableMoveSquare.haveToAppearProperty.Value = false;
+            AbleMoveSquare.haveToAppearProperty.Value = true;
+            AbleMoveSquare.haveToAppearProperty.Value = true;
+
             switch(pieceType)
             {
                 case PieceType.Pawn:
@@ -123,6 +128,7 @@ namespace ChessCrush.UI
 
         private void Initialize(int pieceId, ChessBoardVector position, PieceType pieceType)
         {
+            this.pieceId = pieceId;
             base.Initialize(position.x, position.y);
             chessBoardPosition = position;
             this.pieceType = pieceType;
