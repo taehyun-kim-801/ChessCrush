@@ -117,7 +117,7 @@ namespace ChessCrush.UI
             if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y))
                 DisableMoveSquare.UseWithComponent(position);
             else
-                AbleMoveSquare.UseWithComponent(pieceId, position);
+                AbleMoveSquare.UseWithComponent(pieceId, position, pieceType);
         }
         #endregion
 

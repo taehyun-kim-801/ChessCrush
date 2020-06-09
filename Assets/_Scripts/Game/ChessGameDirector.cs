@@ -63,6 +63,7 @@ namespace ChessCrush.Game
             while (true)
             {
                 turnCount.Value++;
+                chessGameUI.SetSelectButtons(chessGameObjects.chessBoard.Pieces);
                 yield return StartCoroutine(CoInput());
                 yield return StartCoroutine(CoSimulate());
             }

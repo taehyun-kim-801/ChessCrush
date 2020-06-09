@@ -34,7 +34,7 @@ namespace ChessCrush.Game
         {
             chessBoard.ClearExpectedChessPieces();
             foreach(var action in actions)
-                chessBoard.AddExpectedChessPiece(ChessPiece.UseWithComponent(action.pieceId, action.chessBoardVector.x, action.chessBoardVector.y, action.pieceType, true));
+                chessBoard.AddExpectedChessPiece(ChessPiece.UseWithComponent(action.pieceId, action.chessBoardVector.x, action.chessBoardVector.y, action.pieceType, true, true));
         }
 
         private void MoveAttackIcon(int turn)
@@ -76,7 +76,8 @@ namespace ChessCrush.Game
                     
                 if(action.pieceId==0)
                 {
-                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, defensePlayer.IsMe);
+                    chessBoard.AddChessPiece(chessPiece);
                     result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
                 }
                 else
@@ -99,7 +100,8 @@ namespace ChessCrush.Game
 
                 if (action.pieceId == 0)
                 {
-                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false);
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, attackPlayer.IsMe);
+                    chessBoard.AddChessPiece(chessPiece);
                     result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
                 }
                 else
@@ -109,6 +111,8 @@ namespace ChessCrush.Game
                     if(chessBoard.AnybodyIn(myBoardVector.x,myBoardVector.y))
                     {
                         var chessPiece = chessBoard.GetChessPiece(myBoardVector.x, myBoardVector.y);
+                        chessBoard.RemoveChessPiece(chessPiece);
+
                         result.AppendCallback(() => 
                         {
                             particleDirector.PlaySkullGhostVFX(myBoardVector.ToWorldVectorOfCenter());
