@@ -60,3 +60,7 @@ MonoBehaviour:
   - serializeObject: {fileID: 100004, guid: 286c6b4443b193e4ab2b16f2e53546c7, type: 3}
     initCount: 5
     plusCount: 1
+  - serializeObject: {fileID: 1040608886635896, guid: a97415c6b57076f41a6621a7b51d63a3,
+      type: 3}
+    initCount: 3
+    plusCount: 1
