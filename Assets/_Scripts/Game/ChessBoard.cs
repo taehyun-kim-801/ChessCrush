@@ -20,6 +20,17 @@ namespace ChessCrush.Game
                 return false;    
         }
 
+        public bool MyPieceIn(int x, int y, bool includeExpectedPieces=false)
+        {
+            int piecesIdx = Pieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
+            if (piecesIdx != -1)
+                return true;
+            else if (includeExpectedPieces)
+                return expectedPieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y) != -1;
+            else
+                return false;
+        }
+
         public ChessPiece GetChessPiece(int x, int y, bool includeExpectedPieces = false)
         {
             if (!AnybodyIn(x, y, includeExpectedPieces))

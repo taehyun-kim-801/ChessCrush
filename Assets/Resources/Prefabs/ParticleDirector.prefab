@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8076966326491873684}
+  - component: {fileID: 8054811870813365033}
+  - component: {fileID: 8672058347170051813}
   m_Layer: 0
   m_Name: ParticleDirector
   m_TagString: Untagged
@@ -30,3 +32,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8054811870813365033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403007961184045430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65b84f805f278fc48b93f432f3405d92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8672058347170051813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403007961184045430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 219ce00e4a959644ab230fa444c17e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolSerializeList:
+  - serializeObject: {fileID: 100004, guid: 286c6b4443b193e4ab2b16f2e53546c7, type: 3}
+    initCount: 5
+    plusCount: 1

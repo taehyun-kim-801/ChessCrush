@@ -119,7 +119,11 @@ namespace ChessCrush.UI
             if (position.x < 0 || position.y < 0 || position.x > 7 || position.y > 7)
                 return;
 
-            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y))
+            //내가 수비 상황일 때 자살을 막음
+            if (((chessGameDirector.player.IsWhite && chessGameDirector.turnCount.Value % 2 == 0) || (!chessGameDirector.player.IsWhite && chessGameDirector.turnCount.Value % 2 != 0))
+                && chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y, true))
+                DisableMoveSquare.UseWithComponent(position);
+            else if (chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(position.x, position.y, true))
                 DisableMoveSquare.UseWithComponent(position);
             else
                 AbleMoveSquare.UseWithComponent(pieceId, position, pieceType);
