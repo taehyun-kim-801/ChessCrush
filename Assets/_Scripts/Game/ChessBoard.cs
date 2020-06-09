@@ -5,12 +5,12 @@ namespace ChessCrush.Game
 {
     public class ChessBoard:MonoBehaviour
     {
-        private List<ChessPiece> pieces = new List<ChessPiece>();
+        public List<ChessPiece> Pieces { get; private set; } = new List<ChessPiece>();
         private List<ChessPiece> expectedPieces = new List<ChessPiece>();
 
         public bool AnybodyIn(int x, int y, bool includeExpectedPieces = false) 
         {
-            int piecesIdx = pieces.FindIndex(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
+            int piecesIdx = Pieces.FindIndex(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
 
             if (piecesIdx != -1)
                 return true;
@@ -20,21 +20,34 @@ namespace ChessCrush.Game
                 return false;    
         }
 
+        public bool MyPieceIn(int x, int y, bool includeExpectedPieces=false)
+        {
+            int piecesIdx = Pieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
+            if (piecesIdx != -1)
+                return true;
+            else if (includeExpectedPieces)
+                return expectedPieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y) != -1;
+            else
+                return false;
+        }
+
         public ChessPiece GetChessPiece(int x, int y, bool includeExpectedPieces = false)
         {
             if (!AnybodyIn(x, y, includeExpectedPieces))
                 return null;
 
-            var res = pieces.Find(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
+            var res = Pieces.Find(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
             if (res is null)
                 res = expectedPieces.Find(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
 
             return res;
         }
 
+        public ChessPiece GetChessPieceById(int id) => Pieces.Find(piece => piece.PieceId == id);
+
         public void AddChessPiece(ChessPiece piece)
         {
-            pieces.Add(piece);
+            Pieces.Add(piece);
         }
 
         public void AddExpectedChessPiece(ChessPiece piece)
@@ -44,10 +57,10 @@ namespace ChessCrush.Game
 
         public void ClearChessPieces()
         {
-            foreach (var piece in pieces)
+            foreach (var piece in Pieces)
                 piece.gameObject.SetActive(false);
 
-            pieces.Clear();
+            Pieces.Clear();
         }
 
         public void ClearExpectedChessPieces()
@@ -57,5 +70,7 @@ namespace ChessCrush.Game
 
             expectedPieces.Clear();
         }
+
+        public void RemoveChessPiece(ChessPiece piece) => Pieces.Remove(piece);
     }
 }

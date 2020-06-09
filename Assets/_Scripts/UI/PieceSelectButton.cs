@@ -20,6 +20,11 @@ namespace ChessCrush.UI
 
         private void SubscribeButton()
         {
+            AbleMoveSquare.haveToAppearProperty.Value = false;
+            DisableMoveSquare.haveToAppearProperty.Value = false;
+            AbleMoveSquare.haveToAppearProperty.Value = true;
+            AbleMoveSquare.haveToAppearProperty.Value = true;
+
             switch(pieceType)
             {
                 case PieceType.Pawn:
@@ -114,15 +119,20 @@ namespace ChessCrush.UI
             if (position.x < 0 || position.y < 0 || position.x > 7 || position.y > 7)
                 return;
 
-            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y))
+            //내가 수비 상황일 때 자살을 막음
+            if (((chessGameDirector.player.IsWhite && chessGameDirector.turnCount.Value % 2 == 0) || (!chessGameDirector.player.IsWhite && chessGameDirector.turnCount.Value % 2 != 0))
+                && chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(position.x, position.y, true))
+                DisableMoveSquare.UseWithComponent(position);
+            else if (chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(position.x, position.y, true))
                 DisableMoveSquare.UseWithComponent(position);
             else
-                AbleMoveSquare.UseWithComponent(pieceId, position);
+                AbleMoveSquare.UseWithComponent(pieceId, position, pieceType);
         }
         #endregion
 
         private void Initialize(int pieceId, ChessBoardVector position, PieceType pieceType)
         {
+            this.pieceId = pieceId;
             base.Initialize(position.x, position.y);
             chessBoardPosition = position;
             this.pieceType = pieceType;

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using ChessCrush.VFX;
+using DG.Tweening;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -15,10 +16,12 @@ namespace ChessCrush.Game
         private readonly float enemyTurnAttackIconPositionY = 2.7f;
 
         private ChessGameDirector chessGameDirector;
+        private ParticleDirector particleDirector;
 
         private void Start()
         {
             chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+            particleDirector = Director.instance.GetSubDirector<ParticleDirector>();
             chessGameDirector.turnCount.Subscribe(value => MoveAttackIcon(value)).AddTo(chessGameDirector);
         }
 
@@ -31,7 +34,7 @@ namespace ChessCrush.Game
         {
             chessBoard.ClearExpectedChessPieces();
             foreach(var action in actions)
-                chessBoard.AddExpectedChessPiece(ChessPiece.UseWithComponent(action.pieceId, action.chessBoardVector.x, action.chessBoardVector.y, action.pieceType, true));
+                chessBoard.AddExpectedChessPiece(ChessPiece.UseWithComponent(action.pieceId, action.chessBoardVector.x, action.chessBoardVector.y, action.pieceType, true, true));
         }
 
         private void MoveAttackIcon(int turn)
@@ -54,6 +57,74 @@ namespace ChessCrush.Game
                 else
                     attackIconPosition.DOMoveY(myTurnAttackIconPositionY, 1.0f).SetEase(Ease.OutCirc);
             }
+        }
+
+        public void DestroyExpectedAction() => chessBoard.ClearExpectedChessPieces();
+
+        public Sequence MakeActionAnimation(Player attackPlayer, Player defensePlayer)
+        {
+            var result = DOTween.Sequence();
+
+            foreach(var action in defensePlayer.chessActions)
+            {
+                ChessBoardVector myBoardVector;
+
+                if (defensePlayer.IsMe)
+                    myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
+                else
+                    myBoardVector = action.chessBoardVector.ToMyBoardVector();
+                    
+                if(action.pieceId==0)
+                {
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, defensePlayer.IsMe);
+                    chessBoard.AddChessPiece(chessPiece);
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
+                }
+                else
+                {
+                    var piece = chessBoard.GetChessPieceById(action.pieceId);
+
+                    piece.MoveTo(myBoardVector.x, myBoardVector.y);
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+                }
+            }
+
+            foreach (var action in attackPlayer.chessActions)
+            {
+                ChessBoardVector myBoardVector;
+
+                if (attackPlayer.IsMe)
+                    myBoardVector = new ChessBoardVector(action.chessBoardVector.x, action.chessBoardVector.y);
+                else
+                    myBoardVector = action.chessBoardVector.ToMyBoardVector();
+
+                if (action.pieceId == 0)
+                {
+                    var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, attackPlayer.IsMe);
+                    chessBoard.AddChessPiece(chessPiece);
+                    result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
+                }
+                else
+                {
+                    var piece = chessBoard.GetChessPieceById(action.pieceId);
+
+                    if(chessBoard.AnybodyIn(myBoardVector.x,myBoardVector.y))
+                    {
+                        var chessPiece = chessBoard.GetChessPiece(myBoardVector.x, myBoardVector.y);
+                        chessBoard.RemoveChessPiece(chessPiece);
+
+                        result.AppendCallback(() => 
+                        {
+                            particleDirector.PlaySkullGhostVFX(myBoardVector.ToWorldVectorOfCenter());
+                            chessPiece.gameObject.SetActive(false);
+                        });
+                    }
+                    piece.MoveTo(myBoardVector.x, myBoardVector.y);
+                    result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+                }
+            }
+
+            return result;
         }
     }
 }

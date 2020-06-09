@@ -31,11 +31,18 @@ namespace ChessCrush.UI
             inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
         }
 
-        public void SetSelectButtons(List<ChessAction> actions)
+        public void SetSelectButtons(List<ChessPiece> pieces)
         {
             objectPool.DestroyAll();
-            foreach(var action in actions)
-                PieceSelectButton.UseWithComponent(action.pieceId, action.chessBoardVector, action.pieceType);
+            foreach(var piece in pieces)
+                if(piece.IsMine)
+                    PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType);
+        }
+
+        public void SetInpuptAreaActive(bool active)
+        {
+            inputButton.gameObject.SetActive(active);
+            inputTimeCircle.gameObject.SetActive(active);
         }
     }
 }

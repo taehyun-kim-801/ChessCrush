@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniRx;
+using UnityEngine;
 
 namespace ChessCrush.Game
 {
@@ -38,12 +39,12 @@ namespace ChessCrush.Game
                 hp.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.myStatus.hpText.text = $"{_} / 20";
-                    chessGameDirector.chessGameUI.myStatus.hpBar.fillAmount = _ / 20;
+                    chessGameDirector.chessGameUI.myStatus.hpBar.fillAmount = (float)_ / 20;
                 });
                 energyPoint.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.myStatus.energyText.text = $"{_} / 10";
-                    chessGameDirector.chessGameUI.myStatus.energyBar.fillAmount = _ / 10;
+                    chessGameDirector.chessGameUI.myStatus.energyBar.fillAmount = (float)_ / 10;
                 });
                 actionsSubject.Subscribe(list => chessGameDirector.chessGameUI.chessActionScroll.SetView(list));
                 actionsSubject.Subscribe(list => chessGameDirector.chessGameObjects.SetExpectedAction(list));
@@ -54,15 +55,20 @@ namespace ChessCrush.Game
                 //TODO: isWhite Subscribe
                 hp.Subscribe(_ =>
                 {
-                    chessGameDirector.chessGameUI.enemyStatus.hpText.text = $"{_} / 20";
-                    chessGameDirector.chessGameUI.enemyStatus.hpBar.fillAmount = _ / 20;
+                    chessGameDirector.chessGameUI.enemyStatus.hpText.text = $"{_.ToString()} / 20";
+                    chessGameDirector.chessGameUI.enemyStatus.hpBar.fillAmount = (float)_ / 20;
                 });
                 energyPoint.Subscribe(_ =>
                 {
-                    chessGameDirector.chessGameUI.enemyStatus.energyText.text = $"{_} / 10";
-                    chessGameDirector.chessGameUI.enemyStatus.energyBar.fillAmount = _ / 10;
+                    chessGameDirector.chessGameUI.enemyStatus.energyText.text = $"{_.ToString()} / 10";
+                    chessGameDirector.chessGameUI.enemyStatus.energyBar.fillAmount = (float)_ / 10;
                 });
             }
+
+            chessGameDirector.turnCount.Subscribe(value =>
+            {
+                if (value > 0) energyPoint.Value = Mathf.Clamp(energyPoint.Value + 1, 0, 10);
+            }).AddTo(chessGameDirector);
         }
 
         public void Dispose()

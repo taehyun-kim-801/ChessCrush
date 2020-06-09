@@ -331,6 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934512846946655}
   pieceSpawnType: 3
 --- !u!1 &3631934511822075139
 GameObject:
@@ -467,6 +468,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934513366991486}
   pieceSpawnType: 5
 --- !u!1 &3631934511865910172
 GameObject:
@@ -828,6 +830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934512235628139}
   pieceSpawnType: 1
 --- !u!1 &3631934512020018885
 GameObject:
@@ -1273,6 +1276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934512401594587}
   pieceSpawnType: 2
 --- !u!1 &3631934512235628137
 GameObject:
@@ -2251,6 +2255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934513026177711}
   pieceSpawnType: 4
 --- !u!1 &3631934513026177709
 GameObject:
@@ -2616,6 +2621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5914d9ae081c9e448f29f05a274bacb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessImage: {fileID: 3631934512444507051}
   pieceSpawnType: 6
 --- !u!1 &3631934513448340515
 GameObject:
