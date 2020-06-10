@@ -86,6 +86,29 @@ namespace ChessCrush.Game
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+
+                    if(defensePlayer.IsMe && piece.chessBoardVector.y == 7)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() =>
+                        {
+                            particleDirector.PlayVFX<HitsVFX>(myBoardVector.ToWorldVectorOfCenter());
+                            piece.gameObject.SetActive(false);
+                            chessGameDirector.enemyPlayer.Hp.Value -= piece.Power;
+                        });
+                    }
+                    else if(!defensePlayer.IsMe && piece.chessBoardVector.y == 0)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() =>
+                        {
+                            particleDirector.PlayVFX<HitsVFX>(myBoardVector.ToWorldVectorOfCenter());
+                            piece.gameObject.SetActive(false);
+                            chessGameDirector.player.Hp.Value -= piece.Power;
+                        });
+                    }
                 }
             }
 
@@ -115,12 +138,35 @@ namespace ChessCrush.Game
 
                         result.AppendCallback(() => 
                         {
-                            particleDirector.PlaySkullGhostVFX(myBoardVector.ToWorldVectorOfCenter());
+                            particleDirector.PlayVFX<SkullGhostVFX>(myBoardVector.ToWorldVectorOfCenter());
                             chessPiece.gameObject.SetActive(false);
                         });
                     }
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+
+                    if (attackPlayer.IsMe && piece.chessBoardVector.y == 7)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() =>
+                        {
+                            particleDirector.PlayVFX<HitsVFX>(myBoardVector.ToWorldVectorOfCenter());
+                            piece.gameObject.SetActive(false);
+                            chessGameDirector.enemyPlayer.Hp.Value -= piece.Power;
+                        });
+                    }
+                    else if (!attackPlayer.IsMe && piece.chessBoardVector.y == 0)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() =>
+                        {
+                            particleDirector.PlayVFX<HitsVFX>(myBoardVector.ToWorldVectorOfCenter());
+                            piece.gameObject.SetActive(false);
+                            chessGameDirector.player.Hp.Value -= piece.Power;
+                        });
+                    }
                 }
             }
 

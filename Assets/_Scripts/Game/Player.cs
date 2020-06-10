@@ -10,8 +10,8 @@ namespace ChessCrush.Game
         private ReactiveProperty<string> name = new ReactiveProperty<string>();
         private ReactiveProperty<bool> isWhite = new ReactiveProperty<bool>();
         public bool IsWhite { get { return isWhite.Value; } }
-        private ReactiveProperty<int> hp = new ReactiveProperty<int>();
-        private ReactiveProperty<int> energyPoint = new ReactiveProperty<int>();
+        public ReactiveProperty<int> Hp { get; private set; } = new ReactiveProperty<int>();
+        public ReactiveProperty<int> EnergyPoint { get; private set; } = new ReactiveProperty<int>();
         public bool IsMe { get; private set; }
         public List<ChessAction> chessActions = new List<ChessAction>();
         public Subject<List<ChessAction>> actionsSubject = new Subject<List<ChessAction>>();
@@ -26,8 +26,8 @@ namespace ChessCrush.Game
         {
             this.name.Value = name;
             this.isWhite.Value = isWhite;
-            hp.Value = 20;
-            energyPoint.Value = 0;
+            Hp.Value = 20;
+            EnergyPoint.Value = 0;
             chessActions = new List<ChessAction>();
             this.IsMe = isMe;
 
@@ -36,12 +36,12 @@ namespace ChessCrush.Game
             {
                 this.name.Subscribe(str => chessGameDirector.chessGameUI.myStatus.nameText.text = $"Player: {str}");
                 //TODO: isWhite Subscribe
-                hp.Subscribe(_ =>
+                Hp.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.myStatus.hpText.text = $"{_} / 20";
                     chessGameDirector.chessGameUI.myStatus.hpBar.fillAmount = (float)_ / 20;
                 });
-                energyPoint.Subscribe(_ =>
+                EnergyPoint.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.myStatus.energyText.text = $"{_} / 10";
                     chessGameDirector.chessGameUI.myStatus.energyBar.fillAmount = (float)_ / 10;
@@ -53,12 +53,12 @@ namespace ChessCrush.Game
             {
                 this.name.Subscribe(str => chessGameDirector.chessGameUI.enemyStatus.nameText.text = $"Player: {str}");
                 //TODO: isWhite Subscribe
-                hp.Subscribe(_ =>
+                Hp.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.enemyStatus.hpText.text = $"{_.ToString()} / 20";
                     chessGameDirector.chessGameUI.enemyStatus.hpBar.fillAmount = (float)_ / 20;
                 });
-                energyPoint.Subscribe(_ =>
+                EnergyPoint.Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.enemyStatus.energyText.text = $"{_.ToString()} / 10";
                     chessGameDirector.chessGameUI.enemyStatus.energyBar.fillAmount = (float)_ / 10;
@@ -67,7 +67,7 @@ namespace ChessCrush.Game
 
             chessGameDirector.turnCount.Subscribe(value =>
             {
-                if (value > 0) energyPoint.Value = Mathf.Clamp(energyPoint.Value + 1, 0, 10);
+                if (value > 0) EnergyPoint.Value = Mathf.Clamp(EnergyPoint.Value + 1, 0, 10);
             }).AddTo(chessGameDirector);
         }
 
@@ -75,8 +75,8 @@ namespace ChessCrush.Game
         {
             name.Dispose();
             isWhite.Dispose();
-            hp.Dispose();
-            energyPoint.Dispose();
+            Hp.Dispose();
+            EnergyPoint.Dispose();
             actionsSubject.Dispose();
         }
     }

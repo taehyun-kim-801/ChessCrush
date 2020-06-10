@@ -13,6 +13,7 @@ namespace ChessCrush.Game
 
         private SpriteRenderer spriteRenderer;
 
+        public int Power { get; private set; }
         public bool IsMine { get; private set; }
         private bool isExpected;
 
@@ -41,9 +42,11 @@ namespace ChessCrush.Game
             else
                 PieceId = pieceId;
             MoveTo(x, y);
+
             this.PieceType = pieceType;
             this.isExpected = isExpected;
             this.IsMine = isMine;
+            Power = GetPower();
 
             if (isExpected)
                 spriteRenderer.color = new Color(1, 1, 1, 0.5f);
@@ -87,6 +90,20 @@ namespace ChessCrush.Game
                     return Resources.Load<Sprite>(string.Format(path, "Black_King"));
             }
             return null;
+        }
+
+        private int GetPower()
+        {
+            switch(PieceType)
+            {
+                case PieceType.Pawn: return 1;
+                case PieceType.Bishop: return 2;
+                case PieceType.Knight: return 2;
+                case PieceType.Rook: return 3;
+                case PieceType.Queen: return 4;
+                case PieceType.King: return 6;
+                default: return 0;
+            }
         }
     }
 }
