@@ -25,11 +25,20 @@ namespace ChessCrush.Game
 
         public event Action gameReadyEvents;
 
-        public int myLocalEnergy;
+        public ReactiveProperty<int?> myLocalEnergy = new ReactiveProperty<int?>();
 
         public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
 
         private BackendDirector backendDirector;
+
+        private void Awake()
+        {
+            myLocalEnergy.Where(value => !(value is null)).Subscribe(value =>
+              {
+                  chessGameUI.myStatus.energyText.text = $"{value} / 10";
+                  chessGameUI.myStatus.energyBar.fillAmount = (float)value / 10;
+              }).AddTo(gameObject);
+        }
 
         private void Start()
         {
@@ -64,6 +73,7 @@ namespace ChessCrush.Game
             {
                 turnCount.Value++;
                 chessGameUI.SetSelectButtons(chessGameObjects.chessBoard.Pieces);
+                myLocalEnergy.Value = player.EnergyPoint.Value;
                 yield return StartCoroutine(CoInput());
                 yield return StartCoroutine(CoSimulate());
             }
@@ -86,6 +96,11 @@ namespace ChessCrush.Game
         private IEnumerator CoSimulate()
         {
             yield return new WaitUntil(() => receivedData);
+
+            myLocalEnergy.Value = null;
+            chessGameUI.myStatus.energyText.text = $"{player.EnergyPoint.Value} / 10";
+            chessGameUI.myStatus.energyBar.fillAmount = (float)player.EnergyPoint.Value / 10;
+
             chessGameObjects.DestroyExpectedAction();
 
             Sequence seq = DOTween.Sequence();

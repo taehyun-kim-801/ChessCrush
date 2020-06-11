@@ -1,4 +1,5 @@
-﻿using ChessCrush.Game;
+﻿using ChessCrush;
+using ChessCrush.Game;
 using System.Text;
 using UniRx;
 using UnityEngine;
@@ -11,14 +12,24 @@ public class ChessActionView : MonoBehaviour
     private Button deleteButton;
     private ChessAction action;
 
+    private ChessGameDirector chessGameDirector;
+
     private void Awake()
     {
         deleteButton.OnClickAsObservable().Subscribe(_ =>
         {
-            var player = Director.instance.GetSubDirector<ChessGameDirector>().player;
+            var player = chessGameDirector.player;
             player.chessActions.Remove(action);
             player.actionsSubject.OnNext(player.chessActions);
+
+            if(action.pieceId == 0)
+                chessGameDirector.myLocalEnergy.Value += action.pieceType.GetNeedEnergy();
         });
+    }
+
+    private void Start()
+    {
+        chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
     }
 
     public void SetText(ChessAction action)
