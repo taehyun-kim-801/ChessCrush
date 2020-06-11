@@ -13,7 +13,6 @@ namespace ChessCrush.UI
         [SerializeField]
         private Image chessImage;
         public PieceType pieceSpawnType;
-        private int needEnergy;
 
         private ChessGameDirector chessGameDirector;
         private ResourceDirector resourceDirector;
@@ -23,7 +22,6 @@ namespace ChessCrush.UI
             button = GetComponent<Button>();
             buttonImage = gameObject.GetComponent<Image>();
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton());
-            needEnergy = SetNeedEnergy();
         }
 
         private void Start()
@@ -64,20 +62,6 @@ namespace ChessCrush.UI
                 {
                     var square = AbleMoveSquare.UseWithComponent(0, new ChessBoardVector(i, 0), pieceSpawnType);
                 }
-            }
-        }
-
-        private int SetNeedEnergy()
-        {
-            switch(pieceSpawnType)
-            {
-                case PieceType.Pawn: return 1;
-                case PieceType.Bishop: return 3;
-                case PieceType.Knight: return 3;
-                case PieceType.Rook: return 5;
-                case PieceType.Queen: return 7;
-                case PieceType.King: return 8;
-                default: return 0;
             }
         }
     }

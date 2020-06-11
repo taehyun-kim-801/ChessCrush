@@ -12,9 +12,9 @@ namespace ChessCrush.Game
             objectPool = gameObject.GetComponent<ObjectPool>();
         }
 
-        public void PlaySkullGhostVFX(Vector3 position)
-        { 
-            var result = objectPool.Use(nameof(SkullGhostVFX)).GetComponent<SkullGhostVFX>();
+        public void PlayVFX<T>(Vector3 position) where T: VFX.VFX
+        {
+            var result = objectPool.Use(typeof(T).Name).GetComponent<T>();
             result.PlayOn(position);
         }
     }

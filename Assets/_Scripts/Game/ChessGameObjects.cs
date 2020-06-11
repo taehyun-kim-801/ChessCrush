@@ -86,6 +86,19 @@ namespace ChessCrush.Game
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+
+                    if(defensePlayer.IsMe && piece.chessBoardVector.y == 7)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() => PlayerHitAnimation(false, piece));
+                    }
+                    else if(!defensePlayer.IsMe && piece.chessBoardVector.y == 0)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() => PlayerHitAnimation(true, piece));
+                    }
                 }
             }
 
@@ -115,16 +128,40 @@ namespace ChessCrush.Game
 
                         result.AppendCallback(() => 
                         {
-                            particleDirector.PlaySkullGhostVFX(myBoardVector.ToWorldVectorOfCenter());
+                            particleDirector.PlayVFX<SkullGhostVFX>(myBoardVector.ToWorldVectorOfCenter());
                             chessPiece.gameObject.SetActive(false);
                         });
                     }
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+
+                    if (attackPlayer.IsMe && piece.chessBoardVector.y == 7)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() => PlayerHitAnimation(false, piece));
+                    }
+                    else if (!attackPlayer.IsMe && piece.chessBoardVector.y == 0)
+                    {
+                        chessGameDirector.chessGameObjects.chessBoard.RemoveChessPiece(piece);
+
+                        result.AppendCallback(() => PlayerHitAnimation(true, piece));
+                    }
                 }
             }
 
             return result;
+        }
+
+        private void PlayerHitAnimation(bool isMe, ChessPiece piece)
+        {
+            particleDirector.PlayVFX<HitsVFX>(piece.chessBoardVector.ToWorldVectorOfCenter());
+            piece.gameObject.SetActive(false);
+            Director.instance.camera.Vibrate(0.15f, 0.3f);
+            if (isMe)
+                chessGameDirector.player.Hp.Value -= piece.PieceType.GetPower();
+            else
+                chessGameDirector.enemyPlayer.Hp.Value -= piece.PieceType.GetPower();
         }
     }
 }

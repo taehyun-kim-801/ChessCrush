@@ -12,6 +12,8 @@ namespace ChessCrush.Game
     {
         static public Director instance;
         [NonSerialized]
+        public MainCamera camera;
+        [NonSerialized]
         public ObjectPool nonUiObjectPool;
         private DirectorsPool directorsPool;
 
@@ -30,6 +32,7 @@ namespace ChessCrush.Game
             DontDestroyOnLoad(gameObject);
             instance = this;
 
+            camera = Instantiate(Resources.Load("Prefabs/Main Camera") as GameObject).GetComponent<MainCamera>();
             Instantiate(Resources.Load("Prefabs/MainCanvas") as GameObject);
             nonUiObjectPool = Instantiate(Resources.Load("Prefabs/NonUIObjectPool") as GameObject).GetComponent<ObjectPool>();
             directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();

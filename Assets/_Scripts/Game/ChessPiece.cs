@@ -41,6 +41,7 @@ namespace ChessCrush.Game
             else
                 PieceId = pieceId;
             MoveTo(x, y);
+
             this.PieceType = pieceType;
             this.isExpected = isExpected;
             this.IsMine = isMine;
