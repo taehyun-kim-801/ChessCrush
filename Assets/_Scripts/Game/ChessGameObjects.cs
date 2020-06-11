@@ -79,6 +79,11 @@ namespace ChessCrush.Game
                     var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, defensePlayer.IsMe);
                     chessBoard.AddChessPiece(chessPiece);
                     result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
+
+                    if(defensePlayer.IsMe)
+                        result.AppendCallback(() => chessGameDirector.player.EnergyPoint.Value -= action.pieceType.GetNeedEnergy());
+                    else
+                        result.AppendCallback(() => chessGameDirector.enemyPlayer.EnergyPoint.Value -= action.pieceType.GetNeedEnergy());
                 }
                 else
                 {
@@ -115,6 +120,11 @@ namespace ChessCrush.Game
                 {
                     var chessPiece = ChessPiece.UseWithComponent(action.pieceId, myBoardVector.x, myBoardVector.y, action.pieceType, false, attackPlayer.IsMe);
                     chessBoard.AddChessPiece(chessPiece);
+
+                    if (attackPlayer.IsMe)
+                        result.AppendCallback(() => chessGameDirector.player.EnergyPoint.Value -= action.pieceType.GetNeedEnergy());
+                    else
+                        result.AppendCallback(() => chessGameDirector.enemyPlayer.EnergyPoint.Value -= action.pieceType.GetNeedEnergy());
                     result.Append(chessPiece.transform.DOScale(0, 1f).From().SetEase(Ease.OutBack));
                 }
                 else

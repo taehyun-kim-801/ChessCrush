@@ -42,6 +42,8 @@ namespace ChessCrush.UI
                       chessImage.sprite = resourceDirector.GetChessSprite(pieceSpawnType, false);
                   }
               };
+
+            chessGameDirector.myLocalEnergy.Where(value => !(value is null)).Subscribe(energy => button.enabled = pieceSpawnType.GetNeedEnergy() <= energy).AddTo(chessGameDirector);
         }
 
         private void SubscribeButton()
@@ -60,7 +62,7 @@ namespace ChessCrush.UI
                 }
                 else
                 {
-                    var square = AbleMoveSquare.UseWithComponent(0, new ChessBoardVector(i, 0), pieceSpawnType);
+                    var square = AbleMoveSquare.UseWithComponent(0, new ChessBoardVector(i, 0), pieceSpawnType, true);
                 }
             }
         }

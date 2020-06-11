@@ -41,7 +41,7 @@ namespace ChessCrush.Game
                     chessGameDirector.chessGameUI.myStatus.hpText.text = $"{_} / 20";
                     chessGameDirector.chessGameUI.myStatus.hpBar.fillAmount = (float)_ / 20;
                 });
-                EnergyPoint.Subscribe(_ =>
+                EnergyPoint.Where(_ => chessGameDirector.myLocalEnergy.Value is null).Subscribe(_ =>
                 {
                     chessGameDirector.chessGameUI.myStatus.energyText.text = $"{_} / 10";
                     chessGameDirector.chessGameUI.myStatus.energyBar.fillAmount = (float)_ / 10;
