@@ -29,6 +29,8 @@ namespace ChessCrush.Game
 
         public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
 
+        private Sequence actionAnimation;
+
         private BackendDirector backendDirector;
 
         private void Awake()
@@ -68,6 +70,20 @@ namespace ChessCrush.Game
         private IEnumerator CoGamePlay()
         {
             yield return new WaitWhile(() => player is null || enemyPlayer is null);
+            player.Hp.Where(value => value <= 0).Subscribe(_ =>
+            {
+                actionAnimation?.Kill(true);
+                actionAnimation = null;
+                StopAllCoroutines();
+            });
+
+            enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
+            {
+                actionAnimation?.Kill(true);
+                actionAnimation = null;
+                StopAllCoroutines();
+            });
+
             gameReadyEvents();
             while (true)
             {
@@ -103,14 +119,14 @@ namespace ChessCrush.Game
 
             chessGameObjects.DestroyExpectedAction();
 
-            Sequence seq = DOTween.Sequence();
+            actionAnimation = DOTween.Sequence();
             if ((player.IsWhite && turnCount.Value % 2 != 0) || (!player.IsWhite && turnCount.Value % 2 == 0))
-                seq = chessGameObjects.MakeActionAnimation(player, enemyPlayer);
+                actionAnimation = chessGameObjects.MakeActionAnimation(player, enemyPlayer);
             else
-                seq = chessGameObjects.MakeActionAnimation(enemyPlayer, player);
+                actionAnimation = chessGameObjects.MakeActionAnimation(enemyPlayer, player);
 
-            seq.Play();
-            yield return new WaitUntil(() => !seq.IsPlaying());
+            actionAnimation.Play();
+            yield return new WaitUntil(() => !actionAnimation.IsPlaying());
 
             inputCompleted = false;
             receivedData = false;
@@ -121,13 +137,20 @@ namespace ChessCrush.Game
             enemyPlayer.chessActions.Clear();
             enemyPlayer.actionsSubject.OnNext(enemyPlayer.chessActions);
 
-            seq.Kill(true);
+            actionAnimation.Kill(true);
         }
 
         public void SetPlayer(bool isWhite, string enemyName)
         {
             player = new Player(Director.instance.userInfo.Value.nickname, isWhite, true);
             enemyPlayer = new Player(enemyName, !isWhite, false);
+        }
+
+        public void GameEnd()
+        {
+            Director.instance.GetSubDirector<StartSceneDirector>();
+            chessGameUI.gameOverWidget.gameObject.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
 }

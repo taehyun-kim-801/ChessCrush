@@ -17,6 +17,7 @@ namespace ChessCrush.UI
         private Button inputButton;
         [SerializeField]
         private InputTimeCircle inputTimeCircle;
+        public GameOverWidget gameOverWidget;
 
         private ChessGameDirector chessGameDirector;
 
@@ -29,6 +30,16 @@ namespace ChessCrush.UI
                 inputTimeCircle.gameObject.SetActive(true);
             });
             inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            gameOverWidget.gameObject.SetActive(true);
+        }
+
+        private void OnDisable()
+        {
+            gameOverWidget.gameObject.SetActive(false);
         }
 
         public void SetSelectButtons(List<ChessPiece> pieces)
