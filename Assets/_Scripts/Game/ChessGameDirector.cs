@@ -99,10 +99,10 @@ namespace ChessCrush.Game
         {
             float temp = Time.time;
 
-            chessGameUI.SetInpuptAreaActive(true);
+            chessGameUI.SetInputAreaActive(true);
             yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
 
-            chessGameUI.SetInpuptAreaActive(false);
+            chessGameUI.SetInputAreaActive(false);
 
             var oms = new OutputMemoryStream();
             oms.Write(player.chessActions);

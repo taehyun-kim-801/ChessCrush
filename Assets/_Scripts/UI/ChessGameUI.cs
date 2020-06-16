@@ -45,7 +45,7 @@ namespace ChessCrush.UI
                     PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType);
         }
 
-        public void SetInpuptAreaActive(bool active)
+        public void SetInputAreaActive(bool active)
         {
             inputButton.gameObject.SetActive(active);
             inputTimeCircle.gameObject.SetActive(active);
