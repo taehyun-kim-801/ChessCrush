@@ -32,11 +32,6 @@ namespace ChessCrush.UI
             inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
         }
 
-        private void OnEnable()
-        {
-            gameOverWidget.gameObject.SetActive(true);
-        }
-
         private void OnDisable()
         {
             gameOverWidget.gameObject.SetActive(false);
