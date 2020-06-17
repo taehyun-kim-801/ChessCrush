@@ -27,8 +27,7 @@ namespace ChessCrush.Game
 
         public void MoveTo(int x, int y)
         {
-            chessBoardVector.x = x;
-            chessBoardVector.y = y;
+            chessBoardVector = new ChessBoardVector(x, y);
         }
 
         private void Initialize(int pieceId, int x, int y, PieceType pieceType, bool isExpected, bool isMine)
@@ -57,9 +56,6 @@ namespace ChessCrush.Game
                 spriteRenderer.sprite = resourceDirector.GetChessSprite(pieceType, chessGameDirector.enemyPlayer.IsWhite);
 
             transform.position = chessBoardVector.ToWorldVector();
-
-            if(!isExpected)
-                PieceSelectButton.UseWithComponent(pieceId, chessBoardVector, pieceType);
         }
 
         public static ChessPiece UseWithComponent(int pieceId, int x, int y, PieceType pieceType, bool isExpected, bool isMine)

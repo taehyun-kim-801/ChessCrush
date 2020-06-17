@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ChessCrush
 {
-    public class ChessBoardVector
+    public struct ChessBoardVector
     {
         public int x;
         public int y;
@@ -11,7 +11,6 @@ namespace ChessCrush
         static Vector2 originPosition;
         private static readonly float ChessBoardBlockSize = 0.73f;
 
-        public ChessBoardVector() { }
         public ChessBoardVector(int x,int y) { this.x = x; this.y = y; }
 
         public Vector3 ToWorldVector()
