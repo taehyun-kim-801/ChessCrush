@@ -17,6 +17,8 @@ namespace ChessCrush.UI
         private Button inputButton;
         [SerializeField]
         private InputTimeCircle inputTimeCircle;
+        [SerializeField]
+        private GameObject waitingTextObject;
         public GameOverWidget gameOverWidget;
 
         private ChessGameDirector chessGameDirector;
@@ -49,6 +51,7 @@ namespace ChessCrush.UI
         {
             inputButton.gameObject.SetActive(active);
             inputTimeCircle.gameObject.SetActive(active);
+            waitingTextObject.SetActive(!active);
         }
     }
 }
