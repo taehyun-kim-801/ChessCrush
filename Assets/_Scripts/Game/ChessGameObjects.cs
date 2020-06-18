@@ -90,7 +90,10 @@ namespace ChessCrush.Game
                     var piece = chessBoard.GetChessPieceById(action.pieceId);
 
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
+
+                    result.AppendCallback(() => piece.SetMovingState(true));
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+                    result.AppendCallback(() => piece.SetMovingState(false));
 
                     if(defensePlayer.IsMe && piece.chessBoardVector.y == 7)
                     {
@@ -143,7 +146,10 @@ namespace ChessCrush.Game
                         });
                     }
                     piece.MoveTo(myBoardVector.x, myBoardVector.y);
+
+                    result.AppendCallback(() => piece.SetMovingState(true));
                     result.Append(piece.transform.DOMove(piece.chessBoardVector.ToWorldVector(), 1f));
+                    result.AppendCallback(() => piece.SetMovingState(false));
 
                     if (attackPlayer.IsMe && piece.chessBoardVector.y == 7)
                     {
