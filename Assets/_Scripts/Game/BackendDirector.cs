@@ -157,7 +157,7 @@ namespace ChessCrush.Game
                     {
                         var ims = new InputMemoryStream(args.BinaryUserData);
                         ims.Read(out chessGameDirector.enemyPlayer.chessActions);
-                        chessGameDirector.receivedData = true;
+                        chessGameDirector.ReceivedData.Value = true;
                     }
                 }
             };

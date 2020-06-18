@@ -12,7 +12,7 @@ namespace ChessCrush.Game
         [NonSerialized]
         public bool inputCompleted;
         [NonSerialized]
-        public bool receivedData;
+        public ReactiveProperty<bool> ReceivedData = new ReactiveProperty<bool>();
         [NonSerialized]
         public ChessGameObjects chessGameObjects;
         [NonSerialized]
@@ -111,7 +111,7 @@ namespace ChessCrush.Game
 
         private IEnumerator CoSimulate()
         {
-            yield return new WaitUntil(() => receivedData);
+            yield return new WaitUntil(() => ReceivedData.Value);
 
             myLocalEnergy.Value = null;
             chessGameUI.myStatus.energyText.text = $"{player.EnergyPoint.Value} / 10";
@@ -129,7 +129,7 @@ namespace ChessCrush.Game
             yield return new WaitUntil(() => !actionAnimation.IsPlaying());
 
             inputCompleted = false;
-            receivedData = false;
+            ReceivedData.Value = false;
 
             player.chessActions.Clear();
             player.actionsSubject.OnNext(player.chessActions);
