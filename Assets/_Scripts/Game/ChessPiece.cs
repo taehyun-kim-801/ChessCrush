@@ -85,5 +85,13 @@ namespace ChessCrush.Game
             }
             return null;
         }
+
+        public void SetMovingState(bool isMoving)
+        {
+            if (isMoving)
+                spriteRenderer.sortingOrder = 2;
+            else
+                spriteRenderer.sortingOrder = 1;
+        }
     }
 }
