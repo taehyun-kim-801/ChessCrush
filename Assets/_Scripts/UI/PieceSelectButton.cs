@@ -6,7 +6,7 @@ namespace ChessCrush.UI
 {
     public class PieceSelectButton: ChessBoardObject
     {
-        private int pieceId;
+        public int PieceId { get; private set; }
         private Button button;
         private PieceType pieceType;
         private static ChessGameDirector chessGameDirector;
@@ -29,25 +29,27 @@ namespace ChessCrush.UI
             {
                 case PieceType.Pawn:
                     UsePawnMoveSquare();
-                    return;
+                    break;
                 case PieceType.Bishop:
                     UseBishopMoveSquare();
-                    return;
+                    break;
                 case PieceType.Knight:
                     UseKnightMoveSquare();
-                    return;
+                    break;
                 case PieceType.Rook:
                     UseRookMoveSquare();
-                    return;
+                    break;
                 case PieceType.Queen:
                     UseQueenMoveSquare();
-                    return;
+                    break;
                 case PieceType.King:
                     UseKingMoveSquare();
-                    return;
+                    break;
                 default:
                     return;
             }
+
+            gameObject.SetActive(false);
         }
 
         #region Use MoveSquare
@@ -126,13 +128,13 @@ namespace ChessCrush.UI
             else if (chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(position.x, position.y, true))
                 DisableMoveSquare.UseWithComponent(position);
             else
-                AbleMoveSquare.UseWithComponent(pieceId, position, pieceType);
+                AbleMoveSquare.UseWithComponent(PieceId, position, pieceType);
         }
         #endregion
 
         private void Initialize(int pieceId, ChessBoardVector position, PieceType pieceType)
         {
-            this.pieceId = pieceId;
+            this.PieceId = pieceId;
             base.Initialize(position.x, position.y);
             chessBoardPosition = position;
             this.pieceType = pieceType;

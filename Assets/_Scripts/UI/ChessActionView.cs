@@ -24,6 +24,8 @@ public class ChessActionView : MonoBehaviour
 
             if(action.pieceId == 0)
                 chessGameDirector.myLocalEnergy.Value += action.pieceType.GetNeedEnergy();
+
+            chessGameDirector.expectedActionDeleteSubject.OnNext(action.pieceId);
         });
     }
 
