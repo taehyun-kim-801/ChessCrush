@@ -29,6 +29,8 @@ namespace ChessCrush.Game
 
         public ReactiveProperty<int> turnCount = new ReactiveProperty<int>();
 
+        public Subject<int> expectedActionDeleteSubject = new Subject<int>();
+
         private Sequence actionAnimation;
 
         private BackendDirector backendDirector;

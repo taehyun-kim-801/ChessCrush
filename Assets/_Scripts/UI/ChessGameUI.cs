@@ -21,6 +21,8 @@ namespace ChessCrush.UI
         private GameObject waitingTextObject;
         public GameOverWidget gameOverWidget;
 
+        private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
+
         private ChessGameDirector chessGameDirector;
 
         private void Start()
@@ -30,7 +32,8 @@ namespace ChessCrush.UI
             {
                 turnText.text = $"Turn {value.ToString()}";
                 inputTimeCircle.gameObject.SetActive(true);
-            });
+            }).AddTo(chessGameDirector);
+            chessGameDirector.expectedActionDeleteSubject.Subscribe(value => pieceSelectButtons.Find(button => button.PieceId == value)?.gameObject.SetActive(true)).AddTo(chessGameDirector);
             inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
         }
 
@@ -42,9 +45,11 @@ namespace ChessCrush.UI
         public void SetSelectButtons(List<ChessPiece> pieces)
         {
             objectPool.DestroyAll();
+            pieceSelectButtons.Clear();
+
             foreach(var piece in pieces)
                 if(piece.IsMine)
-                    PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType);
+                    pieceSelectButtons.Add(PieceSelectButton.UseWithComponent(piece.PieceId, piece.chessBoardVector, piece.PieceType));
         }
 
         public void SetInputAreaActive(bool active)

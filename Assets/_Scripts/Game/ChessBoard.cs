@@ -13,7 +13,11 @@ namespace ChessCrush.Game
             int piecesIdx = Pieces.FindIndex(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
 
             if (piecesIdx != -1)
+            {
+                if (includeExpectedPieces)
+                    return expectedPieces.FindIndex(piece => piece.PieceId == Pieces[piecesIdx].PieceId) == -1;
                 return true;
+            }
             else if (includeExpectedPieces)
                 return expectedPieces.FindIndex(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y) != -1;
             else
@@ -23,10 +27,15 @@ namespace ChessCrush.Game
         public bool MyPieceIn(int x, int y, bool includeExpectedPieces=false)
         {
             int piecesIdx = Pieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y);
+
             if (piecesIdx != -1)
+            {
+                if (includeExpectedPieces)
+                    return expectedPieces.FindIndex(piece => piece.PieceId == Pieces[piecesIdx].PieceId) == -1;
                 return true;
+            }
             else if (includeExpectedPieces)
-                return expectedPieces.FindIndex(piece => piece.IsMine && piece.chessBoardVector.x == x && piece.chessBoardVector.y == y) != -1;
+                return expectedPieces.FindIndex(piece => piece.chessBoardVector.x == x && piece.chessBoardVector.y == y) != -1;
             else
                 return false;
         }

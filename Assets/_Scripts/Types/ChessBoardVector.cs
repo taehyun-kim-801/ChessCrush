@@ -11,7 +11,7 @@ namespace ChessCrush
         static Vector2 originPosition;
         private static readonly float ChessBoardBlockSize = 0.73f;
 
-        public ChessBoardVector(int x,int y) { this.x = x; this.y = y; }
+        public ChessBoardVector(int x, int y) { this.x = x; this.y = y; }
 
         public Vector3 ToWorldVector()
         {
