@@ -56,9 +56,9 @@ namespace ChessCrush.UI
         private void UsePawnMoveSquare()
         {
             UseMoveSquare(new ChessBoardVector(chessBoardPosition.x,chessBoardPosition.y + 1));
-            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(chessBoardPosition.x - 1, chessBoardPosition.y + 1))
+            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(chessBoardPosition.x - 1, chessBoardPosition.y + 1) && !chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(chessBoardPosition.x - 1, chessBoardPosition.y + 1))
                 UseMoveSquare(new ChessBoardVector(chessBoardPosition.x - 1, chessBoardPosition.y + 1));
-            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(chessBoardPosition.x + 1, chessBoardPosition.y + 1))
+            if (chessGameDirector.chessGameObjects.chessBoard.AnybodyIn(chessBoardPosition.x + 1, chessBoardPosition.y + 1) && !chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(chessBoardPosition.x + 1, chessBoardPosition.y + 1))
                 UseMoveSquare(new ChessBoardVector(chessBoardPosition.x + 1, chessBoardPosition.y + 1));
         }
 
