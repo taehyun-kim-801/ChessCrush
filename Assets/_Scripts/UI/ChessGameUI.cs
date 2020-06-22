@@ -33,7 +33,7 @@ namespace ChessCrush.UI
                 turnText.text = $"Turn {value.ToString()}";
                 inputTimeCircle.gameObject.SetActive(true);
             }).AddTo(chessGameDirector);
-            chessGameDirector.expectedActionDeleteSubject.Subscribe(value => pieceSelectButtons.Find(button => button.PieceId == value).gameObject.SetActive(true)).AddTo(chessGameDirector);
+            chessGameDirector.expectedActionDeleteSubject.Subscribe(value => pieceSelectButtons.Find(button => button.PieceId == value)?.gameObject.SetActive(true)).AddTo(chessGameDirector);
             inputButton.OnClickAsObservable().Subscribe(_ => chessGameDirector.inputCompleted = true).AddTo(gameObject);
         }
 

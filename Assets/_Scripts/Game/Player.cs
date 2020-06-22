@@ -71,6 +71,28 @@ namespace ChessCrush.Game
             }).AddTo(chessGameDirector);
         }
 
+        public void DeleteAction(ChessAction chessAction, bool isRecursive = false)
+        {
+            chessActions.Remove(chessAction);
+
+            if (chessAction.pieceId == 0)
+                chessGameDirector.myLocalEnergy.Value += chessAction.pieceType.GetNeedEnergy();
+            else
+            {
+                var chessBoard = chessGameDirector.chessGameObjects.chessBoard;
+                var piece = chessBoard.GetChessPieceById(chessAction.pieceId);
+                if (!(piece is null))
+                {
+                    ChessAction deleteAction = chessActions.Find(action => action.chessBoardVector.Equals(piece.chessBoardVector));
+                    if (!(deleteAction is null))
+                        DeleteAction(deleteAction, true);
+                }
+            }
+            if(!isRecursive)
+                actionsSubject.OnNext(chessActions);
+            chessGameDirector.expectedActionDeleteSubject.OnNext(chessAction.pieceId);
+        }
+
         public void Dispose()
         {
             name.Dispose();
