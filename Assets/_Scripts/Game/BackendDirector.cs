@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 namespace ChessCrush.Game
 {
