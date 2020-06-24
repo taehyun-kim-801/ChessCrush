@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace ChessCrush.Game
 {
@@ -163,7 +164,7 @@ namespace ChessCrush.Game
             };
 
             Backend.Match.OnMatchChat += args => { };
-            Backend.Match.OnMatchResult += args => { };
+            Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
             Backend.Match.OnLeaveInGameServer += args => { };
             Backend.Match.OnSessionOffline += args => { };
         }
