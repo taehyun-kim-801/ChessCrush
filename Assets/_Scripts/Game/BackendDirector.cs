@@ -163,7 +163,7 @@ namespace ChessCrush.Game
             };
 
             Backend.Match.OnMatchChat += args => { };
-            Backend.Match.OnMatchResult += args => { };
+            Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
             Backend.Match.OnLeaveInGameServer += args => { };
             Backend.Match.OnSessionOffline += args => { };
         }

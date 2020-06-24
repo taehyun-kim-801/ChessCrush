@@ -151,7 +151,7 @@ namespace ChessCrush.Game
         public void GameEnd()
         {
             Director.instance.GetSubDirector<StartSceneDirector>();
-            chessGameUI.gameOverWidget.gameObject.SetActive(true);
+            chessGameUI.gameOverWidget.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
     }
