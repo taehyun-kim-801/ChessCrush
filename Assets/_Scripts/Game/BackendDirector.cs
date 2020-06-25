@@ -20,6 +20,8 @@ namespace ChessCrush.Game
         private bool roomJoined;
         private bool inGameReady;
 
+        public bool MatchMakingServerJoined { get; private set; }
+
         public Action matchMakingSuccessCallback;
 
         private ChessGameDirector chessGameDirector;
@@ -73,6 +75,9 @@ namespace ChessCrush.Game
 
             Backend.Match.OnException += args =>
             {
+                if(args is ObjectDisposedException)
+                    return;
+
                 MessageBoxUI.UseWithComponent("Network error");
                 if (gameServerJoined)
                 {
@@ -261,6 +266,9 @@ namespace ChessCrush.Game
 
         public void SignOut(Action successCallback, Action<string> failedCallback)
         {
+            if (MatchMakingServerJoined)
+                LeaveMatchMakingServer();
+
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
@@ -288,6 +296,9 @@ namespace ChessCrush.Game
 
         public void LogOut(Action successCallback, Action<string> failedCallback)
         {
+            if (MatchMakingServerJoined)
+                LeaveMatchMakingServer();
+
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
@@ -324,7 +335,7 @@ namespace ChessCrush.Game
                 success.Value = true;
             });
 
-            success.Subscribe(value =>
+            success.ObserveOnMainThread().Subscribe(value =>
             {
                 if (value)
                 {
@@ -562,9 +573,15 @@ namespace ChessCrush.Game
         {
             if (!Backend.Match.JoinMatchMakingServer(out var errorInfo))
                 failedCallback("Failed to join match making server");
+            else
+                MatchMakingServerJoined = true;
         }
 
-        public void LeaveMatchMakingServer() => Backend.Match.LeaveMatchMakingServer();
+        public void LeaveMatchMakingServer()
+        {
+            Backend.Match.LeaveMatchMakingServer();
+            MatchMakingServerJoined = false;
+        }
 
         public void RequestMatchMaking(Action successCallback)
         {

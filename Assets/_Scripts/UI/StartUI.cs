@@ -12,6 +12,8 @@ namespace ChessCrush.UI
         [SerializeField]
         private SignWidget signWidget;
         [SerializeField]
+        private LoadingObjects loadingObjects;
+        [SerializeField]
         private GameObject afterSignInButtons;
         [SerializeField]
         private Button startButton;
@@ -47,7 +49,9 @@ namespace ChessCrush.UI
 
             startSceneDirector.signedIn.Subscribe(_ => SubscribeSignedIn(_)).AddTo(startSceneDirector);
 
+#if !UNITY_EDITOR
             backendDirector.LoginWithBackendToken(() => startSceneDirector.signedIn.Value = true, str => MessageBoxUI.UseWithComponent(str));
+#endif
         }
 
         private void SubscribeStartButton()
@@ -77,8 +81,19 @@ namespace ChessCrush.UI
         public void SubscribeSignedIn(bool value)
         {
             signInButton.gameObject.SetActive(!value);
-            afterSignInButtons.gameObject.SetActive(value);
-            Director.instance.GetUserInfo();
+            if (value)
+                loadingObjects.gameObject.SetActive(true);
+            else
+            {
+                afterSignInButtons.gameObject.SetActive(value);
+                Director.instance.userInfo.Value = default;
+            }
+        }
+
+        public void AfterLoading()
+        {
+            loadingObjects.gameObject.SetActive(false);
+            afterSignInButtons.gameObject.SetActive(true);
         }
 
         private void SubscribeQuitButton()
