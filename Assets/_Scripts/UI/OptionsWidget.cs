@@ -49,7 +49,6 @@ namespace ChessCrush.UI
             PlayerPrefs.DeleteKey("access_token");
             PlayerPrefs.DeleteKey("refresh_token");
             startSceneDirector.signedIn.Value = false;
-            backendDirector.LeaveMatchMakingServer();
             gameObject.SetActive(false);
         }
 
@@ -57,7 +56,6 @@ namespace ChessCrush.UI
         {
             MessageBoxUI.UseWithComponent("Success to log out");
             startSceneDirector.signedIn.Value = false;
-            backendDirector.LeaveMatchMakingServer();
             gameObject.SetActive(false);
         }
     }

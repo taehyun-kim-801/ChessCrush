@@ -36,6 +36,11 @@ namespace ChessCrush.UI
             StartCoroutine(CoEnable());
         }
 
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         private IEnumerator CoEnable()
         {
             Director.instance.GetUserInfo();

@@ -75,6 +75,9 @@ namespace ChessCrush.Game
 
             Backend.Match.OnException += args =>
             {
+                if(args is ObjectDisposedException)
+                    return;
+
                 MessageBoxUI.UseWithComponent("Network error");
                 if (gameServerJoined)
                 {
@@ -263,6 +266,9 @@ namespace ChessCrush.Game
 
         public void SignOut(Action successCallback, Action<string> failedCallback)
         {
+            if (MatchMakingServerJoined)
+                LeaveMatchMakingServer();
+
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
@@ -290,6 +296,9 @@ namespace ChessCrush.Game
 
         public void LogOut(Action successCallback, Action<string> failedCallback)
         {
+            if (MatchMakingServerJoined)
+                LeaveMatchMakingServer();
+
             var success = new ReactiveProperty<bool>();
             var bro = new BackendReturnObject();
 
@@ -326,7 +335,7 @@ namespace ChessCrush.Game
                 success.Value = true;
             });
 
-            success.Subscribe(value =>
+            success.ObserveOnMainThread().Subscribe(value =>
             {
                 if (value)
                 {
