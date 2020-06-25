@@ -20,6 +20,8 @@ namespace ChessCrush.Game
         private bool roomJoined;
         private bool inGameReady;
 
+        public bool MatchMakingServerJoined { get; private set; }
+
         public Action matchMakingSuccessCallback;
 
         private ChessGameDirector chessGameDirector;
@@ -562,9 +564,15 @@ namespace ChessCrush.Game
         {
             if (!Backend.Match.JoinMatchMakingServer(out var errorInfo))
                 failedCallback("Failed to join match making server");
+            else
+                MatchMakingServerJoined = true;
         }
 
-        public void LeaveMatchMakingServer() => Backend.Match.LeaveMatchMakingServer();
+        public void LeaveMatchMakingServer()
+        {
+            Backend.Match.LeaveMatchMakingServer();
+            MatchMakingServerJoined = false;
+        }
 
         public void RequestMatchMaking(Action successCallback)
         {
