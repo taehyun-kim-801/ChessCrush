@@ -19,6 +19,8 @@ namespace ChessCrush.UI
         private InputTimeCircle inputTimeCircle;
         [SerializeField]
         private GameObject waitingTextObject;
+        [SerializeField]
+        private ChessGameAlert chessGameAlert;
         public GameOverWidget gameOverWidget;
 
         private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
