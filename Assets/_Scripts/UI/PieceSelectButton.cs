@@ -48,8 +48,6 @@ namespace ChessCrush.UI
                 default:
                     return;
             }
-
-            gameObject.SetActive(false);
         }
 
         #region Use MoveSquare
@@ -128,7 +126,7 @@ namespace ChessCrush.UI
             else if (chessGameDirector.chessGameObjects.chessBoard.MyPieceIn(position.x, position.y, true))
                 DisableMoveSquare.UseWithComponent(position);
             else
-                AbleMoveSquare.UseWithComponent(PieceId, position, pieceType);
+                AbleMoveSquare.UseWithComponent(PieceId, position, pieceType, this);
         }
         #endregion
 

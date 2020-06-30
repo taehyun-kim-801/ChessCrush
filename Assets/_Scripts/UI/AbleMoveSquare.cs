@@ -12,7 +12,7 @@ namespace ChessCrush.UI
         private PieceType spawnType;
         private Button button;
         private ChessBoard chessBoard;
-        private bool isCreate;
+        private PieceSelectButton selectButton;
         public static ReactiveProperty<bool> haveToAppearProperty = new ReactiveProperty<bool>();
         private IDisposable haveToAppearPropertyCallback;
 
@@ -36,18 +36,19 @@ namespace ChessCrush.UI
             var gameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
             gameDirector.player.chessActions.Add(new ChessAction(pieceId, spawnType, new ChessBoardVector(chessBoardPosition.x,chessBoardPosition.y)));
             gameDirector.player.actionsSubject.OnNext(gameDirector.player.chessActions);
-            if (isCreate)
+            if (selectButton == null)
                 chessGameDirector.myLocalEnergy.Value -= spawnType.GetNeedEnergy();
+            selectButton?.gameObject.SetActive(false);
 
             haveToAppearProperty.Value = false;
         }
 
-        private void Initialize(int pieceId, int x, int y, PieceType spawnType, bool isCreate)
+        private void Initialize(int pieceId, int x, int y, PieceType spawnType, PieceSelectButton selectButton)
         {
             this.pieceId = pieceId;
             base.Initialize(x, y);
             this.spawnType = spawnType;
-            this.isCreate = isCreate;
+            this.selectButton = selectButton;
             haveToAppearProperty.Value = true;
             haveToAppearPropertyCallback = haveToAppearProperty.Subscribe(value =>
             {
@@ -63,10 +64,10 @@ namespace ChessCrush.UI
             haveToAppearPropertyCallback.Dispose();
         }
 
-        public static AbleMoveSquare UseWithComponent(int pieceId, ChessBoardVector boardVector, PieceType spawnType, bool isCreate = false)
+        public static AbleMoveSquare UseWithComponent(int pieceId, ChessBoardVector boardVector, PieceType spawnType, PieceSelectButton selectButton = null)
         {
             var result = Director.instance.GetSubDirector<ChessGameDirector>().chessGameUI.objectPool.Use(nameof(AbleMoveSquare)).GetComponent<AbleMoveSquare>();
-            result.Initialize(pieceId, boardVector.x, boardVector.y, spawnType, isCreate);
+            result.Initialize(pieceId, boardVector.x, boardVector.y, spawnType, selectButton);
             return result;
         }
     }
