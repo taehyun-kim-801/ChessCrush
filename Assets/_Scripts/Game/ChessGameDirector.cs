@@ -22,6 +22,7 @@ namespace ChessCrush.Game
 
         public Player player;
         public Player enemyPlayer;
+        public bool isPlayerWin;
 
         public event Action gameReadyEvents;
 
@@ -77,6 +78,7 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+                isPlayerWin = false;
             });
 
             enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
@@ -84,6 +86,7 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+                isPlayerWin = true;
             });
 
             gameReadyEvents();

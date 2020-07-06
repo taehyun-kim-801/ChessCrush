@@ -60,5 +60,8 @@ namespace ChessCrush.UI
             inputTimeCircle.gameObject.SetActive(active);
             waitingTextObject.SetActive(!active);
         }
+
+        public void UseAlert(string txt) => chessGameAlert.Appear(txt);
+        public void DisappearAlert() => chessGameAlert.Disappear();
     }
 }

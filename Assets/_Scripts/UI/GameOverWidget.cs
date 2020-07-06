@@ -1,5 +1,4 @@
 ﻿using ChessCrush.Game;
-using DG.Tweening;
 using System.Collections;
 using TMPro;
 using UniRx;
@@ -30,10 +29,8 @@ namespace ChessCrush.UI
 
         private void OnEnable()
         {
-            if (chessGameDirector?.player.Hp.Value <= 0)
-                StartCoroutine(CoEnable(true));
-            else if (chessGameDirector?.enemyPlayer.Hp.Value <= 0)
-                StartCoroutine(CoEnable(false));
+            if(!(chessGameDirector is null))
+                StartCoroutine(CoEnable(chessGameDirector.isPlayerWin));
         }
 
         private void OnDisable()

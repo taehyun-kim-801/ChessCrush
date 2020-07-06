@@ -22,6 +22,8 @@ namespace ChessCrush.Game
 
         public bool MatchMakingServerJoined { get; private set; }
 
+        private bool oppositeDisconnected;
+
         public Action matchMakingSuccessCallback;
 
         private ChessGameDirector chessGameDirector;
@@ -170,7 +172,24 @@ namespace ChessCrush.Game
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
             Backend.Match.OnLeaveInGameServer += args => { };
-            Backend.Match.OnSessionOffline += args => { };
+            Backend.Match.OnSessionOnline += args =>
+              {
+                  chessGameDirector.chessGameUI.DisappearAlert();
+              };
+
+            Backend.Match.OnSessionOffline += args => 
+            {
+                if(oppositeDisconnected)
+                {
+                    chessGameDirector.isPlayerWin = true;
+                    var result = new MatchGameResult();
+                    result.m_winners = new List<SessionId>() { GetMySessionId() };
+                    result.m_losers = new List<SessionId>() { GetOppositeSessionId() };
+                    Backend.Match.MatchEnd(result);
+                }
+                oppositeDisconnected = true;
+                chessGameDirector.chessGameUI.UseAlert("Opposite player disconnected.");
+            };
         }
 
         public void CustomSignUp(string id, string password, Action successCallback, Action<string> failedCallback)
@@ -615,5 +634,8 @@ namespace ChessCrush.Game
         public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
 
         public void SendDataToInGameRoom(byte[] data) => Backend.Match.SendDataToInGameRoom(data);
+
+        private SessionId GetMySessionId() => IsHost ? SessionIdList[0] : SessionIdList[1];
+        private SessionId GetOppositeSessionId() => IsHost ? SessionIdList[1] : SessionIdList[0];
     }
 }
