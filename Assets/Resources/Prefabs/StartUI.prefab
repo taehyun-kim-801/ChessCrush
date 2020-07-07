@@ -2415,7 +2415,7 @@ MonoBehaviour:
   loadingWidget: {fileID: 5716185544157680966}
   optionsWidget: {fileID: 9187138828284454344}
   friendsWidget: {fileID: 148290117269667254}
-  latestGameAlert: {fileID: 0}
+  latestGameAlert: {fileID: 6104402816746310955}
 --- !u!1 &1685292405170327435
 GameObject:
   m_ObjectHideFlags: 0
