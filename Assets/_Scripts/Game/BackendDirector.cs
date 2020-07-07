@@ -658,10 +658,9 @@ namespace ChessCrush.Game
 
             success.ObserveOnMainThread().Where(value=>value).Subscribe(value =>
             {
-                var saveToken = Backend.BMember.SaveToken(bro);
-                if (saveToken.IsSuccess() && saveToken.GetStatusCode() == "200")
+                if (bro.IsSuccess() && bro.GetStatusCode() == "200")
                 {
-                    latestGameRoom = saveToken.GetReturnValuetoJSON();
+                    latestGameRoom = bro.GetReturnValuetoJSON();
                     successCallback();
                 }
 
@@ -670,6 +669,6 @@ namespace ChessCrush.Game
             });
         }
 
-        public void RejoinGameServer() => JoinGameServer(latestGameRoom[0]["serverPublicHostName"].ToJson(), Convert.ToUInt16(latestGameRoom[0]["serverPort"].ToJson()), true);
+        public void RejoinGameServer() => JoinGameServer((string)latestGameRoom["serverPublicHostName"], (ushort)latestGameRoom["serverPort"], true);
     }
 }

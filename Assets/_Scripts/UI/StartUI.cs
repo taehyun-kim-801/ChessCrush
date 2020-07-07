@@ -96,7 +96,7 @@ namespace ChessCrush.UI
         {
             loadingObjects.gameObject.SetActive(false);
             afterSignInButtons.gameObject.SetActive(true);
-            backendDirector.LatestGameRoomActivate(() => latestGameAlert.GetComponent<Animator>().Play("Appear"));
+            backendDirector.LatestGameRoomActivate(() => latestGameAlert.gameObject.SetActive(true));
         }
 
         private void SubscribeQuitButton()
