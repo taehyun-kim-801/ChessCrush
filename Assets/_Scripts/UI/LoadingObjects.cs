@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace ChessCrush.UI
 {
-    public class LoadingObjects: MonoBehaviour
+    public class LoadingObjects : MonoBehaviour
     {
         [SerializeField]
         private Image loadingBar;

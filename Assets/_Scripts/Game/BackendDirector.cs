@@ -91,6 +91,11 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
+                if(!(latestGameRoom is null))
+                {
+                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+                    Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
+                }
                 if (!roomJoined)
                 {
                     Backend.Match.JoinGameRoom(gameRoomToken);
@@ -637,5 +642,34 @@ namespace ChessCrush.Game
 
         private SessionId GetMySessionId() => IsHost ? SessionIdList[0] : SessionIdList[1];
         private SessionId GetOppositeSessionId() => IsHost ? SessionIdList[1] : SessionIdList[0];
+
+        private JsonData latestGameRoom;
+
+        public void LatestGameRoomActivate(Action successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Match.IsGameRoomActivate(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Where(value=>value).Subscribe(value =>
+            {
+                var saveToken = Backend.BMember.SaveToken(bro);
+                if (saveToken.IsSuccess() && saveToken.GetStatusCode() == "200")
+                {
+                    latestGameRoom = saveToken.GetReturnValuetoJSON();
+                    successCallback();
+                }
+
+                bro.Clear();
+                success.Dispose();
+            });
+        }
+
+        public void RejoinGameServer() => JoinGameServer(latestGameRoom[0]["serverPublicHostName"].ToJson(), Convert.ToUInt16(latestGameRoom[0]["serverPort"].ToJson()), true);
     }
 }
