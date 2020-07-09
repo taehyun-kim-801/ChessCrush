@@ -65,33 +65,21 @@ namespace ChessCrush.Game
             return result;
         }
 
-        private static Sprite GetSprite(PieceType pieceType)
-        {
-            string path = "Textures/Chess/ChessPiece/{0}";
-            switch(pieceType)
-            {
-                case PieceType.Pawn:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Pawn"));
-                case PieceType.Bishop:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Bishop"));
-                case PieceType.Knight:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Knight"));
-                case PieceType.Rook:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Rook"));
-                case PieceType.Queen:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Queen"));
-                case PieceType.King:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_King"));
-            }
-            return null;
-        }
-
         public void SetMovingState(bool isMoving)
         {
             if (isMoving)
                 spriteRenderer.sortingOrder = 2;
             else
                 spriteRenderer.sortingOrder = 1;
+        }
+
+        public void Write(OutputMemoryStream oms)
+        {
+            oms.Write(PieceId);
+            oms.Write((int)PieceType);
+            oms.Write(chessBoardVector.x);
+            oms.Write(chessBoardVector.y);
+            oms.Write(!IsMine);
         }
     }
 }

@@ -18,9 +18,12 @@ namespace ChessCrush.UI
             animator = gameObject.GetComponent<Animator>();
             okayButton.OnClickAsObservable().Subscribe(_ => {
                 animator.Play($"{nameof(LatestGameAlert)}_Disappear");
-                backendDirector.RejoinGameServer();
+                backendDirector.RejoinGameServer(true);
             }).AddTo(gameObject);
-            cancelButton.OnClickAsObservable().Subscribe(_ => animator.Play($"{nameof(LatestGameAlert)}_Disappear")).AddTo(gameObject);
+            cancelButton.OnClickAsObservable().Subscribe(_ => {
+                animator.Play($"{nameof(LatestGameAlert)}_Disappear");
+                backendDirector.RejoinGameServer(false);
+            }).AddTo(gameObject);
         }
 
         private void Start()

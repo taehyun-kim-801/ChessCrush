@@ -13,6 +13,7 @@ namespace ChessCrush.UI
         private Text timeText;
 
         private float enableTime;
+        public float LessTime { get { return Time.time - enableTime; } }
 
         private void Awake()
         {

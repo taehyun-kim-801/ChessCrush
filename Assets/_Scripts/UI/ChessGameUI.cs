@@ -25,6 +25,8 @@ namespace ChessCrush.UI
 
         private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
 
+        public float LessTime => inputTimeCircle.LessTime;
+
         private ChessGameDirector chessGameDirector;
 
         private void Start()
