@@ -156,6 +156,8 @@ namespace ChessCrush.Game
             Director.instance.GetSubDirector<StartSceneDirector>();
             chessGameUI.gameOverWidget.gameObject.SetActive(false);
             gameObject.SetActive(false);
+            player.Dispose();
+            enemyPlayer.Dispose();
         }
     }
 }
