@@ -71,6 +71,12 @@ namespace ChessCrush.Game
             }).AddTo(chessGameDirector);
         }
 
+        public void Initialize(int hp,int energy)
+        {
+            Hp.Value = hp;
+            EnergyPoint.Value = energy;
+        }
+
         public void DeleteAction(ChessAction chessAction, bool isRecursive = false)
         {
             chessActions.Remove(chessAction);

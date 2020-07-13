@@ -19,9 +19,13 @@ namespace ChessCrush.UI
         private InputTimeCircle inputTimeCircle;
         [SerializeField]
         private GameObject waitingTextObject;
+        [SerializeField]
+        private ChessGameAlert chessGameAlert;
         public GameOverWidget gameOverWidget;
 
         private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
+
+        public float LessTime => inputTimeCircle.LessTime;
 
         private ChessGameDirector chessGameDirector;
 
@@ -58,5 +62,8 @@ namespace ChessCrush.UI
             inputTimeCircle.gameObject.SetActive(active);
             waitingTextObject.SetActive(!active);
         }
+
+        public void UseAlert(string txt) => chessGameAlert.Appear(txt);
+        public void DisappearAlert() => chessGameAlert.Disappear();
     }
 }

@@ -22,6 +22,8 @@ namespace ChessCrush.Game
 
         public bool MatchMakingServerJoined { get; private set; }
 
+        private bool oppositeDisconnected;
+
         public Action matchMakingSuccessCallback;
 
         private ChessGameDirector chessGameDirector;
@@ -78,17 +80,28 @@ namespace ChessCrush.Game
                 if(args is ObjectDisposedException)
                     return;
 
-                MessageBoxUI.UseWithComponent("Network error");
+                MessageBoxUI.UseWithComponent(args.Message);
                 if (gameServerJoined)
                 {
                     Backend.Match.LeaveGameServer();
                     gameServerJoined = false;
                 }
+                Debug.Log(args.StackTrace);
                 Debug.Log(args.Message);
             };
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
+                if(!(latestGameRoom is null || roomJoined))
+                {
+                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+                    Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
+                    gameServerJoined = true;
+                    roomJoined = true;
+                    var oms = new OutputMemoryStream();
+                    oms.Write(true);
+                    SendDataToInGameRoom(oms.buffer);
+                }
                 if (!roomJoined)
                 {
                     Backend.Match.JoinGameRoom(gameRoomToken);
@@ -106,6 +119,9 @@ namespace ChessCrush.Game
 
             Backend.Match.OnMatchInGameAccess += args => 
             {
+                if(SessionIdList is null)
+                    SessionIdList = new List<SessionId>();
+
                 foreach(var record in args.GameRecords)
                 {
                     if (SessionIdList.Contains(record.m_sessionId))
@@ -113,6 +129,7 @@ namespace ChessCrush.Game
 
                     SessionIdList.Add(record.m_sessionId);
                 }
+                SessionIdList.Sort();
             };
             Backend.Match.OnMatchInGameStart += () => 
             {
@@ -132,7 +149,36 @@ namespace ChessCrush.Game
             };
             Backend.Match.OnMatchRelay += args => 
             {
-                if(!inGameReady)
+                if(!(latestGameRoom is null || inGameReady))
+                {
+                    if (args.From.SessionId != SessionId.None && !IsMySessionId(args.From.SessionId))
+                    {
+                        var ims = new InputMemoryStream(args.BinaryUserData);
+                        ims.Read(out bool isHost);
+                        ims.Read(out int enemyHp);
+                        ims.Read(out int enemyEnergyPoint);
+                        ims.Read(out int playerHp);
+                        ims.Read(out int playerEnergyPoint);
+                        ims.Read(out int turnCount);
+                        ims.Read(out float lessTime);
+
+                        IsHost = isHost;
+                        chessGameDirector.SetPlayer(IsHost, GetNickNameBySessionId(SessionIdList[IsHost ? 1 : 0]));
+                        chessGameDirector.player.Initialize(playerHp, playerEnergyPoint);
+                        chessGameDirector.enemyPlayer.Initialize(enemyHp, enemyEnergyPoint);
+                        chessGameDirector.turnCount.Value = turnCount;
+
+                        ims.Read(out List<ChessPiece> pieces);
+
+                        pieces.ForEach(piece =>
+                        {
+                            chessGameDirector.chessGameObjects.chessBoard.AddChessPiece(piece);
+                        });
+
+                        inGameReady = true;
+                    }
+                }
+                else if(!inGameReady)
                 {
                     var ims = new InputMemoryStream(args.BinaryUserData);
                     ims.Read(out int rand);
@@ -160,9 +206,27 @@ namespace ChessCrush.Game
                 {
                     if (!IsMySessionId(args.From.SessionId))
                     {
-                        var ims = new InputMemoryStream(args.BinaryUserData);
-                        ims.Read(out chessGameDirector.enemyPlayer.chessActions);
-                        chessGameDirector.ReceivedData.Value = true;
+                        if (oppositeDisconnected)
+                        {
+                            oppositeDisconnected = false;
+                            chessGameDirector.chessGameUI.DisappearAlert();
+                            var oms = new OutputMemoryStream();
+                            oms.Write(!IsHost);
+                            oms.Write(chessGameDirector.player.Hp.Value);
+                            oms.Write(chessGameDirector.player.EnergyPoint.Value);
+                            oms.Write(chessGameDirector.enemyPlayer.Hp.Value);
+                            oms.Write(chessGameDirector.enemyPlayer.EnergyPoint.Value);
+                            oms.Write(chessGameDirector.turnCount.Value);
+                            oms.Write(chessGameDirector.chessGameUI.LessTime);
+                            oms.Write(chessGameDirector.chessGameObjects.chessBoard.Pieces);
+                            SendDataToInGameRoom(oms.buffer);
+                        }
+                        else
+                        {
+                            var ims = new InputMemoryStream(args.BinaryUserData);
+                            ims.Read(out chessGameDirector.enemyPlayer.chessActions);
+                            chessGameDirector.ReceivedData.Value = true;
+                        }
                     }
                 }
             };
@@ -170,7 +234,24 @@ namespace ChessCrush.Game
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
             Backend.Match.OnLeaveInGameServer += args => { };
-            Backend.Match.OnSessionOffline += args => { };
+            Backend.Match.OnSessionOnline += args =>
+              {
+              };
+
+            Backend.Match.OnSessionOffline += args => 
+            {
+                if(oppositeDisconnected)
+                {
+                    chessGameDirector.isPlayerWin = true;
+                    var result = new MatchGameResult();
+                    result.m_winners = new List<SessionId>() { GetMySessionId() };
+                    result.m_losers = new List<SessionId>() { GetOppositeSessionId() };
+                    Backend.Match.MatchEnd(result);
+                    return;
+                }
+                oppositeDisconnected = true;
+                chessGameDirector.chessGameUI.UseAlert("Opposite player disconnected.");
+            };
         }
 
         public void CustomSignUp(string id, string password, Action successCallback, Action<string> failedCallback)
@@ -615,5 +696,41 @@ namespace ChessCrush.Game
         public void JoinGameRoom() => Backend.Match.JoinGameRoom(roomToken);
 
         public void SendDataToInGameRoom(byte[] data) => Backend.Match.SendDataToInGameRoom(data);
+
+        private SessionId GetMySessionId() => IsHost ? SessionIdList[0] : SessionIdList[1];
+        private SessionId GetOppositeSessionId() => IsHost ? SessionIdList[1] : SessionIdList[0];
+
+        private JsonData latestGameRoom;
+        public bool IsReconnect => !(latestGameRoom is null);
+
+        public void LatestGameRoomActivate(Action successCallback)
+        {
+            var success = new ReactiveProperty<bool>();
+            var bro = new BackendReturnObject();
+
+            Backend.Match.IsGameRoomActivate(c =>
+            {
+                bro = c;
+                success.Value = true;
+            });
+
+            success.ObserveOnMainThread().Where(value=>value).Subscribe(value =>
+            {
+                if (bro.IsSuccess() && bro.GetStatusCode() == "200")
+                {
+                    latestGameRoom = bro.GetReturnValuetoJSON();
+                    successCallback();
+                }
+
+                bro.Clear();
+                success.Dispose();
+            });
+        }
+
+        public void RejoinGameServer(bool join) 
+        {
+            if (join) JoinGameServer((string)latestGameRoom["serverPublicHostName"], (ushort)latestGameRoom["serverPort"], true);
+            else latestGameRoom = null;
+        }
     }
 }

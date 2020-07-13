@@ -5,7 +5,7 @@ namespace ChessCrush.Game
 {
     public class ChessPiece: MonoBehaviour
     {
-        private static int pieceIdCount = 0;
+        public static int PieceIdCount { get; private set; }
 
         public int PieceId { get; private set; }
         public ChessBoardVector chessBoardVector { get; private set; }
@@ -36,9 +36,12 @@ namespace ChessCrush.Game
             resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
 
             if (pieceId == 0 && !isExpected)
-                PieceId = ++pieceIdCount;
+                PieceId = ++PieceIdCount;
             else
+            {
                 PieceId = pieceId;
+                if (PieceIdCount < pieceId) PieceIdCount = pieceId;
+            }
             MoveTo(x, y);
 
             this.PieceType = pieceType;
@@ -65,33 +68,21 @@ namespace ChessCrush.Game
             return result;
         }
 
-        private static Sprite GetSprite(PieceType pieceType)
-        {
-            string path = "Textures/Chess/ChessPiece/{0}";
-            switch(pieceType)
-            {
-                case PieceType.Pawn:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Pawn"));
-                case PieceType.Bishop:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Bishop"));
-                case PieceType.Knight:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Knight"));
-                case PieceType.Rook:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Rook"));
-                case PieceType.Queen:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_Queen"));
-                case PieceType.King:
-                    return Resources.Load<Sprite>(string.Format(path, "Black_King"));
-            }
-            return null;
-        }
-
         public void SetMovingState(bool isMoving)
         {
             if (isMoving)
                 spriteRenderer.sortingOrder = 2;
             else
                 spriteRenderer.sortingOrder = 1;
+        }
+
+        public void Write(OutputMemoryStream oms)
+        {
+            oms.Write(PieceId);
+            oms.Write((int)PieceType);
+            oms.Write(7 - chessBoardVector.x);
+            oms.Write(7 - chessBoardVector.y);
+            oms.Write(!IsMine);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace ChessCrush.Game
 
         public Player player;
         public Player enemyPlayer;
+        public bool isPlayerWin;
 
         public event Action gameReadyEvents;
 
@@ -32,6 +33,8 @@ namespace ChessCrush.Game
         public Subject<int> expectedActionDeleteSubject = new Subject<int>();
 
         private Sequence actionAnimation;
+
+        private bool initializedInReconnect;
 
         private BackendDirector backendDirector;
 
@@ -77,6 +80,7 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+                isPlayerWin = false;
             });
 
             enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
@@ -84,12 +88,17 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+                isPlayerWin = true;
             });
 
             gameReadyEvents();
             while (true)
             {
-                turnCount.Value++;
+                if (backendDirector.IsReconnect && !initializedInReconnect)
+                    initializedInReconnect = true;
+                else
+                    turnCount.Value++;
+
                 chessGameUI.SetSelectButtons(chessGameObjects.chessBoard.Pieces);
                 myLocalEnergy.Value = player.EnergyPoint.Value;
                 yield return StartCoroutine(CoInput());
@@ -153,6 +162,8 @@ namespace ChessCrush.Game
             Director.instance.GetSubDirector<StartSceneDirector>();
             chessGameUI.gameOverWidget.gameObject.SetActive(false);
             gameObject.SetActive(false);
+            player.Dispose();
+            enemyPlayer.Dispose();
         }
     }
 }

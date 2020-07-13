@@ -1,6 +1,5 @@
 ﻿using ChessCrush.Game;
 using System;
-using System.Runtime.CompilerServices;
 using UniRx;
 using UnityEngine.UI;
 

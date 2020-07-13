@@ -29,6 +29,8 @@ namespace ChessCrush.UI
         private GameObject optionsWidget;
         [SerializeField]
         private GameObject friendsWidget;
+        [SerializeField]
+        private GameObject latestGameAlert;
 
         private StartSceneDirector startSceneDirector;
         private BackendDirector backendDirector;
@@ -94,6 +96,7 @@ namespace ChessCrush.UI
         {
             loadingObjects.gameObject.SetActive(false);
             afterSignInButtons.gameObject.SetActive(true);
+            backendDirector.LatestGameRoomActivate(() => latestGameAlert.gameObject.SetActive(true));
         }
 
         private void SubscribeQuitButton()
