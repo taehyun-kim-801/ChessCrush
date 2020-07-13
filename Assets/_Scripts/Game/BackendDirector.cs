@@ -80,7 +80,7 @@ namespace ChessCrush.Game
                 if(args is ObjectDisposedException)
                     return;
 
-                MessageBoxUI.UseWithComponent("Network error");
+                MessageBoxUI.UseWithComponent(args.Message);
                 if (gameServerJoined)
                 {
                     Backend.Match.LeaveGameServer();
@@ -161,13 +161,19 @@ namespace ChessCrush.Game
                         ims.Read(out int playerEnergyPoint);
                         ims.Read(out int turnCount);
                         ims.Read(out float lessTime);
-                        ims.Read(out List<ChessPiece> pieces);
 
                         IsHost = isHost;
                         chessGameDirector.SetPlayer(IsHost, GetNickNameBySessionId(SessionIdList[IsHost ? 1 : 0]));
                         chessGameDirector.player.Initialize(playerHp, playerEnergyPoint);
                         chessGameDirector.enemyPlayer.Initialize(enemyHp, enemyEnergyPoint);
                         chessGameDirector.turnCount.Value = turnCount;
+
+                        ims.Read(out List<ChessPiece> pieces);
+
+                        pieces.ForEach(piece =>
+                        {
+                            chessGameDirector.chessGameObjects.chessBoard.AddChessPiece(piece);
+                        });
 
                         inGameReady = true;
                     }

@@ -34,6 +34,8 @@ namespace ChessCrush.Game
 
         private Sequence actionAnimation;
 
+        private bool initializedInReconnect;
+
         private BackendDirector backendDirector;
 
         private void Awake()
@@ -92,7 +94,11 @@ namespace ChessCrush.Game
             gameReadyEvents();
             while (true)
             {
-                turnCount.Value++;
+                if (backendDirector.IsReconnect && !initializedInReconnect)
+                    initializedInReconnect = true;
+                else
+                    turnCount.Value++;
+
                 chessGameUI.SetSelectButtons(chessGameObjects.chessBoard.Pieces);
                 myLocalEnergy.Value = player.EnergyPoint.Value;
                 yield return StartCoroutine(CoInput());

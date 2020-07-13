@@ -37,10 +37,11 @@ namespace ChessCrush
         public static void Read(this InputMemoryStream ims, out ChessPiece res)
         {
             ims.Read(out int pieceId);
+            ims.Read(out int pieceType);
             ims.Read(out int x);
             ims.Read(out int y);
-            ims.Read(out int pieceType);
             ims.Read(out bool isMine);
+
             res = ChessPiece.UseWithComponent(pieceId, x, y, (PieceType)pieceType, false, isMine);
         }
 

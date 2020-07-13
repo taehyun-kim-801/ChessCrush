@@ -5,7 +5,7 @@ namespace ChessCrush.Game
 {
     public class ChessPiece: MonoBehaviour
     {
-        private static int pieceIdCount = 0;
+        public static int PieceIdCount { get; private set; }
 
         public int PieceId { get; private set; }
         public ChessBoardVector chessBoardVector { get; private set; }
@@ -36,9 +36,12 @@ namespace ChessCrush.Game
             resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
 
             if (pieceId == 0 && !isExpected)
-                PieceId = ++pieceIdCount;
+                PieceId = ++PieceIdCount;
             else
+            {
                 PieceId = pieceId;
+                if (PieceIdCount < pieceId) PieceIdCount = pieceId;
+            }
             MoveTo(x, y);
 
             this.PieceType = pieceType;
@@ -77,8 +80,8 @@ namespace ChessCrush.Game
         {
             oms.Write(PieceId);
             oms.Write((int)PieceType);
-            oms.Write(chessBoardVector.x);
-            oms.Write(chessBoardVector.y);
+            oms.Write(7 - chessBoardVector.x);
+            oms.Write(7 - chessBoardVector.y);
             oms.Write(!IsMine);
         }
     }
