@@ -233,7 +233,16 @@ namespace ChessCrush.Game
 
             Backend.Match.OnMatchChat += args => { };
             Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
-            Backend.Match.OnLeaveInGameServer += args => { };
+            Backend.Match.OnLeaveInGameServer += args => 
+            {
+                gameServerJoined = false;
+                roomJoined = false;
+                inGameReady = false;
+                roomToken = null;
+                oppositeDisconnected = false;
+                SessionIdList = null;
+                latestGameRoom = null;
+            };
             Backend.Match.OnSessionOnline += args =>
               {
               };

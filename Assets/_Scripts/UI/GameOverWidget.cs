@@ -44,10 +44,8 @@ namespace ChessCrush.UI
 
         private IEnumerator CoEnable(bool isPlayerWin)
         {
-            if (isPlayerWin)
-                winText.gameObject.SetActive(true);
-            else
-                winText.gameObject.SetActive(false);
+            winText.gameObject.SetActive(isPlayerWin);
+            loseText.gameObject.SetActive(!isPlayerWin);
 
             yield return new WaitForSeconds(0.7f);
 
