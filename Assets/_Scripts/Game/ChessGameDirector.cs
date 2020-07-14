@@ -81,6 +81,7 @@ namespace ChessCrush.Game
                 actionAnimation = null;
                 StopAllCoroutines();
                 isPlayerWin = false;
+                chessGameUI.gameOverWidget.gameObject.SetActive(true);
             });
 
             enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
@@ -89,6 +90,7 @@ namespace ChessCrush.Game
                 actionAnimation = null;
                 StopAllCoroutines();
                 isPlayerWin = true;
+                chessGameUI.gameOverWidget.gameObject.SetActive(true);
             });
 
             gameReadyEvents();
