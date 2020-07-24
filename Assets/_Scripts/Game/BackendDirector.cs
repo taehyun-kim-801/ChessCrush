@@ -208,7 +208,6 @@ namespace ChessCrush.Game
                     {
                         if (oppositeDisconnected)
                         {
-                            oppositeDisconnected = false;
                             chessGameDirector.chessGameUI.DisappearAlert();
                             var oms = new OutputMemoryStream();
                             oms.Write(!IsHost);
