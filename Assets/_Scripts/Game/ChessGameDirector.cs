@@ -163,6 +163,7 @@ namespace ChessCrush.Game
         {
             Director.instance.GetSubDirector<StartSceneDirector>();
             chessGameUI.gameOverWidget.gameObject.SetActive(false);
+            chessGameObjects.chessBoard.ClearChessPieces();
             gameObject.SetActive(false);
             player.Dispose();
             enemyPlayer.Dispose();
