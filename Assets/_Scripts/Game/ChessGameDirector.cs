@@ -94,6 +94,7 @@ namespace ChessCrush.Game
             });
 
             gameReadyEvents();
+
             while (true)
             {
                 if (backendDirector.IsReconnect && !initializedInReconnect)
@@ -161,9 +162,13 @@ namespace ChessCrush.Game
 
         public void GameEnd()
         {
+            turnCount.Value = 0;
             Director.instance.GetSubDirector<StartSceneDirector>();
             chessGameUI.gameOverWidget.gameObject.SetActive(false);
+            chessGameObjects.chessBoard.ClearChessPieces();
+            chessGameObjects.chessBoard.ClearExpectedChessPieces();
             gameObject.SetActive(false);
+            backendDirector.LeaveGameServer();
             player.Dispose();
             enemyPlayer.Dispose();
         }

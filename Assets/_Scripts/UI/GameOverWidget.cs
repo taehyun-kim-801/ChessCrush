@@ -29,8 +29,16 @@ namespace ChessCrush.UI
 
         private void OnEnable()
         {
-            if(!(chessGameDirector is null))
-                StartCoroutine(CoEnable(chessGameDirector.isPlayerWin));
+            winText.gameObject.SetActive(false);
+            loseText.gameObject.SetActive(false);
+            rateText.gameObject.SetActive(false);
+            rateNumText.gameObject.SetActive(false);
+            continueButton.gameObject.SetActive(false);
+
+            if (chessGameDirector is null)
+                chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
+            StartCoroutine(CoEnable(chessGameDirector.isPlayerWin));
         }
 
         private void OnDisable()
@@ -40,6 +48,7 @@ namespace ChessCrush.UI
             rateText.gameObject.SetActive(false);
             rateNumText.gameObject.SetActive(false);
             continueButton.gameObject.SetActive(false);
+            StopAllCoroutines();
         }
 
         private IEnumerator CoEnable(bool isPlayerWin)

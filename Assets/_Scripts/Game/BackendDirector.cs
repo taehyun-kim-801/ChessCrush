@@ -208,7 +208,6 @@ namespace ChessCrush.Game
                     {
                         if (oppositeDisconnected)
                         {
-                            oppositeDisconnected = false;
                             chessGameDirector.chessGameUI.DisappearAlert();
                             var oms = new OutputMemoryStream();
                             oms.Write(!IsHost);
@@ -740,6 +739,19 @@ namespace ChessCrush.Game
         {
             if (join) JoinGameServer((string)latestGameRoom["serverPublicHostName"], (ushort)latestGameRoom["serverPort"], true);
             else latestGameRoom = null;
+        }
+
+        public void LeaveGameServer() => Backend.Match.LeaveGameServer();
+
+        public void MatchEnd(bool playerWin)
+        {
+            if(IsHost)
+            {
+                if (playerWin)
+                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetMySessionId() }, m_losers = new List<SessionId> { GetOppositeSessionId() } });
+                else
+                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
+            }
         }
     }
 }
