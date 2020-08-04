@@ -20,6 +20,10 @@ namespace ChessCrush.UI
             animator.Play($"{nameof(ChessGameAlert)}_Appear");
         }
 
-        public void Disappear() => animator.Play($"{nameof(ChessGameAlert)}_Disappear");
+        public void Disappear()
+        {
+            animator.Play($"{nameof(ChessGameAlert)}_Disappear");
+            gameObject.SetActive(false);
+        }
     }
 }

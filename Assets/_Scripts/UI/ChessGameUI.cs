@@ -43,6 +43,7 @@ namespace ChessCrush.UI
 
         private void OnDisable()
         {
+            chessGameAlert.gameObject.SetActive(false);
             gameOverWidget.gameObject.SetActive(false);
         }
 
