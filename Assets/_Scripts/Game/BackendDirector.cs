@@ -231,7 +231,7 @@ namespace ChessCrush.Game
             };
 
             Backend.Match.OnMatchChat += args => { };
-            Backend.Match.OnMatchResult += args => chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
+
             Backend.Match.OnLeaveInGameServer += args => 
             {
                 gameServerJoined = false;
@@ -752,6 +752,8 @@ namespace ChessCrush.Game
                 else
                     Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
             }
+
+            chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(playerWin);
         }
     }
 }

@@ -80,8 +80,10 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+
                 isPlayerWin = false;
                 chessGameUI.gameOverWidget.gameObject.SetActive(true);
+                backendDirector.MatchEnd(isPlayerWin);
             });
 
             enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
@@ -89,8 +91,10 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
+
                 isPlayerWin = true;
                 chessGameUI.gameOverWidget.gameObject.SetActive(true);
+                backendDirector.MatchEnd(isPlayerWin);
             });
 
             gameReadyEvents();
