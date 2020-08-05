@@ -80,8 +80,8 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
-                isPlayerWin = false;
-                chessGameUI.gameOverWidget.gameObject.SetActive(true);
+
+                backendDirector.MatchEnd(isPlayerWin = false);
             });
 
             enemyPlayer.Hp.Where(value => value <= 0).Subscribe(_ =>
@@ -89,8 +89,7 @@ namespace ChessCrush.Game
                 actionAnimation?.Kill(true);
                 actionAnimation = null;
                 StopAllCoroutines();
-                isPlayerWin = true;
-                chessGameUI.gameOverWidget.gameObject.SetActive(true);
+                backendDirector.MatchEnd(isPlayerWin = true);
             });
 
             gameReadyEvents();
@@ -170,7 +169,9 @@ namespace ChessCrush.Game
             gameObject.SetActive(false);
             backendDirector.LeaveGameServer();
             player.Dispose();
+            player = null;
             enemyPlayer.Dispose();
+            enemyPlayer = null;
         }
     }
 }
