@@ -170,7 +170,9 @@ namespace ChessCrush.Game
             gameObject.SetActive(false);
             backendDirector.LeaveGameServer();
             player.Dispose();
+            player = null;
             enemyPlayer.Dispose();
+            enemyPlayer = null;
         }
     }
 }

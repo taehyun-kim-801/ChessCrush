@@ -16,6 +16,8 @@ namespace ChessCrush.Game
         public List<ChessAction> chessActions = new List<ChessAction>();
         public Subject<List<ChessAction>> actionsSubject = new Subject<List<ChessAction>>();
 
+        private IDisposable turnCountSubscribe;
+
         private ChessGameDirector chessGameDirector;
 
         public Player()
@@ -65,10 +67,7 @@ namespace ChessCrush.Game
                 });
             }
 
-            chessGameDirector.turnCount.Subscribe(value =>
-            {
-                if (value > 0) EnergyPoint.Value = Mathf.Clamp(EnergyPoint.Value + 1, 0, 10);
-            }).AddTo(chessGameDirector);
+            turnCountSubscribe = chessGameDirector.turnCount.Where(value => value > 0).Subscribe(_ => EnergyPoint.Value = Mathf.Clamp(EnergyPoint.Value + 1, 0, 10));
         }
 
         public void Initialize(int hp,int energy)
@@ -106,6 +105,8 @@ namespace ChessCrush.Game
             Hp.Dispose();
             EnergyPoint.Dispose();
             actionsSubject.Dispose();
+            turnCountSubscribe.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
