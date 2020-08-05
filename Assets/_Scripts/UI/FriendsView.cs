@@ -10,15 +10,12 @@ namespace ChessCrush.UI
         [SerializeField]
         private Text nicknameText;
         [SerializeField]
-        private Button chatButton;
-        [SerializeField]
         private Button breakButton;
 
         private string friendInDate;
 
         private void Awake()
         {
-            chatButton.OnClickAsObservable().Subscribe(_ => SubscribeChatButton()).AddTo(gameObject);
             breakButton.OnClickAsObservable().Subscribe(_ => SubscribeBreakButton()).AddTo(gameObject);
         }
 
@@ -26,11 +23,6 @@ namespace ChessCrush.UI
         {
             nicknameText.text = nickname;
             friendInDate = inDate;
-        }
-
-        private void SubscribeChatButton()
-        {
-            
         }
 
         private void SubscribeBreakButton()
