@@ -42,6 +42,15 @@ namespace ChessCrush.Game
             });
         }
 
+        private void OnApplicationQuit()
+        {
+            if (IsReconnect)
+            {
+                MatchEnd(false);
+                LeaveGameServer();
+            }
+        }
+
         private void SetHandler()
         {
             string gameRoomToken = "";
@@ -92,19 +101,20 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
-                if(!(latestGameRoom is null || roomJoined))
+                if(!roomJoined)
                 {
-                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-                    Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
-                    gameServerJoined = true;
-                    roomJoined = true;
-                    var oms = new OutputMemoryStream();
-                    oms.Write(true);
-                    SendDataToInGameRoom(oms.buffer);
-                }
-                if (!roomJoined)
-                {
-                    Backend.Match.JoinGameRoom(gameRoomToken);
+                    if(!(latestGameRoom is null))
+                    {
+                        chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+                        Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
+                        gameServerJoined = true;
+                        var oms = new OutputMemoryStream();
+                        oms.Write(true);
+                        SendDataToInGameRoom(oms.buffer);
+                    }
+                    else
+                        Backend.Match.JoinGameRoom(gameRoomToken);
+
                     roomJoined = true;
                 }
             };
@@ -204,7 +214,7 @@ namespace ChessCrush.Game
                 }
                 else
                 {
-                    if (!IsMySessionId(args.From.SessionId))
+                    if (GetOppositeSessionId() == args.From.SessionId)
                     {
                         if (oppositeDisconnected)
                         {
@@ -251,10 +261,7 @@ namespace ChessCrush.Game
                 if(oppositeDisconnected)
                 {
                     chessGameDirector.isPlayerWin = true;
-                    var result = new MatchGameResult();
-                    result.m_winners = new List<SessionId>() { GetMySessionId() };
-                    result.m_losers = new List<SessionId>() { GetOppositeSessionId() };
-                    Backend.Match.MatchEnd(result);
+                    MatchEnd(true);
                     return;
                 }
                 oppositeDisconnected = true;
@@ -745,13 +752,10 @@ namespace ChessCrush.Game
 
         public void MatchEnd(bool playerWin)
         {
-            if(IsHost)
-            {
-                if (playerWin)
-                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetMySessionId() }, m_losers = new List<SessionId> { GetOppositeSessionId() } });
-                else
-                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
-            }
+            if (playerWin)
+                Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetMySessionId() }, m_losers = new List<SessionId> { GetOppositeSessionId() } });
+            else
+                Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
 
             chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
         }
