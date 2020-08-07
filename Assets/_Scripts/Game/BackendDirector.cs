@@ -23,6 +23,7 @@ namespace ChessCrush.Game
         public bool MatchMakingServerJoined { get; private set; }
 
         private bool oppositeDisconnected;
+        private int oppositeDisconnectedCount = 0;
 
         public Action matchMakingSuccessCallback;
 
@@ -110,6 +111,7 @@ namespace ChessCrush.Game
                         gameServerJoined = true;
                         var oms = new OutputMemoryStream();
                         oms.Write(true);
+                        Debug.Log("Send data to in game room on session join in server");
                         SendDataToInGameRoom(oms.buffer);
                     }
                     else
@@ -154,6 +156,7 @@ namespace ChessCrush.Game
                     int rand = UnityEngine.Random.Range(0, 1);
                     OutputMemoryStream oms = new OutputMemoryStream();
                     oms.Write(rand);
+                    Debug.Log("Send data to in game room on match in game start");
                     SendDataToInGameRoom(oms.buffer);
                 }
             };
@@ -228,7 +231,9 @@ namespace ChessCrush.Game
                             oms.Write(chessGameDirector.turnCount.Value);
                             oms.Write(chessGameDirector.chessGameUI.LessTime);
                             oms.Write(chessGameDirector.chessGameObjects.chessBoard.Pieces);
+                            Debug.Log("Send data to in game room on match relay");
                             SendDataToInGameRoom(oms.buffer);
+                            oppositeDisconnected = false;
                         }
                         else
                         {
@@ -249,6 +254,7 @@ namespace ChessCrush.Game
                 inGameReady = false;
                 roomToken = null;
                 oppositeDisconnected = false;
+                oppositeDisconnectedCount = 0;
                 SessionIdList = null;
                 latestGameRoom = null;
             };
@@ -258,12 +264,13 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionOffline += args => 
             {
-                if(oppositeDisconnected)
+                if(oppositeDisconnectedCount > 0)
                 {
                     chessGameDirector.isPlayerWin = true;
                     MatchEnd(true);
                     return;
                 }
+                oppositeDisconnectedCount++;
                 oppositeDisconnected = true;
                 chessGameDirector.chessGameUI.UseAlert("Opposite player disconnected.");
             };

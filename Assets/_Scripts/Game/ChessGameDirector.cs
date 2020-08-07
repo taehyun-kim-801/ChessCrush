@@ -119,6 +119,7 @@ namespace ChessCrush.Game
 
             var oms = new OutputMemoryStream();
             oms.Write(player.chessActions);
+            Debug.Log("Send data to in game room on input");
             backendDirector.SendDataToInGameRoom(oms.buffer);
         }
 
