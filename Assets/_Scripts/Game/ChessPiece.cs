@@ -6,6 +6,7 @@ namespace ChessCrush.Game
     public class ChessPiece: MonoBehaviour
     {
         public static int PieceIdCount { get; private set; }
+        private bool gameEndEventInitialized;
 
         public int PieceId { get; private set; }
         public ChessBoardVector chessBoardVector { get; private set; }
@@ -32,8 +33,16 @@ namespace ChessCrush.Game
 
         private void Initialize(int pieceId, int x, int y, PieceType pieceType, bool isExpected, bool isMine)
         {
-            chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-            resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
+            if (chessGameDirector is null)
+                chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+            if(resourceDirector is null)
+                resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
+
+            if (!gameEndEventInitialized)
+            {
+                chessGameDirector.gameEndEvents += () => PieceIdCount = 0;
+                gameEndEventInitialized = true;
+            }
 
             if (pieceId == 0 && !isExpected)
                 PieceId = ++PieceIdCount;
