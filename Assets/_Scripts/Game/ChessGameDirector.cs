@@ -25,6 +25,7 @@ namespace ChessCrush.Game
         public bool isPlayerWin;
 
         public event Action gameReadyEvents;
+        public event Action gameEndEvents;
 
         public ReactiveProperty<int?> myLocalEnergy = new ReactiveProperty<int?>();
 
@@ -45,6 +46,20 @@ namespace ChessCrush.Game
                   chessGameUI.myStatus.energyText.text = $"{value} / 10";
                   chessGameUI.myStatus.energyBar.fillAmount = (float)value / 10;
               }).AddTo(gameObject);
+
+            gameEndEvents += () =>
+            {
+                turnCount.Value = 0;
+                chessGameObjects.chessBoard.ClearChessPieces();
+                chessGameObjects.chessBoard.ClearExpectedChessPieces();
+
+                player.Dispose();
+                player = null;
+                enemyPlayer.Dispose();
+                enemyPlayer = null;
+
+                backendDirector.LeaveGameServer();
+            };
         }
 
         private void Start()
@@ -162,17 +177,10 @@ namespace ChessCrush.Game
 
         public void GameEnd()
         {
-            turnCount.Value = 0;
+            gameEndEvents();
             Director.instance.GetSubDirector<StartSceneDirector>();
             chessGameUI.gameOverWidget.gameObject.SetActive(false);
-            chessGameObjects.chessBoard.ClearChessPieces();
-            chessGameObjects.chessBoard.ClearExpectedChessPieces();
             gameObject.SetActive(false);
-            backendDirector.LeaveGameServer();
-            player.Dispose();
-            player = null;
-            enemyPlayer.Dispose();
-            enemyPlayer = null;
         }
     }
 }
