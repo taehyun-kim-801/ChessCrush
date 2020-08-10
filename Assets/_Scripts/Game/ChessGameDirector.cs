@@ -35,7 +35,7 @@ namespace ChessCrush.Game
 
         private Sequence actionAnimation;
 
-        private bool initializedInReconnect;
+        public bool InitializedInReconnect { get; private set; }
 
         private BackendDirector backendDirector;
 
@@ -111,8 +111,8 @@ namespace ChessCrush.Game
 
             while (true)
             {
-                if (backendDirector.IsReconnect && !initializedInReconnect)
-                    initializedInReconnect = true;
+                if (backendDirector.IsReconnect && !InitializedInReconnect)
+                    InitializedInReconnect = true;
                 else
                     turnCount.Value++;
 

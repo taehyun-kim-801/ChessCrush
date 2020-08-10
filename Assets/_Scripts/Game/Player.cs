@@ -67,7 +67,8 @@ namespace ChessCrush.Game
                 });
             }
 
-            turnCountSubscribe = chessGameDirector.turnCount.Where(value => value > 0).Subscribe(_ => EnergyPoint.Value = Mathf.Clamp(EnergyPoint.Value + 1, 0, 10));
+            //재접속을 하지 않았거나 재접속 후 초기화했을 시에 이벤트 실행
+            turnCountSubscribe = chessGameDirector.turnCount.Where(value => value > 0 && (!Director.instance.GetSubDirector<BackendDirector>().IsReconnect || chessGameDirector.InitializedInReconnect)).Subscribe(_ => EnergyPoint.Value = Mathf.Clamp(EnergyPoint.Value + 1, 0, 10));
         }
 
         public void Initialize(int hp,int energy)
