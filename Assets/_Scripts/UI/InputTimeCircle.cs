@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using ChessCrush.Game;
+using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,24 +13,30 @@ namespace ChessCrush.UI
         [SerializeField]
         private Text timeText;
 
-        private float enableTime;
-        public float LessTime { get { return Time.time - enableTime; } }
+        public readonly ReactiveProperty<float> LessTime = new ReactiveProperty<float>();
+
+        private BackendDirector backendDirector;
 
         private void Awake()
         {
-            inputTimeCircle.UpdateAsObservable().Subscribe(_ =>
+            LessTime.Subscribe(value =>
             {
-                inputTimeCircle.fillAmount = (30f - (Time.time - enableTime)) / 30f;
-                if (inputTimeCircle.fillAmount <= 0)
-                    gameObject.SetActive(false);
+                inputTimeCircle.fillAmount = value / 30f;
+                timeText.text = ((int)value).ToString();
             }).AddTo(gameObject);
+            LessTime.Where(value => value <= 0).Subscribe(_ => gameObject.SetActive(false)).AddTo(gameObject);
 
-            timeText.UpdateAsObservable().Subscribe(_ => timeText.text = (30 - ((int)(Time.time - enableTime))).ToString()).AddTo(gameObject);
+            gameObject.UpdateAsObservable().Where(_ => !backendDirector.OppositeDisconnected).Subscribe(_ => LessTime.Value -= Time.deltaTime).AddTo(gameObject);
+        }
+
+        private void Start()
+        {
+            backendDirector = Director.instance.GetSubDirector<BackendDirector>();
         }
 
         private void OnEnable()
         {
-            enableTime = Time.time;
+            LessTime.Value = 30f;
         }
     }
 }

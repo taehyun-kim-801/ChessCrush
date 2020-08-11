@@ -21,8 +21,8 @@ namespace ChessCrush.Game
         private bool inGameReady;
 
         public bool MatchMakingServerJoined { get; private set; }
-
-        private bool oppositeDisconnected;
+        public bool OppositeDisconnected { get; private set; }
+        private int oppositeDisconnectedCount = 0;
 
         public Action matchMakingSuccessCallback;
 
@@ -40,6 +40,15 @@ namespace ChessCrush.Game
                 else
                     MessageBoxUI.UseWithComponent("Failed to connect to server");
             });
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (IsReconnect)
+            {
+                MatchEnd(false);
+                LeaveGameServer();
+            }
         }
 
         private void SetHandler()
@@ -92,19 +101,21 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionJoinInServer += args =>
             {
-                if(!(latestGameRoom is null || roomJoined))
+                if(!roomJoined)
                 {
-                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-                    Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
-                    gameServerJoined = true;
-                    roomJoined = true;
-                    var oms = new OutputMemoryStream();
-                    oms.Write(true);
-                    SendDataToInGameRoom(oms.buffer);
-                }
-                if (!roomJoined)
-                {
-                    Backend.Match.JoinGameRoom(gameRoomToken);
+                    if(!(latestGameRoom is null))
+                    {
+                        chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+                        Director.instance.DestroySubDirector(Director.instance.GetSubDirector<StartSceneDirector>());
+                        gameServerJoined = true;
+                        var oms = new OutputMemoryStream();
+                        oms.Write(true);
+                        Debug.Log("Send data to in game room on session join in server");
+                        SendDataToInGameRoom(oms.buffer);
+                    }
+                    else
+                        Backend.Match.JoinGameRoom(gameRoomToken);
+
                     roomJoined = true;
                 }
             };
@@ -133,18 +144,22 @@ namespace ChessCrush.Game
             };
             Backend.Match.OnMatchInGameStart += () => 
             {
-                if (chessGameDirector is null)
-                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-
-                TrySetHostSession();
-
-                if(IsHost)
+                if (!IsReconnect)
                 {
-                    //호스트: 0이 나오면 선공, 1이 나오면 후공
-                    int rand = UnityEngine.Random.Range(0, 1);
-                    OutputMemoryStream oms = new OutputMemoryStream();
-                    oms.Write(rand);
-                    SendDataToInGameRoom(oms.buffer);
+                    if (chessGameDirector is null)
+                        chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
+                    TrySetHostSession();
+
+                    if (IsHost)
+                    {
+                        //호스트: 0이 나오면 선공, 1이 나오면 후공
+                        int rand = UnityEngine.Random.Range(0, 1);
+                        OutputMemoryStream oms = new OutputMemoryStream();
+                        oms.Write(rand);
+                        Debug.Log("Send data to in game room on match in game start");
+                        SendDataToInGameRoom(oms.buffer);
+                    }
                 }
             };
             Backend.Match.OnMatchRelay += args => 
@@ -167,6 +182,7 @@ namespace ChessCrush.Game
                         chessGameDirector.player.Initialize(playerHp, playerEnergyPoint);
                         chessGameDirector.enemyPlayer.Initialize(enemyHp, enemyEnergyPoint);
                         chessGameDirector.turnCount.Value = turnCount;
+                        chessGameDirector.chessGameUI.SetInputTimeCircle(lessTime);
 
                         ims.Read(out List<ChessPiece> pieces);
 
@@ -204,11 +220,11 @@ namespace ChessCrush.Game
                 }
                 else
                 {
-                    if (!IsMySessionId(args.From.SessionId))
+                    if (GetOppositeSessionId() == args.From.SessionId)
                     {
-                        if (oppositeDisconnected)
+                        if (OppositeDisconnected)
                         {
-                            chessGameDirector.chessGameUI.DisappearAlert();
+                            chessGameDirector.chessGameUI.UpdateReconnectOpposite();
                             var oms = new OutputMemoryStream();
                             oms.Write(!IsHost);
                             oms.Write(chessGameDirector.player.Hp.Value);
@@ -218,7 +234,9 @@ namespace ChessCrush.Game
                             oms.Write(chessGameDirector.turnCount.Value);
                             oms.Write(chessGameDirector.chessGameUI.LessTime);
                             oms.Write(chessGameDirector.chessGameObjects.chessBoard.Pieces);
+                            Debug.Log("Send data to in game room on match relay");
                             SendDataToInGameRoom(oms.buffer);
+                            OppositeDisconnected = false;
                         }
                         else
                         {
@@ -238,7 +256,8 @@ namespace ChessCrush.Game
                 roomJoined = false;
                 inGameReady = false;
                 roomToken = null;
-                oppositeDisconnected = false;
+                OppositeDisconnected = false;
+                oppositeDisconnectedCount = 0;
                 SessionIdList = null;
                 latestGameRoom = null;
             };
@@ -248,17 +267,15 @@ namespace ChessCrush.Game
 
             Backend.Match.OnSessionOffline += args => 
             {
-                if(oppositeDisconnected)
+                if(oppositeDisconnectedCount > 0)
                 {
                     chessGameDirector.isPlayerWin = true;
-                    var result = new MatchGameResult();
-                    result.m_winners = new List<SessionId>() { GetMySessionId() };
-                    result.m_losers = new List<SessionId>() { GetOppositeSessionId() };
-                    Backend.Match.MatchEnd(result);
+                    MatchEnd(true);
                     return;
                 }
-                oppositeDisconnected = true;
-                chessGameDirector.chessGameUI.UseAlert("Opposite player disconnected.");
+                oppositeDisconnectedCount++;
+                OppositeDisconnected = true;
+                chessGameDirector.chessGameUI.UpdateDisconnectOpposite();
             };
         }
 
@@ -745,13 +762,10 @@ namespace ChessCrush.Game
 
         public void MatchEnd(bool playerWin)
         {
-            if(IsHost)
-            {
-                if (playerWin)
-                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetMySessionId() }, m_losers = new List<SessionId> { GetOppositeSessionId() } });
-                else
-                    Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
-            }
+            if (playerWin)
+                Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetMySessionId() }, m_losers = new List<SessionId> { GetOppositeSessionId() } });
+            else
+                Backend.Match.MatchEnd(new MatchGameResult { m_winners = new List<SessionId> { GetOppositeSessionId() }, m_losers = new List<SessionId> { GetMySessionId() } });
 
             chessGameDirector.chessGameUI.gameOverWidget.gameObject.SetActive(true);
         }

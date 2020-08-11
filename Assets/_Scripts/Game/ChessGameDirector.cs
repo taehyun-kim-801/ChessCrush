@@ -35,7 +35,7 @@ namespace ChessCrush.Game
 
         private Sequence actionAnimation;
 
-        private bool initializedInReconnect;
+        public bool InitializedInReconnect { get; private set; }
 
         private BackendDirector backendDirector;
 
@@ -111,8 +111,8 @@ namespace ChessCrush.Game
 
             while (true)
             {
-                if (backendDirector.IsReconnect && !initializedInReconnect)
-                    initializedInReconnect = true;
+                if (backendDirector.IsReconnect && !InitializedInReconnect)
+                    InitializedInReconnect = true;
                 else
                     turnCount.Value++;
 
@@ -128,12 +128,13 @@ namespace ChessCrush.Game
             float temp = Time.time;
 
             chessGameUI.SetInputAreaActive(true);
-            yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
+            yield return new WaitUntil(() => inputCompleted || chessGameUI.LessTime <= 0);
 
             chessGameUI.SetInputAreaActive(false);
 
             var oms = new OutputMemoryStream();
             oms.Write(player.chessActions);
+            Debug.Log("Send data to in game room on input");
             backendDirector.SendDataToInGameRoom(oms.buffer);
         }
 
