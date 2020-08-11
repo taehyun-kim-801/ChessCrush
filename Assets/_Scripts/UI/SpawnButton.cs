@@ -1,5 +1,4 @@
 ﻿using ChessCrush.Game;
-using System;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
