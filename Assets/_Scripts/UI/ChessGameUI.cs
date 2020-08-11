@@ -20,8 +20,12 @@ namespace ChessCrush.UI
         [SerializeField]
         private GameObject waitingTextObject;
         [SerializeField]
+        private ButtonInformationPopup buttonInformationPopup;
+        [SerializeField]
         private ChessGameAlert chessGameAlert;
         public GameOverWidget gameOverWidget;
+
+        public ButtonInformationPopup ButtonInformationPopup => buttonInformationPopup;
 
         private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
 
