@@ -145,19 +145,22 @@ namespace ChessCrush.Game
             };
             Backend.Match.OnMatchInGameStart += () => 
             {
-                if (chessGameDirector is null)
-                    chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
-
-                TrySetHostSession();
-
-                if(IsHost)
+                if (!IsReconnect)
                 {
-                    //호스트: 0이 나오면 선공, 1이 나오면 후공
-                    int rand = UnityEngine.Random.Range(0, 1);
-                    OutputMemoryStream oms = new OutputMemoryStream();
-                    oms.Write(rand);
-                    Debug.Log("Send data to in game room on match in game start");
-                    SendDataToInGameRoom(oms.buffer);
+                    if (chessGameDirector is null)
+                        chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
+
+                    TrySetHostSession();
+
+                    if (IsHost)
+                    {
+                        //호스트: 0이 나오면 선공, 1이 나오면 후공
+                        int rand = UnityEngine.Random.Range(0, 1);
+                        OutputMemoryStream oms = new OutputMemoryStream();
+                        oms.Write(rand);
+                        Debug.Log("Send data to in game room on match in game start");
+                        SendDataToInGameRoom(oms.buffer);
+                    }
                 }
             };
             Backend.Match.OnMatchRelay += args => 
