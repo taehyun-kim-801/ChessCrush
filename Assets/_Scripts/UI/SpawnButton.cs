@@ -1,6 +1,7 @@
 ﻿using ChessCrush.Game;
 using System;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,11 +17,18 @@ namespace ChessCrush.UI
 
         private ChessGameDirector chessGameDirector;
         private ResourceDirector resourceDirector;
+        private ButtonInformationPopup buttonInformationPopup;
 
         private void Awake()
         {
             button = GetComponent<Button>();
             buttonImage = gameObject.GetComponent<Image>();
+
+            button.OnPointerEnterAsObservable().Subscribe(_ => buttonInformationPopup.Use(pieceSpawnType)).AddTo(gameObject);
+            Observable.EveryUpdate().SkipUntil(button.OnPointerEnterAsObservable()).TakeUntil(button.OnPointerExitAsObservable()).RepeatUntilDestroy(this)
+                .Select(_ => Input.mousePosition).Subscribe(position => buttonInformationPopup.transform.position = position);
+            button.OnPointerExitAsObservable().Subscribe(_ => buttonInformationPopup.gameObject.SetActive(false)).AddTo(gameObject);
+
             button.OnClickAsObservable().Subscribe(_ => SubscribeButton());
         }
 
@@ -28,6 +36,7 @@ namespace ChessCrush.UI
         {
             chessGameDirector = Director.instance.GetSubDirector<ChessGameDirector>();
             resourceDirector = Director.instance.GetSubDirector<ResourceDirector>();
+            buttonInformationPopup = chessGameDirector.chessGameUI.ButtonInformationPopup;
 
             chessGameDirector.gameReadyEvents += () =>
               {
