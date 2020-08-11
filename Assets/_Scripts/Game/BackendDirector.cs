@@ -182,6 +182,7 @@ namespace ChessCrush.Game
                         chessGameDirector.player.Initialize(playerHp, playerEnergyPoint);
                         chessGameDirector.enemyPlayer.Initialize(enemyHp, enemyEnergyPoint);
                         chessGameDirector.turnCount.Value = turnCount;
+                        chessGameDirector.chessGameUI.SetInputTimeCircle(lessTime);
 
                         ims.Read(out List<ChessPiece> pieces);
 

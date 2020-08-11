@@ -128,7 +128,7 @@ namespace ChessCrush.Game
             float temp = Time.time;
 
             chessGameUI.SetInputAreaActive(true);
-            yield return new WaitUntil(() => inputCompleted || Time.time - temp > InputTime);
+            yield return new WaitUntil(() => inputCompleted || chessGameUI.LessTime <= 0);
 
             chessGameUI.SetInputAreaActive(false);
 

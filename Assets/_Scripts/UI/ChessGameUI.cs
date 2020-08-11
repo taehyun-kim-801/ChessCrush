@@ -64,6 +64,8 @@ namespace ChessCrush.UI
             waitingTextObject.SetActive(!active);
         }
 
+        public void SetInputTimeCircle(float time) => inputTimeCircle.LessTime.Value = time;
+
         public void UpdateDisconnectOpposite() => chessGameAlert.Appear("Opposite player disconnected");
 
         public void UpdateReconnectOpposite() => chessGameAlert.Disappear();

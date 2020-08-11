@@ -13,7 +13,6 @@ namespace ChessCrush.UI
         [SerializeField]
         private Text timeText;
 
-        private float enableTime;
         public readonly ReactiveProperty<float> LessTime = new ReactiveProperty<float>();
 
         private BackendDirector backendDirector;
