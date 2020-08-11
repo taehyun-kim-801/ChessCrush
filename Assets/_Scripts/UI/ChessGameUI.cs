@@ -25,7 +25,7 @@ namespace ChessCrush.UI
 
         private List<PieceSelectButton> pieceSelectButtons = new List<PieceSelectButton>();
 
-        public float LessTime => inputTimeCircle.LessTime;
+        public float LessTime => inputTimeCircle.LessTime.Value;
 
         private ChessGameDirector chessGameDirector;
 
@@ -64,7 +64,8 @@ namespace ChessCrush.UI
             waitingTextObject.SetActive(!active);
         }
 
-        public void UseAlert(string txt) => chessGameAlert.Appear(txt);
-        public void DisappearAlert() => chessGameAlert.Disappear();
+        public void UpdateDisconnectOpposite() => chessGameAlert.Appear("Opposite player disconnected");
+
+        public void UpdateReconnectOpposite() => chessGameAlert.Disappear();
     }
 }

@@ -21,8 +21,7 @@ namespace ChessCrush.Game
         private bool inGameReady;
 
         public bool MatchMakingServerJoined { get; private set; }
-
-        private bool oppositeDisconnected;
+        public bool OppositeDisconnected { get; private set; }
         private int oppositeDisconnectedCount = 0;
 
         public Action matchMakingSuccessCallback;
@@ -222,9 +221,9 @@ namespace ChessCrush.Game
                 {
                     if (GetOppositeSessionId() == args.From.SessionId)
                     {
-                        if (oppositeDisconnected)
+                        if (OppositeDisconnected)
                         {
-                            chessGameDirector.chessGameUI.DisappearAlert();
+                            chessGameDirector.chessGameUI.UpdateReconnectOpposite();
                             var oms = new OutputMemoryStream();
                             oms.Write(!IsHost);
                             oms.Write(chessGameDirector.player.Hp.Value);
@@ -236,7 +235,7 @@ namespace ChessCrush.Game
                             oms.Write(chessGameDirector.chessGameObjects.chessBoard.Pieces);
                             Debug.Log("Send data to in game room on match relay");
                             SendDataToInGameRoom(oms.buffer);
-                            oppositeDisconnected = false;
+                            OppositeDisconnected = false;
                         }
                         else
                         {
@@ -256,7 +255,7 @@ namespace ChessCrush.Game
                 roomJoined = false;
                 inGameReady = false;
                 roomToken = null;
-                oppositeDisconnected = false;
+                OppositeDisconnected = false;
                 oppositeDisconnectedCount = 0;
                 SessionIdList = null;
                 latestGameRoom = null;
@@ -274,8 +273,8 @@ namespace ChessCrush.Game
                     return;
                 }
                 oppositeDisconnectedCount++;
-                oppositeDisconnected = true;
-                chessGameDirector.chessGameUI.UseAlert("Opposite player disconnected.");
+                OppositeDisconnected = true;
+                chessGameDirector.chessGameUI.UpdateDisconnectOpposite();
             };
         }
 
