@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
@@ -51,9 +52,15 @@ public class ObjectPool : MonoBehaviour
         if(objIndex==-1)
         {
             var obj = poolDictionary[objectName][0];
-            var newGameObject = Instantiate(obj, transform);
-            poolDictionary[objectName].Add(newGameObject);
-            return newGameObject;
+
+            GameObject result = null;
+            foreach (var _ in Enumerable.Range(1, poolSerializeList.Find(info => info.serializeObject.name == objectName).plusCount))
+            {
+                var newGameObject = Instantiate(obj, transform);
+                poolDictionary[objectName].Add(newGameObject);
+                if (result is null) result = newGameObject;
+            }
+            return result;
         }
         else
         {
