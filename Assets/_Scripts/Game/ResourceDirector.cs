@@ -11,10 +11,15 @@ namespace ChessCrush.Game
         private Queue<Object> inGameResources = new Queue<Object>();
         private readonly string ChessPiecePath = "Textures/Chess/chessPiece/{0}";
 
-        private void Awake()
+        private ChessGameDirector chessGameDirector;
+
+        private void Start()
         {
-            LoadChessSprite();
+            chessGameDirector = Director.instance.PeekSubDirector<ChessGameDirector>();
+            chessGameDirector.gameReadyEvents += LoadChessSprite;
+            chessGameDirector.gameEndEvents += UnloadChessGameAssets;
         }
+
         private void LoadChessSprite()
         {
             chessSpriteAtlas = Resources.Load<SpriteAtlas>(string.Format(ChessPiecePath, "ChessSpriteAtlas"));
