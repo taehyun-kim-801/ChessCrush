@@ -46,7 +46,9 @@ namespace ChessCrush.Game
             GetSubDirector<ResourceDirector>();
             GetSubDirector<StartSceneDirector>();
         }
-        
+
+        public T PeekSubDirector<T>() where T : SubDirector => directorsPool.PeekDirector<T>();
+
         public T GetSubDirector<T>() where T : SubDirector => directorsPool.UseDirector<T>();
 
         public void DestroySubDirector<T>(T subDirector) where T: SubDirector

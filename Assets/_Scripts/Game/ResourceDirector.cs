@@ -1,70 +1,43 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+using UnityEngine.U2D;
 
 namespace ChessCrush.Game
 {
     public class ResourceDirector: SubDirector
     {
-        #region Chess Sprite
-        private Sprite blackPawnSprite;
-        private Sprite blackBishopSprite;
-        private Sprite blackKnightSprite;
-        private Sprite blackRookSprite;
-        private Sprite blackQueenSprite;
-        private Sprite blackKingSprite;
+        private SpriteAtlas chessSpriteAtlas;
+        private Queue<Object> inGameResources = new Queue<Object>();
+        private readonly string ChessPiecePath = "Textures/Chess/chessPiece/{0}";
 
-        private Sprite whitePawnSprite;
-        private Sprite whiteBishopSprite;
-        private Sprite whiteKnightSprite;
-        private Sprite whiteRookSprite;
-        private Sprite whiteQueenSprite;
-        private Sprite whiteKingSprite;
-        #endregion
-        private void Awake()
+        private ChessGameDirector chessGameDirector;
+
+        private void Start()
         {
-            LoadChessSprite();
+            chessGameDirector = Director.instance.PeekSubDirector<ChessGameDirector>();
+            chessGameDirector.gameReadyEvents += LoadChessSprite;
+            chessGameDirector.gameEndEvents += UnloadChessGameAssets;
         }
 
         private void LoadChessSprite()
         {
-            string path = "Textures/Chess/ChessPiece/{0}";
-            blackPawnSprite = Resources.Load<Sprite>(string.Format(path, "Black_Pawn"));
-            blackBishopSprite = Resources.Load<Sprite>(string.Format(path, "Black_Bishop"));
-            blackKnightSprite = Resources.Load<Sprite>(string.Format(path, "Black_Knight"));
-            blackRookSprite = Resources.Load<Sprite>(string.Format(path, "Black_Rook"));
-            blackQueenSprite = Resources.Load<Sprite>(string.Format(path, "Black_Queen"));
-            blackKingSprite = Resources.Load<Sprite>(string.Format(path, "Black_King"));
-            whitePawnSprite = Resources.Load<Sprite>(string.Format(path, "White_Pawn"));
-            whiteBishopSprite = Resources.Load<Sprite>(string.Format(path, "White_Bishop"));
-            whiteKnightSprite = Resources.Load<Sprite>(string.Format(path, "White_Knight"));
-            whiteRookSprite = Resources.Load<Sprite>(string.Format(path, "White_Rook"));
-            whiteQueenSprite = Resources.Load<Sprite>(string.Format(path, "White_Queen"));
-            whiteKingSprite = Resources.Load<Sprite>(string.Format(path, "White_King"));
+            chessSpriteAtlas = Resources.Load<SpriteAtlas>(string.Format(ChessPiecePath, "ChessSpriteAtlas"));
+            inGameResources.Enqueue(chessSpriteAtlas);
+        }
+
+        public void UnloadChessGameAssets()
+        {
+            while (inGameResources.Count != 0)
+                Resources.UnloadAsset(inGameResources.Dequeue());
         }
 
         public Sprite GetChessSprite(PieceType pieceType, bool isWhite)
         {
-            switch(pieceType)
-            {
-                case PieceType.Pawn:
-                    if (isWhite) return whitePawnSprite;
-                    else return blackPawnSprite;
-                case PieceType.Bishop:
-                    if (isWhite) return whiteBishopSprite;
-                    else return blackBishopSprite;
-                case PieceType.Knight:
-                    if (isWhite) return whiteKnightSprite;
-                    else return blackKnightSprite;
-                case PieceType.Rook:
-                    if (isWhite) return whiteRookSprite;
-                    else return blackRookSprite;
-                case PieceType.Queen:
-                    if (isWhite) return whiteQueenSprite;
-                    else return blackQueenSprite;
-                case PieceType.King:
-                    if (isWhite) return whiteKingSprite;
-                    else return blackKingSprite;
-                default: return null;
-            }
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(isWhite ? "White_" : "Black_");
+            stringBuilder.Append(pieceType.ToString());
+            return chessSpriteAtlas.GetSprite(stringBuilder.ToString());
         }
     }
 }
